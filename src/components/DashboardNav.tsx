@@ -1,48 +1,61 @@
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom"
+import { cn } from "@/lib/utils"
+import { Button } from "@/components/ui/button"
 import {
   LayoutDashboard,
   Users,
   ShoppingCart,
   Package,
-  BarChart,
-} from "lucide-react";
-import { cn } from "@/lib/utils";
+  Share2,
+} from "lucide-react"
 
-const navigation = [
-  { name: "Dashboard", href: "/", icon: LayoutDashboard },
-  { name: "Customers", href: "/customers", icon: Users },
-  { name: "Orders", href: "/orders", icon: ShoppingCart },
-  { name: "Products", href: "/products", icon: Package },
-  { name: "Analytics", href: "/analytics", icon: BarChart },
-];
+export function DashboardNav() {
+  const location = useLocation()
 
-export default function DashboardNav() {
-  const location = useLocation();
+  const routes = [
+    {
+      href: "/",
+      label: "Overview",
+      icon: LayoutDashboard,
+    },
+    {
+      href: "/customers",
+      label: "Customers",
+      icon: Users,
+    },
+    {
+      href: "/orders",
+      label: "Orders",
+      icon: ShoppingCart,
+    },
+    {
+      href: "/products",
+      label: "Products",
+      icon: Package,
+    },
+    {
+      href: "/social",
+      label: "Social Media",
+      icon: Share2,
+    },
+  ]
 
   return (
-    <nav className="flex flex-1 flex-col">
-      <ul role="list" className="flex flex-1 flex-col gap-y-7 px-4 pt-5">
-        <li>
-          <ul role="list" className="-mx-2 space-y-1">
-            {navigation.map((item) => (
-              <li key={item.name}>
-                <Link
-                  to={item.href}
-                  className={cn(
-                    "group flex gap-x-3 rounded-md p-2 text-sm font-semibold leading-6",
-                    location.pathname === item.href
-                      ? "bg-primary text-white"
-                      : "text-gray-700 hover:bg-gray-50 hover:text-primary"
-                  )}
-                >
-                  <item.icon className="h-6 w-6 shrink-0" />
-                  {item.name}
-                </Link>
-              </li>
-            ))}
-          </ul>
-        </li>
-      </ul>
+    <nav className="grid items-start gap-2">
+      {routes.map((route) => (
+        <Link
+          key={route.href}
+          to={route.href}
+        >
+          <Button
+            variant={location.pathname === route.href ? "secondary" : "ghost"}
+            className="w-full justify-start"
+          >
+            <route.icon className="mr-2 h-4 w-4" />
+            {route.label}
+          </Button>
+        </Link>
+      ))}
     </nav>
-  );
+  )
 }
