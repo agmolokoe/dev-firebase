@@ -1,8 +1,8 @@
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { useState } from "react"
-import { useToast } from "@/components/ui/use-toast"
-import { WhatsappIcon, Instagram, Share2 } from "lucide-react"
+import { useToast } from "@/hooks/use-toast"
+import { MessageSquare, Instagram, Share2 } from "lucide-react"
 import {
   Card,
   CardContent,
@@ -63,7 +63,7 @@ export default function SocialPage() {
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
-              <WhatsappIcon className="h-5 w-5 text-green-500" />
+              <MessageSquare className="h-5 w-5 text-green-500" />
               WhatsApp Business
             </CardTitle>
             <CardDescription>
