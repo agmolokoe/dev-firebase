@@ -28,7 +28,7 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
         )}
       >
         <div className="flex h-16 items-center justify-between px-4">
-          <h1 className="text-xl font-bold text-primary">BusinessHub</h1>
+          <h1 className="text-xl font-bold text-primary">Baseti ShopApp</h1>
           <button
             onClick={() => setSidebarOpen(false)}
             className="rounded-md p-2 text-gray-500 hover:bg-gray-100 lg:hidden"
