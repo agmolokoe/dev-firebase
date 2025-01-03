@@ -14,9 +14,22 @@ import {
 export default function SocialPage() {
   const [whatsappNumber, setWhatsappNumber] = useState("")
   const [instagramHandle, setInstagramHandle] = useState("")
+  const [isConnecting, setIsConnecting] = useState(false)
   const { toast } = useToast()
 
-  const handleWhatsAppConnect = () => {
+  const validateWhatsAppNumber = (number: string) => {
+    // Basic validation for international phone numbers
+    const phoneRegex = /^\+[1-9]\d{1,14}$/
+    return phoneRegex.test(number)
+  }
+
+  const validateInstagramHandle = (handle: string) => {
+    // Basic validation for Instagram handles
+    const handleRegex = /^[a-zA-Z0-9._]{1,30}$/
+    return handleRegex.test(handle)
+  }
+
+  const handleWhatsAppConnect = async () => {
     if (!whatsappNumber) {
       toast({
         title: "Error",
@@ -25,15 +38,40 @@ export default function SocialPage() {
       })
       return
     }
-    
-    // Here you would typically integrate with WhatsApp Business API
-    toast({
-      title: "WhatsApp Connected",
-      description: "Your WhatsApp business account has been connected successfully.",
-    })
+
+    if (!validateWhatsAppNumber(whatsappNumber)) {
+      toast({
+        title: "Invalid Number",
+        description: "Please enter a valid international phone number (e.g., +1234567890)",
+        variant: "destructive",
+      })
+      return
+    }
+
+    setIsConnecting(true)
+    try {
+      // Simulate API call
+      await new Promise(resolve => setTimeout(resolve, 1500))
+      
+      toast({
+        title: "WhatsApp Connected",
+        description: "Your WhatsApp business account has been connected successfully.",
+      })
+      
+      // Clear the input after successful connection
+      setWhatsappNumber("")
+    } catch (error) {
+      toast({
+        title: "Connection Failed",
+        description: "Failed to connect WhatsApp. Please try again.",
+        variant: "destructive",
+      })
+    } finally {
+      setIsConnecting(false)
+    }
   }
 
-  const handleInstagramConnect = () => {
+  const handleInstagramConnect = async () => {
     if (!instagramHandle) {
       toast({
         title: "Error",
@@ -43,11 +81,36 @@ export default function SocialPage() {
       return
     }
 
-    // Here you would typically integrate with Instagram API
-    toast({
-      title: "Instagram Connected",
-      description: "Your Instagram account has been connected successfully.",
-    })
+    if (!validateInstagramHandle(instagramHandle)) {
+      toast({
+        title: "Invalid Handle",
+        description: "Please enter a valid Instagram handle (letters, numbers, dots, and underscores only)",
+        variant: "destructive",
+      })
+      return
+    }
+
+    setIsConnecting(true)
+    try {
+      // Simulate API call
+      await new Promise(resolve => setTimeout(resolve, 1500))
+      
+      toast({
+        title: "Instagram Connected",
+        description: "Your Instagram account has been connected successfully.",
+      })
+      
+      // Clear the input after successful connection
+      setInstagramHandle("")
+    } catch (error) {
+      toast({
+        title: "Connection Failed",
+        description: "Failed to connect Instagram. Please try again.",
+        variant: "destructive",
+      })
+    } finally {
+      setIsConnecting(false)
+    }
   }
 
   return (
@@ -77,6 +140,7 @@ export default function SocialPage() {
                   placeholder="Enter WhatsApp business number"
                   value={whatsappNumber}
                   onChange={(e) => setWhatsappNumber(e.target.value)}
+                  disabled={isConnecting}
                 />
                 <p className="text-sm text-muted-foreground">
                   Enter your number with country code (e.g., +1234567890)
@@ -85,8 +149,9 @@ export default function SocialPage() {
               <Button
                 className="w-full"
                 onClick={handleWhatsAppConnect}
+                disabled={isConnecting}
               >
-                Connect WhatsApp
+                {isConnecting ? "Connecting..." : "Connect WhatsApp"}
               </Button>
             </div>
           </CardContent>
@@ -109,6 +174,7 @@ export default function SocialPage() {
                   placeholder="Enter Instagram handle"
                   value={instagramHandle}
                   onChange={(e) => setInstagramHandle(e.target.value)}
+                  disabled={isConnecting}
                 />
                 <p className="text-sm text-muted-foreground">
                   Enter your Instagram handle without @ symbol
@@ -117,8 +183,9 @@ export default function SocialPage() {
               <Button
                 className="w-full"
                 onClick={handleInstagramConnect}
+                disabled={isConnecting}
               >
-                Connect Instagram
+                {isConnecting ? "Connecting..." : "Connect Instagram"}
               </Button>
             </div>
           </CardContent>
