@@ -1,6 +1,6 @@
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { useToast } from "@/hooks/use-toast"
 import { MessageSquare, Instagram, Share2 } from "lucide-react"
 import {
@@ -10,21 +10,55 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card"
+import { supabase } from "@/lib/supabase"
+
+interface SocialConnection {
+  id: string
+  platform: string
+  handle: string
+  user_id: string
+  created_at: string
+}
 
 export default function SocialPage() {
   const [whatsappNumber, setWhatsappNumber] = useState("")
   const [instagramHandle, setInstagramHandle] = useState("")
   const [isConnecting, setIsConnecting] = useState(false)
+  const [connections, setConnections] = useState<SocialConnection[]>([])
   const { toast } = useToast()
 
+  useEffect(() => {
+    fetchConnections()
+  }, [])
+
+  const fetchConnections = async () => {
+    try {
+      const { data: { user } } = await supabase.auth.getUser()
+      if (!user) return
+
+      const { data, error } = await supabase
+        .from('social_connections')
+        .select('*')
+        .eq('user_id', user.id)
+
+      if (error) throw error
+      setConnections(data || [])
+    } catch (error) {
+      console.error('Error fetching connections:', error)
+      toast({
+        title: "Error",
+        description: "Failed to load social connections",
+        variant: "destructive",
+      })
+    }
+  }
+
   const validateWhatsAppNumber = (number: string) => {
-    // Basic validation for international phone numbers
     const phoneRegex = /^\+[1-9]\d{1,14}$/
     return phoneRegex.test(number)
   }
 
   const validateInstagramHandle = (handle: string) => {
-    // Basic validation for Instagram handles
     const handleRegex = /^[a-zA-Z0-9._]{1,30}$/
     return handleRegex.test(handle)
   }
@@ -50,17 +84,28 @@ export default function SocialPage() {
 
     setIsConnecting(true)
     try {
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 1500))
+      const { data: { user } } = await supabase.auth.getUser()
+      if (!user) throw new Error('Not authenticated')
+
+      const { error } = await supabase
+        .from('social_connections')
+        .upsert({
+          platform: 'whatsapp',
+          handle: whatsappNumber,
+          user_id: user.id
+        })
+
+      if (error) throw error
       
       toast({
         title: "WhatsApp Connected",
         description: "Your WhatsApp business account has been connected successfully.",
       })
       
-      // Clear the input after successful connection
       setWhatsappNumber("")
+      fetchConnections()
     } catch (error) {
+      console.error('Error connecting WhatsApp:', error)
       toast({
         title: "Connection Failed",
         description: "Failed to connect WhatsApp. Please try again.",
@@ -92,17 +137,28 @@ export default function SocialPage() {
 
     setIsConnecting(true)
     try {
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 1500))
+      const { data: { user } } = await supabase.auth.getUser()
+      if (!user) throw new Error('Not authenticated')
+
+      const { error } = await supabase
+        .from('social_connections')
+        .upsert({
+          platform: 'instagram',
+          handle: instagramHandle,
+          user_id: user.id
+        })
+
+      if (error) throw error
       
       toast({
         title: "Instagram Connected",
         description: "Your Instagram account has been connected successfully.",
       })
       
-      // Clear the input after successful connection
       setInstagramHandle("")
+      fetchConnections()
     } catch (error) {
+      console.error('Error connecting Instagram:', error)
       toast({
         title: "Connection Failed",
         description: "Failed to connect Instagram. Please try again.",
@@ -153,6 +209,9 @@ export default function SocialPage() {
               >
                 {isConnecting ? "Connecting..." : "Connect WhatsApp"}
               </Button>
+              {connections.find(c => c.platform === 'whatsapp') && (
+                <p className="text-sm text-green-600">✓ Connected</p>
+              )}
             </div>
           </CardContent>
         </Card>
@@ -187,6 +246,9 @@ export default function SocialPage() {
               >
                 {isConnecting ? "Connecting..." : "Connect Instagram"}
               </Button>
+              {connections.find(c => c.platform === 'instagram') && (
+                <p className="text-sm text-green-600">✓ Connected</p>
+              )}
             </div>
           </CardContent>
         </Card>
