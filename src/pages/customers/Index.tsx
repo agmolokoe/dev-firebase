@@ -14,14 +14,14 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { db } from "@/lib/supabase";
+import { db, type Customer } from "@/lib/supabase";
 import { useToast } from "@/components/ui/use-toast";
 
 export default function CustomersPage() {
   const [searchTerm, setSearchTerm] = useState("");
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [isDetailsOpen, setIsDetailsOpen] = useState(false);
-  const [selectedCustomer, setSelectedCustomer] = useState(null);
+  const [selectedCustomer, setSelectedCustomer] = useState<Customer | null>(null);
   const { toast } = useToast();
   const queryClient = useQueryClient();
 
@@ -35,15 +35,15 @@ export default function CustomersPage() {
     customer.email.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
-  const handleViewDetails = (customer) => {
+  const handleViewDetails = (customer: Customer) => {
     setSelectedCustomer(customer);
     setIsDetailsOpen(true);
   };
 
-  const handleCreateCustomer = async (customerData) => {
+  const handleCreateCustomer = async (customerData: Omit<Customer, 'id' | 'created_at'>) => {
     try {
       await db.customers.create(customerData);
-      queryClient.invalidateQueries(['customers']);
+      await queryClient.invalidateQueries({ queryKey: ['customers'] });
       toast({
         title: "Success",
         description: "Customer created successfully",
@@ -58,10 +58,10 @@ export default function CustomersPage() {
     }
   };
 
-  const handleUpdateCustomer = async (id, customerData) => {
+  const handleUpdateCustomer = async (id: string, customerData: Partial<Customer>) => {
     try {
       await db.customers.update(id, customerData);
-      queryClient.invalidateQueries(['customers']);
+      await queryClient.invalidateQueries({ queryKey: ['customers'] });
       toast({
         title: "Success",
         description: "Customer updated successfully",
