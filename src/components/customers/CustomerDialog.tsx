@@ -18,7 +18,6 @@ import {
 } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
-import { useToast } from "@/components/ui/use-toast"
 
 const formSchema = z.object({
   name: z.string().min(2, "Name must be at least 2 characters"),
@@ -35,14 +34,19 @@ type CustomerDialogProps = {
     email: string
     phone: string
   } | null
+  onSubmit: (data: z.infer<typeof formSchema>) => Promise<void>
+  onUpdate: (id: string, data: z.infer<typeof formSchema>) => Promise<void>
 }
 
 export function CustomerDialog({
   open,
   onOpenChange,
   customer,
+  onSubmit,
+  onUpdate,
 }: CustomerDialogProps) {
-  const { toast } = useToast()
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -52,14 +56,18 @@ export function CustomerDialog({
     },
   })
 
-  const onSubmit = async (values: z.infer<typeof formSchema>) => {
-    // Will be replaced with API call
-    toast({
-      title: customer ? "Customer updated" : "Customer created",
-      description: "The customer has been successfully saved.",
-    })
-    onOpenChange(false)
-    form.reset()
+  const handleSubmit = async (values: z.infer<typeof formSchema>) => {
+    setIsSubmitting(true);
+    try {
+      if (customer) {
+        await onUpdate(customer.id, values);
+      } else {
+        await onSubmit(values);
+      }
+      form.reset();
+    } finally {
+      setIsSubmitting(false);
+    }
   }
 
   return (
@@ -71,7 +79,7 @@ export function CustomerDialog({
           </DialogTitle>
         </DialogHeader>
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+          <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-4">
             <FormField
               control={form.control}
               name="name"
@@ -116,10 +124,11 @@ export function CustomerDialog({
                 type="button"
                 variant="outline"
                 onClick={() => onOpenChange(false)}
+                disabled={isSubmitting}
               >
                 Cancel
               </Button>
-              <Button type="submit">
+              <Button type="submit" disabled={isSubmitting}>
                 {customer ? "Update" : "Create"}
               </Button>
             </div>

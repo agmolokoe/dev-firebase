@@ -13,42 +13,67 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-
-// Temporary data - would be replaced with API calls
-const initialCustomers = [
-  {
-    id: "1",
-    name: "John Doe",
-    email: "john@example.com",
-    phone: "+1234567890",
-    lastPurchase: "2024-02-20",
-    totalOrders: 5,
-  },
-  {
-    id: "2",
-    name: "Jane Smith",
-    email: "jane@example.com",
-    phone: "+1987654321",
-    lastPurchase: "2024-02-18",
-    totalOrders: 3,
-  },
-];
+import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { db } from "@/lib/supabase";
+import { useToast } from "@/components/ui/use-toast";
 
 export default function CustomersPage() {
-  const [customers, setCustomers] = useState(initialCustomers);
   const [searchTerm, setSearchTerm] = useState("");
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [isDetailsOpen, setIsDetailsOpen] = useState(false);
-  const [selectedCustomer, setSelectedCustomer] = useState<typeof initialCustomers[0] | null>(null);
+  const [selectedCustomer, setSelectedCustomer] = useState(null);
+  const { toast } = useToast();
+  const queryClient = useQueryClient();
+
+  const { data: customers = [], isLoading } = useQuery({
+    queryKey: ['customers'],
+    queryFn: () => db.customers.getAll(),
+  });
 
   const filteredCustomers = customers.filter((customer) =>
     customer.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
     customer.email.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
-  const handleViewDetails = (customer: typeof initialCustomers[0]) => {
+  const handleViewDetails = (customer) => {
     setSelectedCustomer(customer);
     setIsDetailsOpen(true);
+  };
+
+  const handleCreateCustomer = async (customerData) => {
+    try {
+      await db.customers.create(customerData);
+      queryClient.invalidateQueries(['customers']);
+      toast({
+        title: "Success",
+        description: "Customer created successfully",
+      });
+      setIsDialogOpen(false);
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to create customer",
+        variant: "destructive",
+      });
+    }
+  };
+
+  const handleUpdateCustomer = async (id, customerData) => {
+    try {
+      await db.customers.update(id, customerData);
+      queryClient.invalidateQueries(['customers']);
+      toast({
+        title: "Success",
+        description: "Customer updated successfully",
+      });
+      setIsDialogOpen(false);
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to update customer",
+        variant: "destructive",
+      });
+    }
   };
 
   return (
@@ -85,7 +110,13 @@ export default function CustomersPage() {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {filteredCustomers.map((customer) => (
+              {isLoading ? (
+                <TableRow>
+                  <TableCell colSpan={6} className="text-center">
+                    Loading...
+                  </TableCell>
+                </TableRow>
+              ) : filteredCustomers.map((customer) => (
                 <TableRow key={customer.id}>
                   <TableCell>{customer.name}</TableCell>
                   <TableCell>{customer.email}</TableCell>
@@ -110,6 +141,8 @@ export default function CustomersPage() {
           open={isDialogOpen}
           onOpenChange={setIsDialogOpen}
           customer={null}
+          onSubmit={handleCreateCustomer}
+          onUpdate={handleUpdateCustomer}
         />
 
         <CustomerDetails
