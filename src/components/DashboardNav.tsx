@@ -41,7 +41,7 @@ export function DashboardNav() {
   ]
 
   return (
-    <nav className="grid items-start gap-2">
+    <nav className="grid items-start gap-2 p-4">
       {routes.map((route) => (
         <Link
           key={route.href}
@@ -57,5 +57,5 @@ export function DashboardNav() {
         </Link>
       ))}
     </nav>
-  )
+  );
 }
