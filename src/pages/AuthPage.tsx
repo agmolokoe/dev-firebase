@@ -3,7 +3,7 @@ import { Auth } from "@supabase/auth-ui-react";
 import { ThemeSupa } from "@supabase/auth-ui-shared";
 import { supabase } from "@/integrations/supabase/client";
 import { useNavigate } from "react-router-dom";
-import { useToast } from "@/components/ui/use-toast";
+import { useToast } from "@/hooks/use-toast";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { AuthError, AuthApiError } from "@supabase/supabase-js";
 
@@ -116,7 +116,7 @@ export default function AuthPage() {
               },
             }}
             providers={["google", "facebook", "twitter"]}
-            redirectTo={window.location.origin}
+            redirectTo={`${window.location.origin}/auth/callback`}
             onlyThirdPartyProviders={false}
             view="sign_in"
           />
