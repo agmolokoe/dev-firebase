@@ -1,11 +1,14 @@
-// src/pages/AuthPage.js
 import { useState } from "react";
 
-export default function AuthPage({ mode }) {
+interface AuthPageProps {
+  mode?: "login" | "signup";
+}
+
+export default function AuthPage({ mode = "login" }: AuthPageProps) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
-  const handleSubmit = (e) => {
+  const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     console.log(`${mode} submitted`, { email, password });
   };
