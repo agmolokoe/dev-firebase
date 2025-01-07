@@ -20,7 +20,7 @@ const App = () => (
           <Route path="/" element={<LandingPage />} />
 
           {/* Route for authentication (login/signup) */}
-          <Route path="/auth" element={<AuthPage />} />
+          <Route path="/auth" element={<AuthPage mode="login" />} />
 
           {/* Route for the rest of your dashboard and app */}
           <Route path="/*" element={<Index />} />
