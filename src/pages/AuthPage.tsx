@@ -3,7 +3,6 @@ import { Auth } from "@supabase/auth-ui-react";
 import { ThemeSupa } from "@supabase/auth-ui-shared";
 import { supabase } from "@/integrations/supabase/client";
 import { useNavigate } from "react-router-dom";
-import { Alert, AlertDescription } from "@/components/ui/alert";
 import { useToast } from "@/components/ui/use-toast";
 
 export default function AuthPage() {
@@ -22,17 +21,27 @@ export default function AuthPage() {
     const {
       data: { subscription },
     } = supabase.auth.onAuthStateChange((event, session) => {
+      console.log("Auth state changed:", event, session);
+      
       if (event === "SIGNED_IN") {
+        toast({
+          title: "Welcome!",
+          description: "You have successfully signed in.",
+        });
         navigate("/");
       }
       
       if (event === "SIGNED_OUT") {
         navigate("/auth");
       }
+
+      if (event === "USER_UPDATED") {
+        console.log("User was updated");
+      }
     });
 
     return () => subscription.unsubscribe();
-  }, [navigate]);
+  }, [navigate, toast]);
 
   return (
     <div className="min-h-screen flex flex-col lg:flex-row">
@@ -66,9 +75,15 @@ export default function AuthPage() {
                   },
                 },
               },
+              className: {
+                container: 'auth-container',
+                button: 'auth-button',
+                anchor: 'auth-anchor',
+              },
             }}
-            providers={[]}
+            providers={["google", "facebook", "twitter"]}
             redirectTo={window.location.origin}
+            onlyThirdPartyProviders={false}
           />
         </div>
       </div>
