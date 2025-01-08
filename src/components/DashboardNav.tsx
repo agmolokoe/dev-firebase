@@ -47,16 +47,16 @@ export function DashboardNav() {
             className={cn(
               "flex items-center space-x-3 rounded-lg px-3 py-2 text-sm font-medium transition-colors",
               location.pathname === route.href
-                ? "bg-blue-50 text-blue-600"
-                : "text-gray-700 hover:bg-gray-100 hover:text-gray-900"
+                ? "bg-white text-black"
+                : "text-white/60 hover:bg-white/5 hover:text-white"
             )}
           >
             <route.icon
               className={cn(
                 "h-5 w-5 flex-shrink-0",
                 location.pathname === route.href
-                  ? "text-blue-600"
-                  : "text-gray-400 group-hover:text-gray-500"
+                  ? "text-black"
+                  : "text-white/60 group-hover:text-white"
               )}
             />
             <span>{route.label}</span>
