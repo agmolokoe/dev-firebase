@@ -1,14 +1,15 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Auth } from "@supabase/auth-ui-react";
 import { ThemeSupa } from "@supabase/auth-ui-shared";
 import { supabase } from "@/lib/supabase";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { AuthError } from "@supabase/supabase-js";
+import { AuthError, AuthApiError } from "@supabase/supabase-js";
 
 export default function AuthPage({ mode }: { mode: "login" | "signup" }) {
   const navigate = useNavigate();
+  const [errorMessage, setErrorMessage] = useState<string>("");
 
   useEffect(() => {
     // Check if user is already logged in
@@ -24,6 +25,11 @@ export default function AuthPage({ mode }: { mode: "login" | "signup" }) {
     // Listen for auth state changes
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
       console.log("Auth state changed:", event, session);
+      
+      if (event === 'SIGNED_OUT') {
+        setErrorMessage(""); // Clear errors on sign out
+      }
+      
       if (session) {
         navigate("/dashboard");
       }
@@ -41,6 +47,11 @@ export default function AuthPage({ mode }: { mode: "login" | "signup" }) {
           </CardTitle>
         </CardHeader>
         <CardContent>
+          {errorMessage && (
+            <Alert variant="destructive" className="mb-4">
+              <AlertDescription>{errorMessage}</AlertDescription>
+            </Alert>
+          )}
           <Auth
             supabaseClient={supabase}
             appearance={{
@@ -61,9 +72,6 @@ export default function AuthPage({ mode }: { mode: "login" | "signup" }) {
             theme="light"
             providers={["google", "facebook"]}
             redirectTo="https://rococo-muffin-6b8a71.netlify.app/auth"
-            onError={(error: AuthError) => {
-              console.error("Auth error:", error);
-            }}
           />
         </CardContent>
       </Card>
