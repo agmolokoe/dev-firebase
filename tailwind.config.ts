@@ -25,11 +25,11 @@ export default {
         background: "hsl(var(--background))",
         foreground: "hsl(var(--foreground))",
         primary: {
-          DEFAULT: "#FFD700", // Gold
-          foreground: "#000000", // Black
+          DEFAULT: "#0047AB", // Royal Blue
+          foreground: "#FFFFFF", // White
         },
         secondary: {
-          DEFAULT: "#B8860B", // Dark Gold
+          DEFAULT: "#002366", // Darker Royal Blue
           foreground: "#FFFFFF", // White
         },
         destructive: {
@@ -37,16 +37,16 @@ export default {
           foreground: "#FFFFFF",
         },
         muted: {
-          DEFAULT: "#1A1A1A", // Dark Gray
-          foreground: "#FFD700", // Gold
+          DEFAULT: "#F8F9FA", // Light Gray
+          foreground: "#0047AB", // Royal Blue
         },
         accent: {
-          DEFAULT: "#222222", // Dark Gray
-          foreground: "#FFD700", // Gold
+          DEFAULT: "#E9ECEF", // Light Gray
+          foreground: "#0047AB", // Royal Blue
         },
         card: {
-          DEFAULT: "#000000", // Black
-          foreground: "#FFFFFF", // White
+          DEFAULT: "#FFFFFF", // White
+          foreground: "#000000", // Black
         },
       },
       borderRadius: {
