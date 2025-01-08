@@ -4,6 +4,8 @@ import { Auth } from "@supabase/auth-ui-react";
 import { ThemeSupa } from "@supabase/auth-ui-shared";
 import { supabase } from "@/lib/supabase";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { AuthError } from "@supabase/supabase-js";
 
 export default function AuthPage({ mode }: { mode: "login" | "signup" }) {
   const navigate = useNavigate();
@@ -20,7 +22,8 @@ export default function AuthPage({ mode }: { mode: "login" | "signup" }) {
     checkUser();
 
     // Listen for auth state changes
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+      console.log("Auth state changed:", event, session);
       if (session) {
         navigate("/dashboard");
       }
@@ -30,10 +33,10 @@ export default function AuthPage({ mode }: { mode: "login" | "signup" }) {
   }, [navigate]);
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-background">
+    <div className="min-h-screen flex items-center justify-center bg-white">
       <Card className="w-full max-w-md">
         <CardHeader>
-          <CardTitle className="text-2xl font-bold text-center">
+          <CardTitle className="text-2xl font-bold text-center text-black">
             {mode === "login" ? "Welcome Back" : "Create Account"}
           </CardTitle>
         </CardHeader>
@@ -48,13 +51,19 @@ export default function AuthPage({ mode }: { mode: "login" | "signup" }) {
                     brand: '#0047AB', // Royal Blue
                     brandAccent: '#002366', // Darker Royal Blue
                     brandButtonText: '#FFFFFF',
+                    inputText: '#000000',
+                    inputBackground: '#FFFFFF',
+                    inputBorder: '#0047AB',
                   },
                 },
               },
             }}
             theme="light"
             providers={["google", "facebook"]}
-            redirectTo="https://rococo-muffin-6b8a71.netlify.app"
+            redirectTo="https://rococo-muffin-6b8a71.netlify.app/auth"
+            onError={(error: AuthError) => {
+              console.error("Auth error:", error);
+            }}
           />
         </CardContent>
       </Card>
