@@ -45,17 +45,16 @@ export default function AuthPage({ mode }: { mode: "login" | "signup" }) {
               variables: {
                 default: {
                   colors: {
-                    brand: '#FFD700',
-                    brandAccent: '#B8860B',
-                    brandButtonText: '#000000',
+                    brand: '#0047AB', // Royal Blue
+                    brandAccent: '#002366', // Darker Royal Blue
+                    brandButtonText: '#FFFFFF',
                   },
                 },
               },
             }}
-            theme="dark"
+            theme="light"
             providers={["google", "facebook"]}
-            redirectTo={window.location.origin}
-            onlyThirdPartyProviders={false}
+            redirectTo="https://rococo-muffin-6b8a71.netlify.app"
           />
         </CardContent>
       </Card>
