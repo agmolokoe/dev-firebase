@@ -12,30 +12,20 @@ export default function AuthPage({ mode }: { mode: "login" | "signup" }) {
   const [errorMessage, setErrorMessage] = useState<string>("");
 
   useEffect(() => {
-    // Check if user is already logged in
-    const checkUser = async () => {
-      const { data: { session } } = await supabase.auth.getSession();
-      if (session) {
-        navigate("/dashboard");
-      }
-    };
-    
-    checkUser();
-
-    // Listen for auth state changes
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange(async (event, session) => {
       console.log("Auth state changed:", event, session);
-      
-      if (event === 'SIGNED_IN' && session) {
+
+      if (event === "SIGNED_IN" && session) {
         navigate("/dashboard");
       }
-      
-      if (event === 'SIGNED_OUT') {
+
+      if (event === "SIGNED_OUT") {
         setErrorMessage("");
       }
 
-      // Handle specific auth errors
-      if (event === 'USER_UPDATED' && !session) {
+      if (event === "USER_UPDATED" && !session) {
         const { error } = await supabase.auth.getSession();
         if (error) {
           setErrorMessage(getErrorMessage(error));
@@ -50,21 +40,21 @@ export default function AuthPage({ mode }: { mode: "login" | "signup" }) {
     if (error instanceof AuthApiError) {
       switch (error.status) {
         case 400:
-          return 'Invalid credentials. Please check your email and password.';
+          return "Invalid credentials. Please check your email and password.";
         case 422:
-          return 'Invalid email format. Please enter a valid email address.';
+          return "Invalid email format. Please enter a valid email address.";
         default:
           return error.message;
       }
     }
-    return 'An unexpected error occurred. Please try again.';
+    return "An unexpected error occurred. Please try again.";
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-white">
+    <div className="min-h-screen flex items-center justify-center bg-gray-50">
       <Card className="w-full max-w-md">
         <CardHeader>
-          <CardTitle className="text-2xl font-bold text-center text-black">
+          <CardTitle className="text-2xl font-bold text-center">
             {mode === "login" ? "Welcome Back" : "Create Account"}
           </CardTitle>
         </CardHeader>
@@ -81,12 +71,12 @@ export default function AuthPage({ mode }: { mode: "login" | "signup" }) {
               variables: {
                 default: {
                   colors: {
-                    brand: '#0047AB',
-                    brandAccent: '#002366',
-                    brandButtonText: '#FFFFFF',
-                    inputText: '#000000',
-                    inputBackground: '#FFFFFF',
-                    inputBorder: '#0047AB',
+                    brand: "#000000",
+                    brandAccent: "#333333",
+                    brandButtonText: "#FFFFFF",
+                    inputText: "#000000",
+                    inputBackground: "#FFFFFF",
+                    inputBorder: "#E5E7EB",
                   },
                 },
               },

@@ -13,27 +13,27 @@ export function DashboardNav() {
 
   const routes = [
     {
-      href: "/",
+      href: "/dashboard",
       label: "Overview",
       icon: LayoutDashboard,
     },
     {
-      href: "/customers",
+      href: "/dashboard/customers",
       label: "Customers",
       icon: Users,
     },
     {
-      href: "/orders",
+      href: "/dashboard/orders",
       label: "Orders",
       icon: ShoppingCart,
     },
     {
-      href: "/products",
+      href: "/dashboard/products",
       label: "Products",
       icon: Package,
     },
     {
-      href: "/social",
+      href: "/dashboard/social",
       label: "Social Media",
       icon: Share2,
     },
