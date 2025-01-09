@@ -16,17 +16,15 @@ const App = () => (
       <Sonner />
       <BrowserRouter>
         <Routes>
-          {/* Route for the landing page */}
+          {/* Public routes */}
           <Route path="/" element={<LandingPage />} />
-
-          {/* Route for authentication (login/signup) */}
           <Route path="/auth" element={<AuthPage mode="login" />} />
-
-          {/* Route for the rest of your dashboard and app */}
-          <Route path="/*" element={<Index />} />
-
-          {/* Redirect /dashboard to the Index component */}
-          <Route path="/dashboard" element={<Navigate to="/" replace />} />
+          
+          {/* Protected dashboard routes */}
+          <Route path="/dashboard/*" element={<Index />} />
+          
+          {/* Redirect any unknown routes to dashboard */}
+          <Route path="*" element={<Navigate to="/dashboard" replace />} />
         </Routes>
       </BrowserRouter>
     </TooltipProvider>

@@ -34,7 +34,7 @@ export default function Index() {
   return (
     <Routes>
       <Route
-        path="/dashboard"
+        path="/"
         element={
           <DashboardLayout>
             <div className="container mx-auto p-6">

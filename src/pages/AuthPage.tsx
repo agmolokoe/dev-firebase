@@ -32,7 +32,6 @@ export default function AuthPage({ mode }: { mode: "login" | "signup" }) {
       
       if (event === 'SIGNED_OUT') {
         setErrorMessage("");
-        navigate("/auth");
       }
 
       // Handle specific auth errors
@@ -94,7 +93,7 @@ export default function AuthPage({ mode }: { mode: "login" | "signup" }) {
             }}
             theme="light"
             providers={[]}
-            redirectTo={window.location.origin}
+            redirectTo={`${window.location.origin}/dashboard`}
           />
         </CardContent>
       </Card>
