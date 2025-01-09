@@ -22,31 +22,35 @@ export default {
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",
         ring: "hsl(var(--ring))",
-        background: "hsl(var(--background))",
-        foreground: "hsl(var(--foreground))",
+        background: "#000000", // TikTok Black
+        foreground: "#FFFFFF", // TikTok White
         primary: {
-          DEFAULT: "#0047AB", // Royal Blue
-          foreground: "#FFFFFF", // White
+          DEFAULT: "#FE2C55", // TikTok Red
+          foreground: "#FFFFFF",
         },
         secondary: {
-          DEFAULT: "#002366", // Darker Royal Blue
-          foreground: "#FFFFFF", // White
+          DEFAULT: "#25F4EE", // TikTok Blue
+          foreground: "#000000",
+        },
+        success: {
+          DEFAULT: "#00F076", // TikTok Green
+          foreground: "#000000",
         },
         destructive: {
-          DEFAULT: "#ef4444",
+          DEFAULT: "#FE2C55", // TikTok Red
           foreground: "#FFFFFF",
         },
         muted: {
-          DEFAULT: "#F8F9FA", // Light Gray
-          foreground: "#0047AB", // Royal Blue
+          DEFAULT: "#1F1F1F", // Darker shade of black
+          foreground: "#FFFFFF",
         },
         accent: {
-          DEFAULT: "#E9ECEF", // Light Gray
-          foreground: "#0047AB", // Royal Blue
+          DEFAULT: "#25F4EE", // TikTok Blue
+          foreground: "#000000",
         },
         card: {
-          DEFAULT: "#FFFFFF", // White
-          foreground: "#000000", // Black
+          DEFAULT: "#121212", // Slightly lighter black
+          foreground: "#FFFFFF",
         },
       },
       borderRadius: {

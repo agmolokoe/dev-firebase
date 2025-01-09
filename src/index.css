@@ -6,25 +6,27 @@
 
 @layer base {
   :root {
-    --background: 0 0% 100%; /* White */
-    --foreground: 0 0% 0%; /* Black */
-    --card: 0 0% 100%; /* White */
-    --card-foreground: 0 0% 0%; /* Black */
-    --popover: 0 0% 100%; /* White */
-    --popover-foreground: 0 0% 0%; /* Black */
-    --primary: 219 100% 33%; /* Royal Blue */
+    --background: 0 0% 0%; /* TikTok Black */
+    --foreground: 0 0% 100%; /* TikTok White */
+    --card: 0 0% 7%; /* Slightly lighter black */
+    --card-foreground: 0 0% 100%; /* White */
+    --popover: 0 0% 7%; /* Slightly lighter black */
+    --popover-foreground: 0 0% 100%; /* White */
+    --primary: 345 99% 58%; /* TikTok Red */
     --primary-foreground: 0 0% 100%; /* White */
-    --secondary: 220 100% 20%; /* Darker Royal Blue */
-    --secondary-foreground: 0 0% 100%; /* White */
-    --muted: 210 17% 98%; /* Light Gray */
-    --muted-foreground: 219 100% 33%; /* Royal Blue */
-    --accent: 210 14% 93%; /* Light Gray */
-    --accent-foreground: 219 100% 33%; /* Royal Blue */
-    --destructive: 0 84.2% 60.2%;
+    --secondary: 183 91% 55%; /* TikTok Blue */
+    --secondary-foreground: 0 0% 0%; /* Black */
+    --success: 156 100% 47%; /* TikTok Green */
+    --success-foreground: 0 0% 0%; /* Black */
+    --muted: 0 0% 12%; /* Darker shade of black */
+    --muted-foreground: 0 0% 100%; /* White */
+    --accent: 183 91% 55%; /* TikTok Blue */
+    --accent-foreground: 0 0% 0%; /* Black */
+    --destructive: 345 99% 58%; /* TikTok Red */
     --destructive-foreground: 0 0% 100%; /* White */
-    --border: 219 100% 33%; /* Royal Blue */
-    --input: 219 100% 33%; /* Royal Blue */
-    --ring: 219 100% 33%; /* Royal Blue */
+    --border: 0 0% 12%; /* Darker shade of black */
+    --input: 0 0% 12%; /* Darker shade of black */
+    --ring: 345 99% 58%; /* TikTok Red */
     --radius: 0.5rem;
   }
 }
