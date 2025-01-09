@@ -17,37 +17,47 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-
-// Temporary data - would be replaced with API calls
-const initialOrders = [
-  {
-    id: "1",
-    customer: "John Doe",
-    date: "2024-02-20",
-    status: "Completed",
-    total: 150.00,
-    items: 3,
-  },
-  {
-    id: "2",
-    customer: "Jane Smith",
-    date: "2024-02-19",
-    status: "Processing",
-    total: 75.50,
-    items: 2,
-  },
-];
+import { useQuery } from "@tanstack/react-query";
+import { supabase } from "@/integrations/supabase/client";
+import { useToast } from "@/hooks/use-toast";
 
 export default function OrdersPage() {
-  const [orders] = useState(initialOrders);
   const [searchTerm, setSearchTerm] = useState("");
+  const { toast } = useToast();
+
+  const { data: orders = [], isLoading } = useQuery({
+    queryKey: ['orders'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('orders')
+        .select(`
+          *,
+          customers (
+            name,
+            email
+          )
+        `)
+        .order('created_at', { ascending: false });
+
+      if (error) {
+        toast({
+          title: "Error",
+          description: "Failed to fetch orders",
+          variant: "destructive",
+        });
+        throw error;
+      }
+
+      return data || [];
+    },
+  });
 
   const filteredOrders = orders.filter((order) =>
-    order.customer.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    order.status.toLowerCase().includes(searchTerm.toLowerCase())
+    order.customers?.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    order.id.toString().includes(searchTerm)
   );
 
-  const totalRevenue = orders.reduce((sum, order) => sum + order.total, 0);
+  const totalRevenue = orders.reduce((sum, order) => sum + Number(order.total_amount), 0);
   const totalOrders = orders.length;
   const processingOrders = orders.filter((order) => order.status === "Processing").length;
 
@@ -113,26 +123,36 @@ export default function OrdersPage() {
                 <TableHead>Order ID</TableHead>
                 <TableHead>Customer</TableHead>
                 <TableHead>Date</TableHead>
-                <TableHead>Items</TableHead>
                 <TableHead>Total</TableHead>
-                <TableHead>Status</TableHead>
                 <TableHead className="text-right">Actions</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
-              {filteredOrders.map((order) => (
-                <TableRow key={order.id}>
-                  <TableCell>#{order.id}</TableCell>
-                  <TableCell>{order.customer}</TableCell>
-                  <TableCell>{order.date}</TableCell>
-                  <TableCell>{order.items}</TableCell>
-                  <TableCell>${order.total.toFixed(2)}</TableCell>
-                  <TableCell>{order.status}</TableCell>
-                  <TableCell className="text-right">
-                    <Button variant="ghost">View Details</Button>
+              {isLoading ? (
+                <TableRow>
+                  <TableCell colSpan={5} className="text-center">
+                    Loading...
                   </TableCell>
                 </TableRow>
-              ))}
+              ) : filteredOrders.length === 0 ? (
+                <TableRow>
+                  <TableCell colSpan={5} className="text-center">
+                    No orders found
+                  </TableCell>
+                </TableRow>
+              ) : (
+                filteredOrders.map((order) => (
+                  <TableRow key={order.id}>
+                    <TableCell>#{order.id}</TableCell>
+                    <TableCell>{order.customers?.name || 'Unknown'}</TableCell>
+                    <TableCell>{new Date(order.created_at).toLocaleDateString()}</TableCell>
+                    <TableCell>${Number(order.total_amount).toFixed(2)}</TableCell>
+                    <TableCell className="text-right">
+                      <Button variant="ghost">View Details</Button>
+                    </TableCell>
+                  </TableRow>
+                ))
+              )}
             </TableBody>
           </Table>
         </div>
