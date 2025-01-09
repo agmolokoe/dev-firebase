@@ -1,4 +1,6 @@
-import { Routes, Route } from "react-router-dom";
+import { useEffect } from "react";
+import { Routes, Route, useNavigate } from "react-router-dom";
+import { supabase } from "@/lib/supabase";
 import CustomersPage from "./customers/Index";
 import OrdersPage from "./orders/Index";
 import ProductsPage from "./products/Index";
@@ -6,6 +8,29 @@ import SocialPage from "./social/Index";
 import { DashboardLayout } from "@/components/DashboardLayout";
 
 export default function Index() {
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    // Check if user is authenticated
+    const checkAuth = async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) {
+        navigate("/auth");
+      }
+    };
+
+    checkAuth();
+
+    // Listen for auth changes
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+      if (!session) {
+        navigate("/auth");
+      }
+    });
+
+    return () => subscription.unsubscribe();
+  }, [navigate]);
+
   return (
     <Routes>
       <Route

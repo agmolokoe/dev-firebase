@@ -16,7 +16,7 @@ export default function AuthPage({ mode }: { mode: "login" | "signup" }) {
     const checkUser = async () => {
       const { data: { session } } = await supabase.auth.getSession();
       if (session) {
-        navigate("/dashboard");
+        navigate("/");
       }
     };
     
@@ -31,7 +31,7 @@ export default function AuthPage({ mode }: { mode: "login" | "signup" }) {
       }
       
       if (session) {
-        navigate("/dashboard");
+        navigate("/");
       }
     });
 
@@ -59,8 +59,8 @@ export default function AuthPage({ mode }: { mode: "login" | "signup" }) {
               variables: {
                 default: {
                   colors: {
-                    brand: '#0047AB', // Royal Blue
-                    brandAccent: '#002366', // Darker Royal Blue
+                    brand: '#0047AB',
+                    brandAccent: '#002366',
                     brandButtonText: '#FFFFFF',
                     inputText: '#000000',
                     inputBackground: '#FFFFFF',
@@ -71,7 +71,7 @@ export default function AuthPage({ mode }: { mode: "login" | "signup" }) {
             }}
             theme="light"
             providers={["google", "facebook"]}
-            redirectTo="https://rococo-muffin-6b8a71.netlify.app/auth"
+            redirectTo={window.location.origin + "/auth"}
           />
         </CardContent>
       </Card>
