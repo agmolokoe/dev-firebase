@@ -18,7 +18,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { useQuery } from "@tanstack/react-query";
-import { supabase } from "@/integrations/supabase/client";
+import { supabase } from "@/lib/supabase";
 import { useToast } from "@/hooks/use-toast";
 
 export default function OrdersPage() {
@@ -59,7 +59,7 @@ export default function OrdersPage() {
 
   const totalRevenue = orders.reduce((sum, order) => sum + Number(order.total_amount), 0);
   const totalOrders = orders.length;
-  const processingOrders = orders.filter((order) => order.status === "Processing").length;
+  const pendingOrders = orders.filter((order) => !order.customers).length;
 
   return (
     <DashboardLayout>
@@ -95,10 +95,10 @@ export default function OrdersPage() {
           </Card>
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Processing Orders</CardTitle>
+              <CardTitle className="text-sm font-medium">Pending Orders</CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">{processingOrders}</div>
+              <div className="text-2xl font-bold">{pendingOrders}</div>
               <p className="text-xs text-muted-foreground">
                 need attention
               </p>
