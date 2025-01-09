@@ -16,27 +16,50 @@ export default function AuthPage({ mode }: { mode: "login" | "signup" }) {
     const checkUser = async () => {
       const { data: { session } } = await supabase.auth.getSession();
       if (session) {
-        navigate("/");
+        navigate("/dashboard");
       }
     };
     
     checkUser();
 
     // Listen for auth state changes
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
       console.log("Auth state changed:", event, session);
       
-      if (event === 'SIGNED_OUT') {
-        setErrorMessage(""); // Clear errors on sign out
+      if (event === 'SIGNED_IN' && session) {
+        navigate("/dashboard");
       }
       
-      if (session) {
-        navigate("/");
+      if (event === 'SIGNED_OUT') {
+        setErrorMessage("");
+        navigate("/auth");
+      }
+
+      // Handle specific auth errors
+      if (event === 'USER_UPDATED' && !session) {
+        const { error } = await supabase.auth.getSession();
+        if (error) {
+          setErrorMessage(getErrorMessage(error));
+        }
       }
     });
 
     return () => subscription.unsubscribe();
   }, [navigate]);
+
+  const getErrorMessage = (error: AuthError) => {
+    if (error instanceof AuthApiError) {
+      switch (error.status) {
+        case 400:
+          return 'Invalid credentials. Please check your email and password.';
+        case 422:
+          return 'Invalid email format. Please enter a valid email address.';
+        default:
+          return error.message;
+      }
+    }
+    return 'An unexpected error occurred. Please try again.';
+  };
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-white">
@@ -70,8 +93,8 @@ export default function AuthPage({ mode }: { mode: "login" | "signup" }) {
               },
             }}
             theme="light"
-            providers={["google", "facebook"]}
-            redirectTo={window.location.origin + "/auth"}
+            providers={[]}
+            redirectTo={window.location.origin}
           />
         </CardContent>
       </Card>

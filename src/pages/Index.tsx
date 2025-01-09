@@ -23,7 +23,7 @@ export default function Index() {
 
     // Listen for auth changes
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
-      if (!session) {
+      if (event === 'SIGNED_OUT' || !session) {
         navigate("/auth");
       }
     });
@@ -34,7 +34,7 @@ export default function Index() {
   return (
     <Routes>
       <Route
-        path="/"
+        path="/dashboard"
         element={
           <DashboardLayout>
             <div className="container mx-auto p-6">
