@@ -82,13 +82,13 @@ export function WhatsAppForm({ connections, onConnect }: WhatsAppFormProps) {
   }
 
   return (
-    <Card className="bg-black text-white border-white/10">
+    <Card className="bg-[#000000] text-[#FFFFFF] border-[#FFFFFF]/10">
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
           <MessageSquare className="h-5 w-5" />
           WhatsApp Business
         </CardTitle>
-        <CardDescription className="text-white/60">
+        <CardDescription className="text-[#FFFFFF]/60">
           Connect your WhatsApp Business account to chat with customers
         </CardDescription>
       </CardHeader>
@@ -100,21 +100,21 @@ export function WhatsAppForm({ connections, onConnect }: WhatsAppFormProps) {
               value={whatsappNumber}
               onChange={(e) => setWhatsappNumber(e.target.value)}
               disabled={isConnecting}
-              className="bg-white/5 border-white/10 text-white"
+              className="bg-[#FFFFFF]/5 border-[#FFFFFF]/10 text-[#FFFFFF]"
             />
-            <p className="text-sm text-white/60">
+            <p className="text-sm text-[#FFFFFF]/60">
               Enter your number with country code (e.g., +1234567890)
             </p>
           </div>
           <Button
-            className="w-full bg-white text-black hover:bg-white/90"
+            className="w-full bg-[#FE2C55] text-[#FFFFFF] hover:bg-[#FE2C55]/90"
             onClick={handleWhatsAppConnect}
             disabled={isConnecting}
           >
             {isConnecting ? "Connecting..." : "Connect WhatsApp"}
           </Button>
           {connections.find(c => c.platform === 'whatsapp') && (
-            <p className="text-sm text-white">✓ Connected</p>
+            <p className="text-sm text-[#00F076]">✓ Connected</p>
           )}
         </div>
       </CardContent>

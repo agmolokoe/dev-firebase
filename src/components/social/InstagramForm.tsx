@@ -82,13 +82,13 @@ export function InstagramForm({ connections, onConnect }: InstagramFormProps) {
   }
 
   return (
-    <Card className="bg-black text-white border-white/10">
+    <Card className="bg-[#000000] text-[#FFFFFF] border-[#FFFFFF]/10">
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
           <Instagram className="h-5 w-5" />
           Instagram Shop
         </CardTitle>
-        <CardDescription className="text-white/60">
+        <CardDescription className="text-[#FFFFFF]/60">
           Connect your Instagram account to showcase products
         </CardDescription>
       </CardHeader>
@@ -100,21 +100,21 @@ export function InstagramForm({ connections, onConnect }: InstagramFormProps) {
               value={instagramHandle}
               onChange={(e) => setInstagramHandle(e.target.value)}
               disabled={isConnecting}
-              className="bg-white/5 border-white/10 text-white"
+              className="bg-[#FFFFFF]/5 border-[#FFFFFF]/10 text-[#FFFFFF]"
             />
-            <p className="text-sm text-white/60">
+            <p className="text-sm text-[#FFFFFF]/60">
               Enter your Instagram handle without @ symbol
             </p>
           </div>
           <Button
-            className="w-full bg-white text-black hover:bg-white/90"
+            className="w-full bg-[#25F4EE] text-[#000000] hover:bg-[#25F4EE]/90"
             onClick={handleInstagramConnect}
             disabled={isConnecting}
           >
             {isConnecting ? "Connecting..." : "Connect Instagram"}
           </Button>
           {connections.find(c => c.platform === 'instagram') && (
-            <p className="text-sm text-white">✓ Connected</p>
+            <p className="text-sm text-[#00F076]">✓ Connected</p>
           )}
         </div>
       </CardContent>

@@ -38,8 +38,8 @@ export default function SocialPage() {
   return (
     <div className="container mx-auto p-6">
       <div className="mb-8">
-        <h1 className="text-3xl font-bold tracking-tight text-white">Social Media Integration</h1>
-        <p className="text-white/60 mt-2">
+        <h1 className="text-3xl font-bold tracking-tight text-[#FFFFFF]">Social Media Integration</h1>
+        <p className="text-[#FFFFFF]/60 mt-2">
           Connect your social media accounts to enhance your shop's reach
         </p>
       </div>
