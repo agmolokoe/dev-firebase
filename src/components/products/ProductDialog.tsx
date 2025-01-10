@@ -81,9 +81,9 @@ export function ProductDialog({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[425px]">
+      <DialogContent className="sm:max-w-[425px] bg-[#000000] text-[#FFFFFF] border-[#FFFFFF]/10">
         <DialogHeader>
-          <DialogTitle>
+          <DialogTitle className="text-[#FFFFFF]">
             {product ? "Edit Product" : "Add New Product"}
           </DialogTitle>
         </DialogHeader>
@@ -94,11 +94,15 @@ export function ProductDialog({
               name="name"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Name</FormLabel>
+                  <FormLabel className="text-[#FFFFFF]">Name</FormLabel>
                   <FormControl>
-                    <Input placeholder="Product name" {...field} />
+                    <Input 
+                      placeholder="Product name" 
+                      {...field}
+                      className="bg-[#FFFFFF]/5 border-[#FFFFFF]/10 text-[#FFFFFF]"
+                    />
                   </FormControl>
-                  <FormMessage />
+                  <FormMessage className="text-[#FE2C55]" />
                 </FormItem>
               )}
             />
@@ -107,14 +111,15 @@ export function ProductDialog({
               name="description"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Description</FormLabel>
+                  <FormLabel className="text-[#FFFFFF]">Description</FormLabel>
                   <FormControl>
                     <Textarea 
                       placeholder="Product description"
                       {...field}
+                      className="bg-[#FFFFFF]/5 border-[#FFFFFF]/10 text-[#FFFFFF]"
                     />
                   </FormControl>
-                  <FormMessage />
+                  <FormMessage className="text-[#FE2C55]" />
                 </FormItem>
               )}
             />
@@ -123,7 +128,7 @@ export function ProductDialog({
               name="price"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Price</FormLabel>
+                  <FormLabel className="text-[#FFFFFF]">Price (ZAR)</FormLabel>
                   <FormControl>
                     <Input 
                       type="number" 
@@ -131,9 +136,10 @@ export function ProductDialog({
                       min="0"
                       placeholder="0.00"
                       {...field}
+                      className="bg-[#FFFFFF]/5 border-[#FFFFFF]/10 text-[#FFFFFF]"
                     />
                   </FormControl>
-                  <FormMessage />
+                  <FormMessage className="text-[#FE2C55]" />
                 </FormItem>
               )}
             />
@@ -142,16 +148,17 @@ export function ProductDialog({
               name="stock"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Stock</FormLabel>
+                  <FormLabel className="text-[#FFFFFF]">Stock</FormLabel>
                   <FormControl>
                     <Input 
                       type="number"
                       min="0"
                       placeholder="0"
                       {...field}
+                      className="bg-[#FFFFFF]/5 border-[#FFFFFF]/10 text-[#FFFFFF]"
                     />
                   </FormControl>
-                  <FormMessage />
+                  <FormMessage className="text-[#FE2C55]" />
                 </FormItem>
               )}
             />
@@ -161,10 +168,15 @@ export function ProductDialog({
                 variant="outline"
                 onClick={() => onOpenChange(false)}
                 disabled={isSubmitting}
+                className="text-[#FFFFFF] border-[#FFFFFF]/10 hover:bg-[#FFFFFF]/5"
               >
                 Cancel
               </Button>
-              <Button type="submit" disabled={isSubmitting}>
+              <Button 
+                type="submit" 
+                disabled={isSubmitting}
+                className="bg-[#FE2C55] text-[#FFFFFF] hover:bg-[#FE2C55]/90"
+              >
                 {product ? "Update" : "Create"}
               </Button>
             </div>
