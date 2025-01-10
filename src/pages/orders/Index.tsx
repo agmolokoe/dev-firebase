@@ -2,7 +2,7 @@ import { useState } from "react";
 import { DashboardLayout } from "@/components/DashboardLayout";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Search } from "lucide-react";
+import { Search, Trash2 } from "lucide-react";
 import { formatCurrency } from "@/lib/utils";
 import {
   Table,
@@ -21,12 +21,13 @@ import {
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/lib/supabase";
 import { useToast } from "@/hooks/use-toast";
+import { OrderDialog } from "@/components/orders/OrderDialog";
 
 export default function OrdersPage() {
   const [searchTerm, setSearchTerm] = useState("");
   const { toast } = useToast();
 
-  const { data: orders = [], isLoading } = useQuery({
+  const { data: orders = [], isLoading, refetch } = useQuery({
     queryKey: ['orders'],
     queryFn: async () => {
       const { data, error } = await supabase
@@ -53,6 +54,29 @@ export default function OrdersPage() {
     },
   });
 
+  const handleDelete = async (id: number) => {
+    try {
+      const { error } = await supabase
+        .from('orders')
+        .delete()
+        .eq('id', id);
+      
+      if (error) throw error;
+      
+      toast({
+        title: "Order deleted",
+        description: "The order has been deleted successfully",
+      });
+      refetch();
+    } catch (error) {
+      toast({
+        variant: "destructive",
+        title: "Error",
+        description: "Failed to delete order",
+      });
+    }
+  };
+
   const filteredOrders = orders.filter((order) =>
     order.customers?.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
     order.id.toString().includes(searchTerm)
@@ -67,6 +91,7 @@ export default function OrdersPage() {
       <div className="container mx-auto p-6 space-y-6">
         <div className="flex justify-between items-center">
           <h1 className="text-3xl font-bold tracking-tight text-[#FFFFFF]">Orders</h1>
+          <OrderDialog mode="create" />
         </div>
 
         <div className="grid gap-4 md:grid-cols-3">
@@ -149,12 +174,17 @@ export default function OrdersPage() {
                     <TableCell className="text-[#FFFFFF]">{new Date(order.created_at).toLocaleDateString()}</TableCell>
                     <TableCell className="text-[#FFFFFF]">{formatCurrency(Number(order.total_amount))}</TableCell>
                     <TableCell className="text-right">
-                      <Button 
-                        variant="ghost" 
-                        className="text-[#25F4EE] hover:text-[#25F4EE]/90 hover:bg-[#FFFFFF]/5"
-                      >
-                        View Details
-                      </Button>
+                      <div className="flex justify-end gap-2">
+                        <OrderDialog mode="edit" order={order} />
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          onClick={() => handleDelete(order.id)}
+                          className="text-red-500 hover:text-red-600 hover:bg-red-500/10"
+                        >
+                          <Trash2 className="h-4 w-4" />
+                        </Button>
+                      </div>
                     </TableCell>
                   </TableRow>
                 ))
