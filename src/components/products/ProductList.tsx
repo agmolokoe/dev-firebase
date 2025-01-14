@@ -15,6 +15,7 @@ type Product = {
   description: string | null
   price: number
   stock: number
+  image_url?: string | null
 }
 
 type ProductListProps = {
@@ -30,6 +31,7 @@ export function ProductList({ products, isLoading, onEdit, onDelete }: ProductLi
       <Table>
         <TableHeader>
           <TableRow className="border-[#FFFFFF]/10">
+            <TableHead className="text-[#FFFFFF] w-[100px]">Image</TableHead>
             <TableHead className="text-[#FFFFFF]">Name</TableHead>
             <TableHead className="text-[#FFFFFF]">Description</TableHead>
             <TableHead className="text-[#FFFFFF]">Price</TableHead>
@@ -40,19 +42,32 @@ export function ProductList({ products, isLoading, onEdit, onDelete }: ProductLi
         <TableBody>
           {isLoading ? (
             <TableRow>
-              <TableCell colSpan={5} className="text-center text-[#FFFFFF]">
+              <TableCell colSpan={6} className="text-center text-[#FFFFFF]">
                 Loading...
               </TableCell>
             </TableRow>
           ) : products.length === 0 ? (
             <TableRow>
-              <TableCell colSpan={5} className="text-center text-[#FFFFFF]">
+              <TableCell colSpan={6} className="text-center text-[#FFFFFF]">
                 No products found
               </TableCell>
             </TableRow>
           ) : (
             products.map((product) => (
               <TableRow key={product.id} className="border-[#FFFFFF]/10">
+                <TableCell>
+                  {product.image_url ? (
+                    <img
+                      src={product.image_url}
+                      alt={product.name}
+                      className="w-16 h-16 object-cover rounded-md"
+                    />
+                  ) : (
+                    <div className="w-16 h-16 bg-[#FFFFFF]/5 rounded-md flex items-center justify-center">
+                      <span className="text-[#FFFFFF]/40 text-xs">No image</span>
+                    </div>
+                  )}
+                </TableCell>
                 <TableCell className="text-[#FFFFFF]">{product.name}</TableCell>
                 <TableCell className="text-[#FFFFFF]">{product.description}</TableCell>
                 <TableCell className="text-[#FFFFFF]">{formatCurrency(product.price)}</TableCell>
