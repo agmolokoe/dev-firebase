@@ -81,14 +81,16 @@ export function WhatsAppForm({ connections, onConnect }: WhatsAppFormProps) {
     }
   }
 
+  const isConnected = connections.some(c => c.platform === 'whatsapp')
+
   return (
-    <Card className="bg-[#000000] text-[#FFFFFF] border-[#FFFFFF]/10">
+    <Card className="bg-black text-white border-white/10">
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
           <MessageSquare className="h-5 w-5" />
           WhatsApp Business
         </CardTitle>
-        <CardDescription className="text-[#FFFFFF]/60">
+        <CardDescription className="text-white/60">
           Connect your WhatsApp Business account to chat with customers
         </CardDescription>
       </CardHeader>
@@ -99,22 +101,25 @@ export function WhatsAppForm({ connections, onConnect }: WhatsAppFormProps) {
               placeholder="Enter WhatsApp business number"
               value={whatsappNumber}
               onChange={(e) => setWhatsappNumber(e.target.value)}
-              disabled={isConnecting}
-              className="bg-[#FFFFFF]/5 border-[#FFFFFF]/10 text-[#FFFFFF]"
+              disabled={isConnecting || isConnected}
+              className="bg-white/5 border-white/10 text-white"
             />
-            <p className="text-sm text-[#FFFFFF]/60">
+            <p className="text-sm text-white/60">
               Enter your number with country code (e.g., +1234567890)
             </p>
           </div>
-          <Button
-            className="w-full bg-[#FE2C55] text-[#FFFFFF] hover:bg-[#FE2C55]/90"
-            onClick={handleWhatsAppConnect}
-            disabled={isConnecting}
-          >
-            {isConnecting ? "Connecting..." : "Connect WhatsApp"}
-          </Button>
-          {connections.find(c => c.platform === 'whatsapp') && (
-            <p className="text-sm text-[#00F076]">✓ Connected</p>
+          {isConnected ? (
+            <div className="flex items-center gap-2 text-green-500">
+              <span className="text-sm">✓ Connected</span>
+            </div>
+          ) : (
+            <Button
+              className="w-full bg-green-500 text-white hover:bg-green-600"
+              onClick={handleWhatsAppConnect}
+              disabled={isConnecting}
+            >
+              {isConnecting ? "Connecting..." : "Connect WhatsApp"}
+            </Button>
           )}
         </div>
       </CardContent>
