@@ -20,9 +20,9 @@ import {
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import { Textarea } from "@/components/ui/textarea"
-import { Image, Loader2 } from "lucide-react"
-import { supabase } from "@/lib/supabase"
-import { useToast } from "@/hooks/use-toast"
+import { Loader2 } from "lucide-react"
+import { ProductImageUpload } from "./ProductImageUpload"
+import { ProductPriceFields } from "./ProductPriceFields"
 
 const formSchema = z.object({
   name: z.string().min(2, "Name must be at least 2 characters"),
@@ -63,9 +63,7 @@ export function ProductDialog({
   onUpdate,
 }: ProductDialogProps) {
   const [isSubmitting, setIsSubmitting] = useState(false)
-  const [uploadingImage, setUploadingImage] = useState(false)
   const [previewUrl, setPreviewUrl] = useState<string | null>(product?.image_url || null)
-  const { toast } = useToast()
   
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -81,44 +79,6 @@ export function ProductDialog({
   const costPrice = Number(form.watch("cost_price")) || 0
   const sellingPrice = Number(form.watch("selling_price")) || 0
   const profit = sellingPrice - costPrice
-
-  const handleImageUpload = async (file: File) => {
-    try {
-      setUploadingImage(true)
-      
-      // Generate a unique filename
-      const fileExt = file.name.split('.').pop()
-      const fileName = `${Math.random().toString(36).substring(2)}.${fileExt}`
-      
-      // Upload to Supabase storage
-      const { data, error } = await supabase.storage
-        .from('product-images')
-        .upload(fileName, file)
-      
-      if (error) {
-        console.error('Storage upload error:', error)
-        throw error
-      }
-      
-      // Get the public URL
-      const { data: { publicUrl } } = supabase.storage
-        .from('product-images')
-        .getPublicUrl(fileName)
-      
-      setPreviewUrl(publicUrl)
-      return publicUrl
-    } catch (error) {
-      console.error('Error uploading image:', error)
-      toast({
-        title: "Error",
-        description: "Failed to upload image. Please try again.",
-        variant: "destructive",
-      })
-      return null
-    } finally {
-      setUploadingImage(false)
-    }
-  }
 
   const handleSubmit = async (values: z.infer<typeof formSchema>) => {
     try {
@@ -137,18 +97,6 @@ export function ProductDialog({
       form.reset()
       setPreviewUrl(null)
       onOpenChange(false)
-      
-      toast({
-        title: "Success",
-        description: product ? "Product updated successfully" : "Product created successfully",
-      })
-    } catch (error) {
-      console.error('Form submission error:', error)
-      toast({
-        title: "Error",
-        description: "Failed to save product. Please try again.",
-        variant: "destructive",
-      })
     } finally {
       setIsSubmitting(false)
     }
@@ -168,36 +116,11 @@ export function ProductDialog({
         <Form {...form}>
           <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-4">
             <div className="flex justify-center mb-4">
-              <div className="relative w-32 h-32 border-2 border-dashed border-[#FFFFFF]/20 rounded-lg overflow-hidden">
-                {previewUrl ? (
-                  <img
-                    src={previewUrl}
-                    alt="Product preview"
-                    className="w-full h-full object-cover"
-                  />
-                ) : (
-                  <div className="flex items-center justify-center w-full h-full">
-                    <Image className="w-8 h-8 text-[#FFFFFF]/40" />
-                  </div>
-                )}
-                <Input
-                  type="file"
-                  accept="image/*"
-                  className="absolute inset-0 opacity-0 cursor-pointer"
-                  onChange={async (e) => {
-                    const file = e.target.files?.[0]
-                    if (file) {
-                      await handleImageUpload(file)
-                    }
-                  }}
-                  disabled={uploadingImage}
-                />
-                {uploadingImage && (
-                  <div className="absolute inset-0 bg-black/50 flex items-center justify-center">
-                    <Loader2 className="w-6 h-6 text-white animate-spin" />
-                  </div>
-                )}
-              </div>
+              <ProductImageUpload
+                previewUrl={previewUrl}
+                onImageUpload={setPreviewUrl}
+                disabled={isSubmitting}
+              />
             </div>
             
             <FormField
@@ -217,6 +140,7 @@ export function ProductDialog({
                 </FormItem>
               )}
             />
+            
             <FormField
               control={form.control}
               name="description"
@@ -234,54 +158,9 @@ export function ProductDialog({
                 </FormItem>
               )}
             />
-            <div className="grid grid-cols-2 gap-4">
-              <FormField
-                control={form.control}
-                name="cost_price"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel className="text-[#FFFFFF]">Cost Price (ZAR)</FormLabel>
-                    <FormControl>
-                      <Input 
-                        type="number" 
-                        step="0.01"
-                        min="0"
-                        placeholder="0.00"
-                        {...field}
-                        className="bg-[#FFFFFF]/5 border-[#FFFFFF]/10 text-[#FFFFFF]"
-                      />
-                    </FormControl>
-                    <FormMessage className="text-[#FE2C55]" />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name="selling_price"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel className="text-[#FFFFFF]">Selling Price (ZAR)</FormLabel>
-                    <FormControl>
-                      <Input 
-                        type="number"
-                        step="0.01"
-                        min="0"
-                        placeholder="0.00"
-                        {...field}
-                        className="bg-[#FFFFFF]/5 border-[#FFFFFF]/10 text-[#FFFFFF]"
-                      />
-                    </FormControl>
-                    <FormMessage className="text-[#FE2C55]" />
-                  </FormItem>
-                )}
-              />
-            </div>
-            <div className="bg-[#FFFFFF]/5 p-3 rounded-md">
-              <p className="text-sm text-[#FFFFFF]/70">Profit per unit:</p>
-              <p className={`text-lg font-semibold ${profit >= 0 ? 'text-green-500' : 'text-red-500'}`}>
-                ZAR {profit.toFixed(2)}
-              </p>
-            </div>
+
+            <ProductPriceFields form={form} profit={profit} />
+
             <FormField
               control={form.control}
               name="stock"
@@ -301,6 +180,7 @@ export function ProductDialog({
                 </FormItem>
               )}
             />
+
             <div className="flex justify-end space-x-2">
               <Button
                 type="button"
@@ -313,7 +193,7 @@ export function ProductDialog({
               </Button>
               <Button 
                 type="submit" 
-                disabled={isSubmitting || uploadingImage}
+                disabled={isSubmitting}
                 className="bg-[#FE2C55] text-[#FFFFFF] hover:bg-[#FE2C55]/90"
               >
                 {isSubmitting ? (
