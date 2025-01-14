@@ -5,6 +5,7 @@ import * as z from "zod"
 import {
   Dialog,
   DialogContent,
+  DialogDescription,
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog"
@@ -19,7 +20,7 @@ import {
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import { Textarea } from "@/components/ui/textarea"
-import { Image, ImagePlus, Loader2 } from "lucide-react"
+import { Image, Loader2 } from "lucide-react"
 import { supabase } from "@/lib/supabase"
 import { useToast } from "@/hooks/use-toast"
 
@@ -85,7 +86,10 @@ export function ProductDialog({
         .from('product-images')
         .upload(fileName, file)
       
-      if (error) throw error
+      if (error) {
+        console.error('Storage upload error:', error)
+        throw error
+      }
       
       // Get the public URL
       const { data: { publicUrl } } = supabase.storage
@@ -108,8 +112,8 @@ export function ProductDialog({
   }
 
   const handleSubmit = async (values: z.infer<typeof formSchema>) => {
-    setIsSubmitting(true)
     try {
+      setIsSubmitting(true)
       const formData = {
         ...values,
         image_url: previewUrl,
@@ -120,9 +124,22 @@ export function ProductDialog({
       } else {
         await onSubmit(formData)
       }
+      
       form.reset()
       setPreviewUrl(null)
       onOpenChange(false)
+      
+      toast({
+        title: "Success",
+        description: product ? "Product updated successfully" : "Product created successfully",
+      })
+    } catch (error) {
+      console.error('Form submission error:', error)
+      toast({
+        title: "Error",
+        description: "Failed to save product. Please try again.",
+        variant: "destructive",
+      })
     } finally {
       setIsSubmitting(false)
     }
@@ -135,6 +152,9 @@ export function ProductDialog({
           <DialogTitle className="text-[#FFFFFF]">
             {product ? "Edit Product" : "Add New Product"}
           </DialogTitle>
+          <DialogDescription className="text-[#FFFFFF]/70">
+            Fill in the product details below. Images will be uploaded automatically.
+          </DialogDescription>
         </DialogHeader>
         <Form {...form}>
           <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-4">
