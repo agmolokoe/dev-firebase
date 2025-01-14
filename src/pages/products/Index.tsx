@@ -35,7 +35,13 @@ export default function ProductsPage() {
     product.description?.toLowerCase().includes(searchTerm.toLowerCase())
   )
 
-  const totalValue = products.reduce((sum, product) => sum + (product.price * (product.stock || 0)), 0)
+  // Calculate total value and total profit
+  const totalValue = products.reduce((sum, product) => 
+    sum + (product.cost_price * (product.stock || 0)), 0
+  )
+  const totalProfit = products.reduce((sum, product) => 
+    sum + ((product.selling_price - product.cost_price) * (product.stock || 0)), 0
+  )
   const totalProducts = products.length
   const lowStockProducts = products.filter((product) => (product.stock || 0) < 10).length
 
@@ -46,8 +52,10 @@ export default function ProductsPage() {
         .insert([{
           name: productData.name,
           description: productData.description,
-          price: Number(productData.price),
+          cost_price: Number(productData.cost_price),
+          selling_price: Number(productData.selling_price),
           stock: Number(productData.stock),
+          image_url: productData.image_url,
         }])
       
       if (error) throw error
@@ -74,8 +82,10 @@ export default function ProductsPage() {
         .update({
           name: productData.name,
           description: productData.description,
-          price: Number(productData.price),
+          cost_price: Number(productData.cost_price),
+          selling_price: Number(productData.selling_price),
           stock: Number(productData.stock),
+          image_url: productData.image_url,
         })
         .eq('id', id)
       
@@ -136,6 +146,7 @@ export default function ProductsPage() {
         <ProductStats
           totalProducts={totalProducts}
           totalValue={totalValue}
+          totalProfit={totalProfit}
           lowStockProducts={lowStockProducts}
         />
 
