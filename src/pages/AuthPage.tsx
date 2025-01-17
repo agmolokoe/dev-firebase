@@ -90,6 +90,7 @@ export default function AuthPage({ mode }: { mode: "login" | "signup" }) {
                 onChange={(e) => setBusinessName(e.target.value)}
                 className="bg-white/5 border-white/10 text-white"
                 placeholder="Enter your business name"
+                required
               />
             </div>
           )}
@@ -118,7 +119,7 @@ export default function AuthPage({ mode }: { mode: "login" | "signup" }) {
               options: {
                 emailRedirectTo: `${window.location.origin}/dashboard`,
                 data: {
-                  business_name: businessName,
+                  business_name: businessName || 'My Business',
                 },
               },
             })}
