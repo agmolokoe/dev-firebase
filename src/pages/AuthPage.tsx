@@ -6,10 +6,13 @@ import { supabase } from "@/lib/supabase";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { AuthError, AuthApiError } from "@supabase/supabase-js";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 
 export default function AuthPage({ mode }: { mode: "login" | "signup" }) {
   const navigate = useNavigate();
   const [errorMessage, setErrorMessage] = useState<string>("");
+  const [businessName, setBusinessName] = useState("");
 
   useEffect(() => {
     const {
@@ -51,10 +54,10 @@ export default function AuthPage({ mode }: { mode: "login" | "signup" }) {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50">
-      <Card className="w-full max-w-md">
+    <div className="min-h-screen flex items-center justify-center bg-black">
+      <Card className="w-full max-w-md bg-black border-white/10">
         <CardHeader>
-          <CardTitle className="text-2xl font-bold text-center">
+          <CardTitle className="text-2xl font-bold text-center text-white">
             {mode === "login" ? "Welcome Back" : "Create Account"}
           </CardTitle>
         </CardHeader>
@@ -63,6 +66,19 @@ export default function AuthPage({ mode }: { mode: "login" | "signup" }) {
             <Alert variant="destructive" className="mb-4">
               <AlertDescription>{errorMessage}</AlertDescription>
             </Alert>
+          )}
+          {mode === "signup" && (
+            <div className="mb-4">
+              <Label htmlFor="businessName" className="text-white">Business Name</Label>
+              <Input
+                id="businessName"
+                type="text"
+                value={businessName}
+                onChange={(e) => setBusinessName(e.target.value)}
+                className="bg-white/5 border-white/10 text-white"
+                placeholder="Enter your business name"
+              />
+            </div>
           )}
           <Auth
             supabaseClient={supabase}
@@ -74,16 +90,25 @@ export default function AuthPage({ mode }: { mode: "login" | "signup" }) {
                     brand: "#000000",
                     brandAccent: "#333333",
                     brandButtonText: "#FFFFFF",
-                    inputText: "#000000",
-                    inputBackground: "#FFFFFF",
-                    inputBorder: "#E5E7EB",
+                    inputText: "#FFFFFF",
+                    inputBackground: "rgba(255, 255, 255, 0.05)",
+                    inputBorder: "rgba(255, 255, 255, 0.1)",
                   },
                 },
               },
             }}
-            theme="light"
+            theme="dark"
             providers={[]}
             redirectTo={`${window.location.origin}/dashboard`}
+            onlyThirdPartyProviders={false}
+            {...(mode === "signup" && {
+              options: {
+                emailRedirectTo: `${window.location.origin}/dashboard`,
+                data: {
+                  business_name: businessName,
+                },
+              },
+            })}
           />
         </CardContent>
       </Card>

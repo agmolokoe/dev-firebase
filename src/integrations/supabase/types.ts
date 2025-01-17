@@ -9,8 +9,39 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
+      business_profiles: {
+        Row: {
+          business_name: string
+          created_at: string | null
+          id: string
+          subscription_tier:
+            | Database["public"]["Enums"]["subscription_tier"]
+            | null
+          updated_at: string | null
+        }
+        Insert: {
+          business_name: string
+          created_at?: string | null
+          id: string
+          subscription_tier?:
+            | Database["public"]["Enums"]["subscription_tier"]
+            | null
+          updated_at?: string | null
+        }
+        Update: {
+          business_name?: string
+          created_at?: string | null
+          id?: string
+          subscription_tier?:
+            | Database["public"]["Enums"]["subscription_tier"]
+            | null
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
       customers: {
         Row: {
+          business_id: string | null
           created_at: string | null
           email: string
           id: number
@@ -18,6 +49,7 @@ export type Database = {
           phone: string | null
         }
         Insert: {
+          business_id?: string | null
           created_at?: string | null
           email: string
           id?: number
@@ -25,34 +57,53 @@ export type Database = {
           phone?: string | null
         }
         Update: {
+          business_id?: string | null
           created_at?: string | null
           email?: string
           id?: number
           name?: string
           phone?: string | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "customers_business_id_fkey"
+            columns: ["business_id"]
+            isOneToOne: false
+            referencedRelation: "business_profiles"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       orders: {
         Row: {
+          business_id: string | null
           created_at: string | null
           customer_id: number | null
           id: number
           total_amount: number
         }
         Insert: {
+          business_id?: string | null
           created_at?: string | null
           customer_id?: number | null
           id?: number
           total_amount: number
         }
         Update: {
+          business_id?: string | null
           created_at?: string | null
           customer_id?: number | null
           id?: number
           total_amount?: number
         }
         Relationships: [
+          {
+            foreignKeyName: "orders_business_id_fkey"
+            columns: ["business_id"]
+            isOneToOne: false
+            referencedRelation: "business_profiles"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "orders_customer_id_fkey"
             columns: ["customer_id"]
@@ -64,6 +115,7 @@ export type Database = {
       }
       products: {
         Row: {
+          business_id: string | null
           cost_price: number
           created_at: string | null
           description: string | null
@@ -74,6 +126,7 @@ export type Database = {
           stock: number | null
         }
         Insert: {
+          business_id?: string | null
           cost_price?: number
           created_at?: string | null
           description?: string | null
@@ -84,6 +137,7 @@ export type Database = {
           stock?: number | null
         }
         Update: {
+          business_id?: string | null
           cost_price?: number
           created_at?: string | null
           description?: string | null
@@ -93,7 +147,15 @@ export type Database = {
           selling_price?: number
           stock?: number | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "products_business_id_fkey"
+            columns: ["business_id"]
+            isOneToOne: false
+            referencedRelation: "business_profiles"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       social_connections: {
         Row: {
@@ -142,7 +204,7 @@ export type Database = {
       [_ in never]: never
     }
     Enums: {
-      [_ in never]: never
+      subscription_tier: "free" | "basic" | "premium"
     }
     CompositeTypes: {
       [_ in never]: never

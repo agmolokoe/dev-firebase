@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Menu, X, ChevronDown } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -21,8 +21,31 @@ interface DashboardLayoutProps {
 
 export function DashboardLayout({ children }: DashboardLayoutProps) {
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [businessProfile, setBusinessProfile] = useState<any>(null);
   const navigate = useNavigate();
   const { toast } = useToast();
+
+  useEffect(() => {
+    const fetchBusinessProfile = async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (session) {
+        const { data, error } = await supabase
+          .from('business_profiles')
+          .select('*')
+          .eq('id', session.user.id)
+          .single();
+        
+        if (error) {
+          console.error('Error fetching business profile:', error);
+          return;
+        }
+        
+        setBusinessProfile(data);
+      }
+    };
+
+    fetchBusinessProfile();
+  }, []);
 
   const handleLogout = async () => {
     try {
@@ -58,9 +81,9 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
           sidebarOpen ? "translate-x-0" : "-translate-x-full"
         )}
       >
-        <div className="flex h-16 items-center justify-between px-4 border-b">
+        <div className="flex h-16 items-center justify-between px-4 border-b border-white/10">
           <h1 className="text-xl font-bold text-white">
-            Baseti ShopApp
+            {businessProfile?.business_name || 'Loading...'}
           </h1>
           <button
             onClick={() => setSidebarOpen(false)}
@@ -95,9 +118,9 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
               <DropdownMenuContent className="w-56" align="end" forceMount>
                 <DropdownMenuLabel className="font-normal">
                   <div className="flex flex-col space-y-1">
-                    <p className="text-sm font-medium leading-none">Admin</p>
+                    <p className="text-sm font-medium leading-none">{businessProfile?.business_name}</p>
                     <p className="text-xs leading-none text-muted-foreground">
-                      admin@example.com
+                      {businessProfile?.subscription_tier || 'free'} plan
                     </p>
                   </div>
                 </DropdownMenuLabel>
@@ -106,7 +129,7 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
                   Profile Settings
                 </DropdownMenuItem>
                 <DropdownMenuItem>
-                  Billing
+                  Subscription
                 </DropdownMenuItem>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem onClick={handleLogout}>

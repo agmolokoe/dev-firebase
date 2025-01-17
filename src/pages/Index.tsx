@@ -11,12 +11,16 @@ import { supabase } from "@/lib/supabase";
 import { formatCurrency } from "@/lib/utils";
 
 export default function Index() {
+  const { data: { session } } = await supabase.auth.getSession();
+  const businessId = session?.user?.id;
+
   const { data: customers = [] } = useQuery({
     queryKey: ['dashboard-customers'],
     queryFn: async () => {
       const { data, error } = await supabase
         .from('customers')
-        .select('*');
+        .select('*')
+        .eq('business_id', businessId);
       if (error) throw error;
       return data;
     },
@@ -27,7 +31,8 @@ export default function Index() {
     queryFn: async () => {
       const { data, error } = await supabase
         .from('products')
-        .select('*');
+        .select('*')
+        .eq('business_id', businessId);
       if (error) throw error;
       return data;
     },
@@ -38,7 +43,8 @@ export default function Index() {
     queryFn: async () => {
       const { data, error } = await supabase
         .from('orders')
-        .select('*');
+        .select('*')
+        .eq('business_id', businessId);
       if (error) throw error;
       return data;
     },
