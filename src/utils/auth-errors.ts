@@ -9,16 +9,11 @@ export const getAuthErrorMessage = (error: AuthError) => {
         }
         return "Invalid request. Please check your input and try again.";
       case 422:
-        try {
-          const errorBody = JSON.parse(error.message);
-          if (errorBody.code === "weak_password") {
-            return "Password must be at least 6 characters long.";
-          }
-        } catch {
-          // If parsing fails, fall through to default message
-        }
         return "Invalid email format or weak password. Please check your input.";
       case 500:
+        if (error.message.includes("Database error saving new user")) {
+          return "Error creating account. Please try again with a different email.";
+        }
         return "An unexpected server error occurred. Please try again later.";
       default:
         return error.message;

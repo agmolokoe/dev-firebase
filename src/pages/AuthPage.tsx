@@ -1,4 +1,3 @@
-// src/pages/AuthPage.tsx
 import { useState } from "react";
 import { Auth } from "@supabase/auth-ui-react";
 import { ThemeSupa } from "@supabase/auth-ui-shared";
@@ -51,9 +50,8 @@ export default function AuthPage({ mode }: { mode: "login" | "signup" }) {
             onlyThirdPartyProviders={false}
             {...(mode === "signup" && {
               options: {
-                emailRedirectTo: `${window.location.origin}/dashboard`,
                 data: {
-                  business_name: businessName || 'My Business',
+                  business_name: businessName.trim() || 'My Business',
                 },
               },
             })}
