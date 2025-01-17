@@ -1,7 +1,6 @@
 import { useState } from "react"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
-import * as z from "zod"
 import {
   Dialog,
   DialogContent,
@@ -9,35 +8,12 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog"
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/components/ui/form"
-import { Input } from "@/components/ui/input"
+import { Form } from "@/components/ui/form"
 import { Button } from "@/components/ui/button"
-import { Textarea } from "@/components/ui/textarea"
 import { Loader2 } from "lucide-react"
 import { ProductImageUpload } from "./ProductImageUpload"
-import { ProductPriceFields } from "./ProductPriceFields"
-
-const formSchema = z.object({
-  name: z.string().min(2, "Name must be at least 2 characters"),
-  description: z.string().optional(),
-  cost_price: z.string().refine((val) => !isNaN(Number(val)) && Number(val) >= 0, {
-    message: "Cost price must be a non-negative number",
-  }),
-  selling_price: z.string().refine((val) => !isNaN(Number(val)) && Number(val) > 0, {
-    message: "Selling price must be a positive number",
-  }),
-  stock: z.string().refine((val) => !isNaN(Number(val)) && Number(val) >= 0, {
-    message: "Stock must be a non-negative number",
-  }),
-  image: z.any().optional(),
-})
+import { ProductFormFields, formSchema } from "./ProductFormFields"
+import * as z from "zod"
 
 type ProductDialogProps = {
   open: boolean
@@ -75,10 +51,6 @@ export function ProductDialog({
       stock: product?.stock?.toString() || "0",
     },
   })
-
-  const costPrice = Number(form.watch("cost_price")) || 0
-  const sellingPrice = Number(form.watch("selling_price")) || 0
-  const profit = sellingPrice - costPrice
 
   const handleSubmit = async (values: z.infer<typeof formSchema>) => {
     try {
@@ -123,63 +95,7 @@ export function ProductDialog({
               />
             </div>
             
-            <FormField
-              control={form.control}
-              name="name"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel className="text-[#FFFFFF]">Name</FormLabel>
-                  <FormControl>
-                    <Input 
-                      placeholder="Product name" 
-                      {...field}
-                      className="bg-[#FFFFFF]/5 border-[#FFFFFF]/10 text-[#FFFFFF]"
-                    />
-                  </FormControl>
-                  <FormMessage className="text-[#FE2C55]" />
-                </FormItem>
-              )}
-            />
-            
-            <FormField
-              control={form.control}
-              name="description"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel className="text-[#FFFFFF]">Description</FormLabel>
-                  <FormControl>
-                    <Textarea 
-                      placeholder="Product description"
-                      {...field}
-                      className="bg-[#FFFFFF]/5 border-[#FFFFFF]/10 text-[#FFFFFF]"
-                    />
-                  </FormControl>
-                  <FormMessage className="text-[#FE2C55]" />
-                </FormItem>
-              )}
-            />
-
-            <ProductPriceFields form={form} profit={profit} />
-
-            <FormField
-              control={form.control}
-              name="stock"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel className="text-[#FFFFFF]">Stock</FormLabel>
-                  <FormControl>
-                    <Input 
-                      type="number"
-                      min="0"
-                      placeholder="0"
-                      {...field}
-                      className="bg-[#FFFFFF]/5 border-[#FFFFFF]/10 text-[#FFFFFF]"
-                    />
-                  </FormControl>
-                  <FormMessage className="text-[#FE2C55]" />
-                </FormItem>
-              )}
-            />
+            <ProductFormFields form={form} />
 
             <div className="flex justify-end space-x-2">
               <Button
