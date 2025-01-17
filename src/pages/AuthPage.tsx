@@ -47,11 +47,10 @@ export default function AuthPage({ mode }: { mode: "login" | "signup" }) {
             theme="dark"
             providers={[]}
             redirectTo={`${window.location.origin}/dashboard`}
-            onlyThirdPartyProviders={false}
             {...(mode === "signup" && {
               options: {
                 data: {
-                  business_name: businessName.trim() || 'My Business',
+                  business_name: businessName.trim() || undefined,
                 },
               },
             })}
