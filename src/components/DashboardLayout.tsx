@@ -22,30 +22,45 @@ interface DashboardLayoutProps {
 export function DashboardLayout({ children }: DashboardLayoutProps) {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [businessProfile, setBusinessProfile] = useState<any>(null);
+  const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
   const { toast } = useToast();
 
   useEffect(() => {
     const fetchBusinessProfile = async () => {
-      const { data: { session } } = await supabase.auth.getSession();
-      if (session) {
+      try {
+        const { data: { session } } = await supabase.auth.getSession();
+        if (!session) {
+          setLoading(false);
+          return;
+        }
+        
         const { data, error } = await supabase
           .from('business_profiles')
           .select('*')
           .eq('id', session.user.id)
-          .single();
+          .maybeSingle();
         
         if (error) {
           console.error('Error fetching business profile:', error);
+          toast({
+            variant: "destructive",
+            title: "Error",
+            description: "Could not load business profile",
+          });
           return;
         }
         
         setBusinessProfile(data);
+      } catch (error) {
+        console.error('Error:', error);
+      } finally {
+        setLoading(false);
       }
     };
 
     fetchBusinessProfile();
-  }, []);
+  }, [toast]);
 
   const handleLogout = async () => {
     try {
@@ -66,6 +81,12 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
     }
   };
 
+  if (loading) {
+    return <div className="min-h-screen bg-black flex items-center justify-center">
+      <div className="text-white">Loading...</div>
+    </div>;
+  }
+
   return (
     <div className="min-h-screen bg-black">
       {sidebarOpen && (
@@ -83,7 +104,7 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
       >
         <div className="flex h-16 items-center justify-between px-4 border-b border-white/10">
           <h1 className="text-xl font-bold text-white">
-            {businessProfile?.business_name || 'Loading...'}
+            {businessProfile?.business_name || 'My Business'}
           </h1>
           <button
             onClick={() => setSidebarOpen(false)}
@@ -118,7 +139,7 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
               <DropdownMenuContent className="w-56" align="end" forceMount>
                 <DropdownMenuLabel className="font-normal">
                   <div className="flex flex-col space-y-1">
-                    <p className="text-sm font-medium leading-none">{businessProfile?.business_name}</p>
+                    <p className="text-sm font-medium leading-none">{businessProfile?.business_name || 'My Business'}</p>
                     <p className="text-xs leading-none text-muted-foreground">
                       {businessProfile?.subscription_tier || 'free'} plan
                     </p>
