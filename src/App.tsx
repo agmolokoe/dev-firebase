@@ -8,6 +8,8 @@ import { supabase } from "@/lib/supabase"
 import Index from "./pages/Index"
 import LandingPage from "./pages/LandingPage"
 import AuthPage from "./pages/AuthPage"
+import PrivacyPolicy from "./pages/legal/PrivacyPolicy"
+import TermsOfService from "./pages/legal/TermsOfService"
 
 const queryClient = new QueryClient()
 
@@ -64,6 +66,8 @@ const App = () => {
                 )
               }
             />
+            <Route path="/privacy-policy" element={<PrivacyPolicy />} />
+            <Route path="/terms-of-service" element={<TermsOfService />} />
 
             {/* Protected dashboard routes - require authentication */}
             <Route

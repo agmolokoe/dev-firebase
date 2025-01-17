@@ -99,20 +99,21 @@ export default function LandingPage() {
             <div>
               <h4 className="text-lg font-bold mb-4">Contact</h4>
               <ul className="space-y-2 text-gray-400">
-                <li>support@baseti.com</li>
-                <li>+1 (555) 123-4567</li>
+                <li>Email: info@baseti.co.za</li>
+                <li>Phone: 0607279246</li>
+                <li>Website: baseti.co.za</li>
               </ul>
             </div>
             <div>
               <h4 className="text-lg font-bold mb-4">Legal</h4>
               <ul className="space-y-2 text-gray-400">
-                <li>Privacy Policy</li>
-                <li>Terms of Service</li>
+                <li><Link to="/privacy-policy">Privacy Policy</Link></li>
+                <li><Link to="/terms-of-service">Terms of Service</Link></li>
               </ul>
             </div>
           </div>
           <div className="border-t border-gray-800 mt-12 pt-8 text-center text-gray-400">
-            <p>© 2024 Baseti Social Shop. All rights reserved.</p>
+            <p>© {new Date().getFullYear()} Baseti Group. All rights reserved.</p>
           </div>
         </div>
       </footer>
