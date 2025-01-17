@@ -1,40 +1,16 @@
-import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+// src/pages/AuthPage.tsx
+import { useState } from "react";
 import { Auth } from "@supabase/auth-ui-react";
 import { ThemeSupa } from "@supabase/auth-ui-shared";
 import { supabase } from "@/lib/supabase";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { BusinessNameInput } from "@/components/auth/BusinessNameInput";
 import { AuthError } from "@/components/auth/AuthError";
-import { getAuthErrorMessage } from "@/utils/auth-errors";
+import useAuthState from "@/hooks/useAuthState";
 
 export default function AuthPage({ mode }: { mode: "login" | "signup" }) {
-  const navigate = useNavigate();
-  const [errorMessage, setErrorMessage] = useState<string>("");
+  const { errorMessage, setErrorMessage } = useAuthState();
   const [businessName, setBusinessName] = useState("");
-
-  useEffect(() => {
-    const {
-      data: { subscription },
-    } = supabase.auth.onAuthStateChange(async (event, session) => {
-      if (event === "SIGNED_IN" && session) {
-        navigate("/dashboard");
-      }
-
-      if (event === "SIGNED_OUT") {
-        setErrorMessage("");
-      }
-
-      if (event === "USER_UPDATED" && !session) {
-        const { error } = await supabase.auth.getSession();
-        if (error) {
-          setErrorMessage(getAuthErrorMessage(error));
-        }
-      }
-    });
-
-    return () => subscription.unsubscribe();
-  }, [navigate]);
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-black">
