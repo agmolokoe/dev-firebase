@@ -43,7 +43,10 @@ export default function AuthPage({ mode }: { mode: "login" | "signup" }) {
     if (error instanceof AuthApiError) {
       switch (error.status) {
         case 400:
-          return "Invalid credentials. Please check your email and password.";
+          if (error.message.includes("invalid_credentials")) {
+            return "Invalid email or password. Please check your credentials and try again.";
+          }
+          return "Invalid request. Please check your input and try again.";
         case 422:
           try {
             const errorBody = JSON.parse(error.message);
@@ -54,6 +57,8 @@ export default function AuthPage({ mode }: { mode: "login" | "signup" }) {
             // If parsing fails, fall through to default message
           }
           return "Invalid email format or weak password. Please check your input.";
+        case 500:
+          return "An unexpected server error occurred. Please try again later.";
         default:
           return error.message;
       }
