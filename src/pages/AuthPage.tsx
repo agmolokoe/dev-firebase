@@ -45,7 +45,15 @@ export default function AuthPage({ mode }: { mode: "login" | "signup" }) {
         case 400:
           return "Invalid credentials. Please check your email and password.";
         case 422:
-          return "Invalid email format. Please enter a valid email address.";
+          try {
+            const errorBody = JSON.parse(error.message);
+            if (errorBody.code === "weak_password") {
+              return "Password must be at least 6 characters long.";
+            }
+          } catch {
+            // If parsing fails, fall through to default message
+          }
+          return "Invalid email format or weak password. Please check your input.";
         default:
           return error.message;
       }
