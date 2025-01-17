@@ -97,7 +97,7 @@ export function ProductFormFields({ form }: ProductFormFieldsProps) {
                 {...field}
                 className="bg-[#FFFFFF]/5 border-[#FFFFFF]/10 text-[#FFFFFF]"
               />
-            </Control>
+            </FormControl>
             <FormMessage className="text-[#FE2C55]" />
           </FormItem>
         )}
