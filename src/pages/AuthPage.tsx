@@ -4,10 +4,9 @@ import { Auth } from "@supabase/auth-ui-react";
 import { ThemeSupa } from "@supabase/auth-ui-shared";
 import { supabase } from "@/lib/supabase";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Alert, AlertDescription } from "@/components/ui/alert";
-import { AuthError, AuthApiError } from "@supabase/supabase-js";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
+import { BusinessNameInput } from "@/components/auth/BusinessNameInput";
+import { AuthError } from "@/components/auth/AuthError";
+import { getAuthErrorMessage } from "@/utils/auth-errors";
 
 export default function AuthPage({ mode }: { mode: "login" | "signup" }) {
   const navigate = useNavigate();
@@ -18,8 +17,6 @@ export default function AuthPage({ mode }: { mode: "login" | "signup" }) {
     const {
       data: { subscription },
     } = supabase.auth.onAuthStateChange(async (event, session) => {
-      console.log("Auth state changed:", event, session);
-
       if (event === "SIGNED_IN" && session) {
         navigate("/dashboard");
       }
@@ -31,40 +28,13 @@ export default function AuthPage({ mode }: { mode: "login" | "signup" }) {
       if (event === "USER_UPDATED" && !session) {
         const { error } = await supabase.auth.getSession();
         if (error) {
-          setErrorMessage(getErrorMessage(error));
+          setErrorMessage(getAuthErrorMessage(error));
         }
       }
     });
 
     return () => subscription.unsubscribe();
   }, [navigate]);
-
-  const getErrorMessage = (error: AuthError) => {
-    if (error instanceof AuthApiError) {
-      switch (error.status) {
-        case 400:
-          if (error.message.includes("invalid_credentials")) {
-            return "Invalid email or password. Please check your credentials and try again.";
-          }
-          return "Invalid request. Please check your input and try again.";
-        case 422:
-          try {
-            const errorBody = JSON.parse(error.message);
-            if (errorBody.code === "weak_password") {
-              return "Password must be at least 6 characters long.";
-            }
-          } catch {
-            // If parsing fails, fall through to default message
-          }
-          return "Invalid email format or weak password. Please check your input.";
-        case 500:
-          return "An unexpected server error occurred. Please try again later.";
-        default:
-          return error.message;
-      }
-    }
-    return "An unexpected error occurred. Please try again.";
-  };
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-black">
@@ -75,24 +45,12 @@ export default function AuthPage({ mode }: { mode: "login" | "signup" }) {
           </CardTitle>
         </CardHeader>
         <CardContent>
-          {errorMessage && (
-            <Alert variant="destructive" className="mb-4">
-              <AlertDescription>{errorMessage}</AlertDescription>
-            </Alert>
-          )}
+          <AuthError message={errorMessage} />
           {mode === "signup" && (
-            <div className="mb-4">
-              <Label htmlFor="businessName" className="text-white">Business Name</Label>
-              <Input
-                id="businessName"
-                type="text"
-                value={businessName}
-                onChange={(e) => setBusinessName(e.target.value)}
-                className="bg-white/5 border-white/10 text-white"
-                placeholder="Enter your business name"
-                required
-              />
-            </div>
+            <BusinessNameInput
+              value={businessName}
+              onChange={setBusinessName}
+            />
           )}
           <Auth
             supabaseClient={supabase}
