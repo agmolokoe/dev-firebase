@@ -9,14 +9,23 @@ import SocialPage from "./social/Index";
 import { DashboardLayout } from "@/components/DashboardLayout";
 import { supabase } from "@/lib/supabase";
 import { formatCurrency } from "@/lib/utils";
+import { useEffect, useState } from "react";
 
 export default function Index() {
-  const { data: { session } } = await supabase.auth.getSession();
-  const businessId = session?.user?.id;
+  const [businessId, setBusinessId] = useState<string | null>(null);
+
+  useEffect(() => {
+    const getSession = async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      setBusinessId(session?.user?.id || null);
+    };
+    getSession();
+  }, []);
 
   const { data: customers = [] } = useQuery({
-    queryKey: ['dashboard-customers'],
+    queryKey: ['dashboard-customers', businessId],
     queryFn: async () => {
+      if (!businessId) return [];
       const { data, error } = await supabase
         .from('customers')
         .select('*')
@@ -24,11 +33,13 @@ export default function Index() {
       if (error) throw error;
       return data;
     },
+    enabled: !!businessId,
   });
 
   const { data: products = [] } = useQuery({
-    queryKey: ['dashboard-products'],
+    queryKey: ['dashboard-products', businessId],
     queryFn: async () => {
+      if (!businessId) return [];
       const { data, error } = await supabase
         .from('products')
         .select('*')
@@ -36,11 +47,13 @@ export default function Index() {
       if (error) throw error;
       return data;
     },
+    enabled: !!businessId,
   });
 
   const { data: orders = [] } = useQuery({
-    queryKey: ['dashboard-orders'],
+    queryKey: ['dashboard-orders', businessId],
     queryFn: async () => {
+      if (!businessId) return [];
       const { data, error } = await supabase
         .from('orders')
         .select('*')
@@ -48,6 +61,7 @@ export default function Index() {
       if (error) throw error;
       return data;
     },
+    enabled: !!businessId,
   });
 
   // Calculate metrics
