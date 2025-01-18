@@ -12,7 +12,7 @@ export const getAuthErrorMessage = (error: AuthError) => {
         return "Invalid email format or weak password. Please check your input.";
       case 500:
         if (error.message.includes("Database error saving new user")) {
-          return "Error creating account. Please try again with a different email.";
+          return "An error occurred while creating your account. Please try again.";
         }
         return "An unexpected server error occurred. Please try again later.";
       default:
