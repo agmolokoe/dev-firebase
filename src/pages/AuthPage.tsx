@@ -24,7 +24,10 @@ export default function AuthPage({ mode }: { mode: "login" | "signup" }) {
           {mode === "signup" && (
             <BusinessNameInput
               value={businessName}
-              onChange={setBusinessName}
+              onChange={(value) => {
+                setBusinessName(value);
+                setErrorMessage(""); // Clear any previous errors
+              }}
             />
           )}
           <Auth
@@ -50,7 +53,7 @@ export default function AuthPage({ mode }: { mode: "login" | "signup" }) {
             {...(mode === "signup" && {
               options: {
                 data: {
-                  business_name: businessName.trim() || undefined,
+                  business_name: businessName.trim() || null,
                 },
               },
             })}
@@ -60,3 +63,66 @@ export default function AuthPage({ mode }: { mode: "login" | "signup" }) {
     </div>
   );
 }
+
+<lov-write file_path="src/utils/auth-errors.ts">
+import { AuthError, AuthApiError } from "@supabase/supabase-js";
+
+export const getAuthErrorMessage = (error: AuthError) => {
+  if (error instanceof AuthApiError) {
+    switch (error.status) {
+      case 400:
+        if (error.message.includes("invalid_credentials")) {
+          return "Invalid email or password. Please check your credentials and try again.";
+        }
+        return "Invalid request. Please check your input and try again.";
+      case 422:
+        return "Invalid email format or weak password. Please check your input.";
+      case 500:
+        if (error.message.includes("Database error saving new user")) {
+          return "An error occurred while creating your account. Please try again.";
+        }
+        return "An unexpected server error occurred. Please try again later.";
+      default:
+        return error.message;
+    }
+  }
+  return "An unexpected error occurred. Please try again.";
+};
+
+<lov-write file_path="src/hooks/useAuthState.ts">
+import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { supabase } from "@/lib/supabase";
+import { getAuthErrorMessage } from "@/utils/auth-errors";
+
+function useAuthState() {
+  const navigate = useNavigate();
+  const [errorMessage, setErrorMessage] = useState<string>("");
+
+  useEffect(() => {
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange(async (event, session) => {
+      if (event === "SIGNED_IN" && session) {
+        navigate("/dashboard");
+      }
+
+      if (event === "SIGNED_OUT") {
+        setErrorMessage("");
+      }
+
+      if (event === "USER_UPDATED" && !session) {
+        const { error } = await supabase.auth.getSession();
+        if (error) {
+          setErrorMessage(getAuthErrorMessage(error));
+        }
+      }
+    });
+
+    return () => subscription.unsubscribe();
+  }, [navigate]);
+
+  return { errorMessage, setErrorMessage };
+}
+
+export default useAuthState;

@@ -11,7 +11,7 @@ export type Database = {
     Tables: {
       business_profiles: {
         Row: {
-          business_name: string
+          business_name: string | null
           created_at: string | null
           id: string
           subscription_tier:
@@ -20,7 +20,7 @@ export type Database = {
           updated_at: string | null
         }
         Insert: {
-          business_name: string
+          business_name?: string | null
           created_at?: string | null
           id: string
           subscription_tier?:
@@ -29,7 +29,7 @@ export type Database = {
           updated_at?: string | null
         }
         Update: {
-          business_name?: string
+          business_name?: string | null
           created_at?: string | null
           id?: string
           subscription_tier?:
