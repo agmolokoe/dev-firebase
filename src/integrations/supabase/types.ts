@@ -14,6 +14,10 @@ export type Database = {
           business_name: string | null
           created_at: string | null
           id: string
+          product_limit: number | null
+          subscription_end_date: string | null
+          subscription_features: Json | null
+          subscription_status: string | null
           subscription_tier:
             | Database["public"]["Enums"]["subscription_tier"]
             | null
@@ -23,6 +27,10 @@ export type Database = {
           business_name?: string | null
           created_at?: string | null
           id: string
+          product_limit?: number | null
+          subscription_end_date?: string | null
+          subscription_features?: Json | null
+          subscription_status?: string | null
           subscription_tier?:
             | Database["public"]["Enums"]["subscription_tier"]
             | null
@@ -32,6 +40,10 @@ export type Database = {
           business_name?: string | null
           created_at?: string | null
           id?: string
+          product_limit?: number | null
+          subscription_end_date?: string | null
+          subscription_features?: Json | null
+          subscription_status?: string | null
           subscription_tier?:
             | Database["public"]["Enums"]["subscription_tier"]
             | null
@@ -180,6 +192,57 @@ export type Database = {
           user_id?: string
         }
         Relationships: []
+      }
+      subscriptions: {
+        Row: {
+          amount: number
+          business_id: string | null
+          created_at: string | null
+          currency: string | null
+          id: string
+          payment_date: string | null
+          payment_id: string | null
+          status: string
+          tier: Database["public"]["Enums"]["subscription_tier"]
+        }
+        Insert: {
+          amount: number
+          business_id?: string | null
+          created_at?: string | null
+          currency?: string | null
+          id?: string
+          payment_date?: string | null
+          payment_id?: string | null
+          status: string
+          tier: Database["public"]["Enums"]["subscription_tier"]
+        }
+        Update: {
+          amount?: number
+          business_id?: string | null
+          created_at?: string | null
+          currency?: string | null
+          id?: string
+          payment_date?: string | null
+          payment_id?: string | null
+          status?: string
+          tier?: Database["public"]["Enums"]["subscription_tier"]
+        }
+        Relationships: [
+          {
+            foreignKeyName: "fk_business"
+            columns: ["business_id"]
+            isOneToOne: false
+            referencedRelation: "business_profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "subscriptions_business_id_fkey"
+            columns: ["business_id"]
+            isOneToOne: false
+            referencedRelation: "business_profiles"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       test_table: {
         Row: {

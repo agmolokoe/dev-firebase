@@ -10,6 +10,7 @@ import LandingPage from "./pages/LandingPage"
 import AuthPage from "./pages/AuthPage"
 import PrivacyPolicy from "./pages/legal/PrivacyPolicy"
 import TermsOfService from "./pages/legal/TermsOfService"
+import SubscriptionPage from "./pages/subscription/Index"
 
 const queryClient = new QueryClient()
 
@@ -74,6 +75,14 @@ const App = () => {
               path="/dashboard/*"
               element={
                 session ? <Index /> : <Navigate to="/auth" replace />
+              }
+            />
+            
+            {/* Subscription route */}
+            <Route
+              path="/dashboard/subscription"
+              element={
+                session ? <SubscriptionPage /> : <Navigate to="/auth" replace />
               }
             />
 
