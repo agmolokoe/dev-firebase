@@ -4,9 +4,11 @@ import { useQuery } from "@tanstack/react-query"
 import { supabase } from "@/lib/supabase"
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import { AlertCircle } from "lucide-react"
+import { useToast } from "@/hooks/use-toast"
 
 export default function SubscriptionPage() {
-  const { data: profile } = useQuery({
+  const { toast } = useToast()
+  const { data: profile, error } = useQuery({
     queryKey: ['business-profile'],
     queryFn: async () => {
       const { data: { session } } = await supabase.auth.getSession()
@@ -16,12 +18,36 @@ export default function SubscriptionPage() {
         .from('business_profiles')
         .select('*')
         .eq('id', session.user.id)
-        .single()
+        .maybeSingle()
 
-      if (error) throw error
+      if (error) {
+        toast({
+          variant: "destructive",
+          title: "Error",
+          description: "Could not load business profile",
+        })
+        throw error
+      }
+
       return data
     }
   })
+
+  if (error) {
+    return (
+      <DashboardLayout>
+        <div className="container mx-auto p-6">
+          <Alert variant="destructive">
+            <AlertCircle className="h-4 w-4" />
+            <AlertTitle>Error</AlertTitle>
+            <AlertDescription>
+              Failed to load subscription information. Please try refreshing the page.
+            </AlertDescription>
+          </Alert>
+        </div>
+      </DashboardLayout>
+    )
+  }
 
   return (
     <DashboardLayout>
@@ -35,7 +61,7 @@ export default function SubscriptionPage() {
               <AlertTitle>Current Plan: {profile.subscription_tier}</AlertTitle>
               <AlertDescription>
                 Your subscription is active until{' '}
-                {new Date(profile.subscription_end_date).toLocaleDateString()}
+                {profile.subscription_end_date ? new Date(profile.subscription_end_date).toLocaleDateString() : 'N/A'}
               </AlertDescription>
             </Alert>
           )}

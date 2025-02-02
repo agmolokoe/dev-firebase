@@ -61,6 +61,32 @@ export function PricingPlans() {
         return
       }
 
+      // Check if business profile exists
+      const { data: profile, error: profileError } = await supabase
+        .from('business_profiles')
+        .select('*')
+        .eq('id', session.user.id)
+        .maybeSingle()
+
+      if (profileError) {
+        console.error('Error checking business profile:', profileError)
+        toast({
+          variant: "destructive",
+          title: "Error",
+          description: "Could not verify business profile",
+        })
+        return
+      }
+
+      if (!profile) {
+        toast({
+          variant: "destructive",
+          title: "Profile Required",
+          description: "Please complete your business profile setup first",
+        })
+        return
+      }
+
       const businessId = session.user.id
       const timestamp = new Date().getTime()
       const paymentId = `${businessId}_${timestamp}`
