@@ -51,6 +51,17 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
           return;
         }
         
+        if (!data) {
+          // Handle case where no profile exists
+          toast({
+            variant: "destructive",
+            title: "Profile Not Found",
+            description: "Your business profile could not be found",
+          });
+          // Optionally redirect to profile setup or show a different UI
+          return;
+        }
+        
         setBusinessProfile(data);
       } catch (error) {
         console.error('Error:', error);
@@ -149,7 +160,7 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
                 <DropdownMenuItem>
                   Profile Settings
                 </DropdownMenuItem>
-                <DropdownMenuItem>
+                <DropdownMenuItem onClick={() => navigate('/dashboard/subscription')}>
                   Subscription
                 </DropdownMenuItem>
                 <DropdownMenuSeparator />
