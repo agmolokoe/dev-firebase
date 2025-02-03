@@ -5,6 +5,7 @@ import { TooltipProvider } from "@/components/ui/tooltip"
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query"
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom"
 import { supabase } from "@/lib/supabase"
+import { Session } from "@supabase/supabase-js"
 import Index from "./pages/Index"
 import LandingPage from "./pages/LandingPage"
 import AuthPage from "./pages/AuthPage"
@@ -14,14 +15,6 @@ import SubscriptionPage from "./pages/subscription/Index"
 import { BusinessProfileSetup } from "./components/profile/BusinessProfileSetup"
 
 const queryClient = new QueryClient()
-
-interface Session {
-  user: {
-    id: string
-    email: string
-  }
-  // Add other session properties as needed
-}
 
 function App() {
   const [session, setSession] = useState<Session | null>(null)
