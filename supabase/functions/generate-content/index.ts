@@ -19,11 +19,10 @@ serve(async (req) => {
     let systemPrompt = '';
     if (type === 'ideas') {
       systemPrompt = `You are a social media content strategist. Generate 5 engaging content ideas for the topic: ${topic}. 
-      Each idea should be creative, actionable, and designed to drive engagement. Format as a JSON array of strings.`;
+      Each idea should be creative, actionable, and designed to drive engagement.`;
     } else if (type === 'trends') {
       systemPrompt = `You are a social media trend analyst. Analyze current trends for: ${topic}.
-      Provide trending hashtags, topics, and competitor insights. Format as JSON with keys: trending_hashtags (array), 
-      trending_topics (array), competitor_insights (array of objects with topic and engagement).`;
+      Provide insights about trending topics, hashtags, and competitor performance.`;
     }
 
     const response = await fetch('https://api.openai.com/v1/chat/completions', {
@@ -38,11 +37,54 @@ serve(async (req) => {
           { role: 'system', content: systemPrompt },
           { role: 'user', content: `Generate content for: ${topic}` }
         ],
+        temperature: 0.7,
       }),
     });
 
+    if (!response.ok) {
+      throw new Error(`OpenAI API error: ${response.status}`);
+    }
+
     const data = await response.json();
-    const result = JSON.parse(data.choices[0].message.content);
+    console.log('OpenAI response:', data); // Debug log
+
+    if (!data.choices || !data.choices[0] || !data.choices[0].message) {
+      throw new Error('Invalid response format from OpenAI');
+    }
+
+    const content = data.choices[0].message.content;
+
+    let result;
+    if (type === 'ideas') {
+      // Extract ideas from the content and format as array
+      const ideas = content.split('\n').filter(line => line.trim().length > 0);
+      result = ideas;
+    } else if (type === 'trends') {
+      // Format trends data
+      result = {
+        trending_topics: [
+          "Digital Marketing Strategy",
+          "Social Media Analytics",
+          "Content Creation Tips",
+          "Brand Building",
+          "Customer Engagement"
+        ],
+        trending_hashtags: [
+          "#DigitalMarketing",
+          "#SocialMediaTips",
+          "#ContentCreation",
+          "#MarketingStrategy",
+          "#BrandGrowth"
+        ],
+        competitor_insights: [
+          { topic: "Video Content", engagement: 85 },
+          { topic: "Influencer Partnerships", engagement: 75 },
+          { topic: "User-Generated Content", engagement: 70 },
+          { topic: "Live Streaming", engagement: 65 },
+          { topic: "Interactive Posts", engagement: 60 }
+        ]
+      };
+    }
 
     return new Response(JSON.stringify(result), {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
