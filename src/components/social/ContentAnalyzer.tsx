@@ -4,7 +4,7 @@ import { Loader2, TrendingUp, Hash, Users } from "lucide-react"
 import { supabase } from "@/lib/supabase"
 
 export function ContentAnalyzer() {
-  const { data: trends, isLoading } = useQuery({
+  const { data: trends, isLoading, error } = useQuery({
     queryKey: ['social-trends'],
     queryFn: async () => {
       const { data: { user } } = await supabase.auth.getUser()
@@ -20,8 +20,21 @@ export function ContentAnalyzer() {
       if (error) throw error
       return data
     },
-    refetchInterval: 1000 * 60 * 30, // Refetch every 30 minutes
+    retry: 3,
+    retryDelay: (attemptIndex) => Math.min(1000 * Math.pow(2, attemptIndex), 30000),
   })
+
+  if (error) {
+    return (
+      <Card className="bg-black text-white border-white/10">
+        <CardContent className="p-6">
+          <div className="text-red-400">
+            Failed to load trends. Please try refreshing the page.
+          </div>
+        </CardContent>
+      </Card>
+    )
+  }
 
   if (isLoading) {
     return (

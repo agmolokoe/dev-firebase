@@ -46,9 +46,10 @@ export function ContentGenerator() {
       console.error('Error generating ideas:', error)
       toast({
         title: "Generation Failed",
-        description: "Failed to generate content ideas. Please try again.",
+        description: error instanceof Error ? error.message : "Failed to generate content ideas. Please try again.",
         variant: "destructive",
       })
+      setIdeas([])
     } finally {
       setIsGenerating(false)
     }
@@ -73,6 +74,7 @@ export function ContentGenerator() {
               value={topic}
               onChange={(e) => setTopic(e.target.value)}
               className="bg-white/5 border-white/10 text-white"
+              disabled={isGenerating}
             />
             <Button
               onClick={generateIdeas}

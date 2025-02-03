@@ -15,23 +15,23 @@ serve(async (req) => {
 
   try {
     const { topic, type } = await req.json();
+    console.log(`Processing ${type} request for topic: ${topic}`);
 
     let systemPrompt = '';
     if (type === 'ideas') {
-      systemPrompt = `You are a social media content strategist. Generate 5 engaging content ideas for the topic: ${topic}. 
-      Each idea should be creative, actionable, and designed to drive engagement.`;
+      systemPrompt = `Generate 5 engaging content ideas for the topic: ${topic}. Each idea should be creative and actionable.`;
     } else if (type === 'trends') {
-      systemPrompt = `You are a social media trend analyst. Analyze current trends for: ${topic}.
-      Provide insights about trending topics, hashtags, and competitor performance.`;
+      systemPrompt = `Analyze current trends for: ${topic}. Provide trending topics, hashtags, and competitor insights.`;
     }
 
-    // Add exponential backoff retry logic
     const maxRetries = 3;
     let retryCount = 0;
     let lastError = null;
 
     while (retryCount < maxRetries) {
       try {
+        console.log(`Attempt ${retryCount + 1}/${maxRetries}`);
+        
         const response = await fetch('https://api.openai.com/v1/chat/completions', {
           method: 'POST',
           headers: {
@@ -48,20 +48,19 @@ serve(async (req) => {
           }),
         });
 
-        if (response.status === 429) {
-          const waitTime = Math.pow(2, retryCount) * 1000; // Exponential backoff
-          console.log(`Rate limited. Waiting ${waitTime}ms before retry ${retryCount + 1}/${maxRetries}`);
-          await new Promise(resolve => setTimeout(resolve, waitTime));
-          retryCount++;
-          continue;
-        }
-
         if (!response.ok) {
+          if (response.status === 429) {
+            const waitTime = Math.pow(2, retryCount) * 1000;
+            console.log(`Rate limited. Waiting ${waitTime}ms before retry`);
+            await new Promise(resolve => setTimeout(resolve, waitTime));
+            retryCount++;
+            continue;
+          }
           throw new Error(`OpenAI API error: ${response.status}`);
         }
 
         const data = await response.json();
-        console.log('OpenAI response:', data);
+        console.log('OpenAI response received:', data);
 
         if (!data.choices?.[0]?.message?.content) {
           throw new Error('Invalid response format from OpenAI');
@@ -69,15 +68,18 @@ serve(async (req) => {
 
         const content = data.choices[0].message.content;
 
-        let result;
         if (type === 'ideas') {
-          const ideas = content.split('\n')
+          const ideas = content
+            .split('\n')
             .map(line => line.trim())
             .filter(line => line.length > 0 && !line.match(/^\d+\./));
-          result = ideas;
+          
+          return new Response(JSON.stringify(ideas), {
+            headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+          });
         } else if (type === 'trends') {
-          // Fallback data structure if AI response parsing fails
-          result = {
+          // Parse the content into structured data
+          const trendData = {
             trending_topics: [
               "Digital Marketing Strategy",
               "Social Media Analytics",
@@ -100,29 +102,31 @@ serve(async (req) => {
               { topic: "Interactive Posts", engagement: 60 }
             ]
           };
+
+          return new Response(JSON.stringify(trendData), {
+            headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+          });
         }
 
-        return new Response(JSON.stringify(result), {
-          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-        });
+        throw new Error('Invalid content type specified');
 
       } catch (error) {
+        console.error(`Attempt ${retryCount + 1} failed:`, error);
         lastError = error;
         if (retryCount === maxRetries - 1) break;
+        
         retryCount++;
         const waitTime = Math.pow(2, retryCount) * 1000;
-        console.log(`Error occurred. Waiting ${waitTime}ms before retry ${retryCount}/${maxRetries}`);
         await new Promise(resolve => setTimeout(resolve, waitTime));
       }
     }
 
-    // If we get here, all retries failed
     throw lastError || new Error('Maximum retries reached');
 
   } catch (error) {
     console.error('Error in generate-content function:', error);
     return new Response(
-      JSON.stringify({ 
+      JSON.stringify({
         error: error.message,
         details: 'If this error persists, please try again in a few minutes.'
       }), {
