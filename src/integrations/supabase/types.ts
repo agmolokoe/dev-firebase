@@ -11,10 +11,19 @@ export type Database = {
     Tables: {
       business_profiles: {
         Row: {
+          business_address: string | null
+          business_description: string | null
+          business_hours: Json | null
           business_name: string | null
+          contact_email: string | null
+          contact_phone: string | null
           created_at: string | null
           id: string
+          industry: string | null
+          logo_url: string | null
           product_limit: number | null
+          settings: Json | null
+          social_media: Json | null
           subscription_end_date: string | null
           subscription_features: Json | null
           subscription_status: string | null
@@ -22,12 +31,22 @@ export type Database = {
             | Database["public"]["Enums"]["subscription_tier"]
             | null
           updated_at: string | null
+          website_url: string | null
         }
         Insert: {
+          business_address?: string | null
+          business_description?: string | null
+          business_hours?: Json | null
           business_name?: string | null
+          contact_email?: string | null
+          contact_phone?: string | null
           created_at?: string | null
           id: string
+          industry?: string | null
+          logo_url?: string | null
           product_limit?: number | null
+          settings?: Json | null
+          social_media?: Json | null
           subscription_end_date?: string | null
           subscription_features?: Json | null
           subscription_status?: string | null
@@ -35,12 +54,22 @@ export type Database = {
             | Database["public"]["Enums"]["subscription_tier"]
             | null
           updated_at?: string | null
+          website_url?: string | null
         }
         Update: {
+          business_address?: string | null
+          business_description?: string | null
+          business_hours?: Json | null
           business_name?: string | null
+          contact_email?: string | null
+          contact_phone?: string | null
           created_at?: string | null
           id?: string
+          industry?: string | null
+          logo_url?: string | null
           product_limit?: number | null
+          settings?: Json | null
+          social_media?: Json | null
           subscription_end_date?: string | null
           subscription_features?: Json | null
           subscription_status?: string | null
@@ -48,6 +77,7 @@ export type Database = {
             | Database["public"]["Enums"]["subscription_tier"]
             | null
           updated_at?: string | null
+          website_url?: string | null
         }
         Relationships: []
       }
@@ -267,6 +297,15 @@ export type Database = {
       [_ in never]: never
     }
     Enums: {
+      business_industry:
+        | "retail"
+        | "hospitality"
+        | "healthcare"
+        | "technology"
+        | "manufacturing"
+        | "education"
+        | "finance"
+        | "other"
       subscription_tier: "free" | "basic" | "premium"
     }
     CompositeTypes: {

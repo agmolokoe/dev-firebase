@@ -14,6 +14,8 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
+import { Skeleton } from "@/components/ui/skeleton";
+import { Alert, AlertDescription } from "@/components/ui/alert";
 
 interface DashboardLayoutProps {
   children: React.ReactNode;
@@ -23,6 +25,7 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [businessProfile, setBusinessProfile] = useState<any>(null);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const navigate = useNavigate();
   const { toast } = useToast();
 
@@ -32,6 +35,7 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
         const { data: { session } } = await supabase.auth.getSession();
         if (!session) {
           setLoading(false);
+          navigate('/auth');
           return;
         }
         
@@ -43,6 +47,7 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
         
         if (error) {
           console.error('Error fetching business profile:', error);
+          setError('Could not load business profile');
           toast({
             variant: "destructive",
             title: "Error",
@@ -52,26 +57,29 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
         }
         
         if (!data) {
-          // Handle case where no profile exists
+          setError('No business profile found');
           toast({
             variant: "destructive",
             title: "Profile Not Found",
-            description: "Your business profile could not be found",
+            description: "Please complete your business profile setup",
           });
-          // Optionally redirect to profile setup or show a different UI
+          // Redirect to profile setup
+          navigate('/dashboard/profile/setup');
           return;
         }
         
         setBusinessProfile(data);
+        setError(null);
       } catch (error) {
         console.error('Error:', error);
+        setError('An unexpected error occurred');
       } finally {
         setLoading(false);
       }
     };
 
     fetchBusinessProfile();
-  }, [toast]);
+  }, [navigate, toast]);
 
   const handleLogout = async () => {
     try {
@@ -93,9 +101,21 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
   };
 
   if (loading) {
-    return <div className="min-h-screen bg-black flex items-center justify-center">
-      <div className="text-white">Loading...</div>
-    </div>;
+    return (
+      <div className="min-h-screen bg-black flex items-center justify-center">
+        <Skeleton className="h-12 w-12 rounded-full" />
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="min-h-screen bg-black p-4">
+        <Alert variant="destructive">
+          <AlertDescription>{error}</AlertDescription>
+        </Alert>
+      </div>
+    );
   }
 
   return (
@@ -150,15 +170,17 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
               <DropdownMenuContent className="w-56" align="end" forceMount>
                 <DropdownMenuLabel className="font-normal">
                   <div className="flex flex-col space-y-1">
-                    <p className="text-sm font-medium leading-none">{businessProfile?.business_name || 'My Business'}</p>
+                    <p className="text-sm font-medium leading-none">
+                      {businessProfile?.business_name || 'My Business'}
+                    </p>
                     <p className="text-xs leading-none text-muted-foreground">
-                      {businessProfile?.subscription_tier || 'free'} plan
+                      {businessProfile?.industry || 'Industry not set'}
                     </p>
                   </div>
                 </DropdownMenuLabel>
                 <DropdownMenuSeparator />
-                <DropdownMenuItem>
-                  Profile Settings
+                <DropdownMenuItem onClick={() => navigate('/dashboard/profile')}>
+                  Business Profile
                 </DropdownMenuItem>
                 <DropdownMenuItem onClick={() => navigate('/dashboard/subscription')}>
                   Subscription

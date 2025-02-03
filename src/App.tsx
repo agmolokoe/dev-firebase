@@ -11,6 +11,7 @@ import AuthPage from "./pages/AuthPage"
 import PrivacyPolicy from "./pages/legal/PrivacyPolicy"
 import TermsOfService from "./pages/legal/TermsOfService"
 import SubscriptionPage from "./pages/subscription/Index"
+import { BusinessProfileSetup } from "./components/profile/BusinessProfileSetup"
 
 const queryClient = new QueryClient()
 
@@ -75,6 +76,14 @@ const App = () => {
               path="/dashboard/*"
               element={
                 session ? <Index /> : <Navigate to="/auth" replace />
+              }
+            />
+            
+            {/* Profile setup route */}
+            <Route
+              path="/dashboard/profile/setup"
+              element={
+                session ? <BusinessProfileSetup /> : <Navigate to="/auth" replace />
               }
             />
             
