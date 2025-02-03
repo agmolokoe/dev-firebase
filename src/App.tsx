@@ -1,9 +1,9 @@
+import React, { useEffect, useState } from "react"
 import { Toaster } from "@/components/ui/toaster"
 import { Toaster as Sonner } from "@/components/ui/sonner"
 import { TooltipProvider } from "@/components/ui/tooltip"
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query"
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom"
-import { useEffect, useState } from "react"
 import { supabase } from "@/lib/supabase"
 import Index from "./pages/Index"
 import LandingPage from "./pages/LandingPage"
@@ -15,8 +15,16 @@ import { BusinessProfileSetup } from "./components/profile/BusinessProfileSetup"
 
 const queryClient = new QueryClient()
 
+interface Session {
+  user: {
+    id: string
+    email: string
+  }
+  // Add other session properties as needed
+}
+
 function App() {
-  const [session, setSession] = useState(null)
+  const [session, setSession] = useState<Session | null>(null)
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
