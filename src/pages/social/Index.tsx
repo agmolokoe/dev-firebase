@@ -3,6 +3,8 @@ import { useToast } from "@/hooks/use-toast"
 import { supabase } from "@/lib/supabase"
 import { WhatsAppForm } from "@/components/social/WhatsAppForm"
 import { InstagramForm } from "@/components/social/InstagramForm"
+import { ContentAnalyzer } from "@/components/social/ContentAnalyzer"
+import { ContentGenerator } from "@/components/social/ContentGenerator"
 import { SocialConnection } from "@/types/social"
 import { DashboardLayout } from "@/components/DashboardLayout"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
@@ -80,8 +82,8 @@ export default function SocialPage() {
 
   return (
     <DashboardLayout>
-      <div className="container mx-auto p-6">
-        <div className="mb-8">
+      <div className="container mx-auto p-6 space-y-8">
+        <div>
           <div className="flex items-center justify-between">
             <div>
               <h1 className="text-3xl font-bold tracking-tight text-white">Social Media Integration</h1>
@@ -93,8 +95,14 @@ export default function SocialPage() {
           </div>
         </div>
 
+        {/* Content Analysis & Generation */}
+        <div className="space-y-8">
+          <ContentAnalyzer />
+          <ContentGenerator />
+        </div>
+
         {/* Current Connections */}
-        <Card className="mb-8 bg-black text-white border-white/10">
+        <Card className="bg-black text-white border-white/10">
           <CardHeader>
             <CardTitle>Connected Accounts</CardTitle>
           </CardHeader>

@@ -7,7 +7,7 @@ import { supabase } from "@/lib/supabase"
 const plans = [
   {
     name: "Basic",
-    price: "299",
+    price: "50",
     description: "Perfect for small businesses",
     features: [
       "Up to 100 products",
@@ -19,7 +19,7 @@ const plans = [
   },
   {
     name: "Pro",
-    price: "599",
+    price: "250",
     description: "Great for growing businesses",
     features: [
       "Up to 500 products",
@@ -32,7 +32,7 @@ const plans = [
   },
   {
     name: "Enterprise",
-    price: "999",
+    price: "500",
     description: "For large scale operations",
     features: [
       "Unlimited products",
