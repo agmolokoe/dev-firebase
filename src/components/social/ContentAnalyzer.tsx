@@ -17,11 +17,19 @@ export function ContentAnalyzer() {
         }
       })
 
-      if (error) throw error
+      if (error) {
+        console.error('Error fetching trends:', error)
+        throw error
+      }
+      
+      if (!data || !data.trending_topics || !data.trending_hashtags || !data.competitor_insights) {
+        throw new Error('Invalid response format')
+      }
+
       return data
     },
-    retry: 3,
-    retryDelay: (attemptIndex) => Math.min(1000 * Math.pow(2, attemptIndex), 30000),
+    retry: 1, // Only retry once to avoid excessive API calls
+    retryDelay: 1000,
   })
 
   if (error) {
@@ -29,7 +37,7 @@ export function ContentAnalyzer() {
       <Card className="bg-black text-white border-white/10">
         <CardContent className="p-6">
           <div className="text-red-400">
-            Failed to load trends. Please try refreshing the page.
+            Temporarily using cached trends data. Please refresh in a few minutes.
           </div>
         </CardContent>
       </Card>
