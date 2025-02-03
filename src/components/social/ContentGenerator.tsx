@@ -27,22 +27,16 @@ export function ContentGenerator() {
       const { data: { user } } = await supabase.auth.getUser()
       if (!user) throw new Error('Not authenticated')
 
-      const response = await fetch('/api/generate-content', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${user.id}`,
-        },
-        body: JSON.stringify({
+      const { data, error } = await supabase.functions.invoke('generate-content', {
+        body: {
           topic,
           type: 'ideas'
-        }),
+        }
       })
 
-      if (!response.ok) throw new Error('Failed to generate ideas')
+      if (error) throw error
       
-      const ideas = await response.json()
-      setIdeas(ideas)
+      setIdeas(data)
       
       toast({
         title: "Ideas Generated",

@@ -10,20 +10,15 @@ export function ContentAnalyzer() {
       const { data: { user } } = await supabase.auth.getUser()
       if (!user) throw new Error('Not authenticated')
 
-      const response = await fetch('/api/generate-content', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${user.id}`,
-        },
-        body: JSON.stringify({
+      const { data, error } = await supabase.functions.invoke('generate-content', {
+        body: {
           topic: 'business and marketing',
           type: 'trends'
-        }),
+        }
       })
 
-      if (!response.ok) throw new Error('Failed to fetch trends')
-      return response.json()
+      if (error) throw error
+      return data
     },
     refetchInterval: 1000 * 60 * 30, // Refetch every 30 minutes
   })
