@@ -10,18 +10,22 @@ export function ContentAnalyzer() {
       const { data: { user } } = await supabase.auth.getUser()
       if (!user) throw new Error('Not authenticated')
 
-      // This would typically fetch from your trend analysis API
-      // For now, returning mock data
-      return {
-        trending_hashtags: ['#smallbusiness', '#entrepreneurlife', '#startup'],
-        trending_topics: ['Digital Marketing', 'Sustainable Business', 'Remote Work'],
-        competitor_insights: [
-          { topic: 'Customer Service', engagement: 85 },
-          { topic: 'Product Updates', engagement: 72 },
-          { topic: 'Industry News', engagement: 65 }
-        ]
-      }
-    }
+      const response = await fetch('/api/generate-content', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${user.id}`,
+        },
+        body: JSON.stringify({
+          topic: 'business and marketing',
+          type: 'trends'
+        }),
+      })
+
+      if (!response.ok) throw new Error('Failed to fetch trends')
+      return response.json()
+    },
+    refetchInterval: 1000 * 60 * 30, // Refetch every 30 minutes
   })
 
   if (isLoading) {
@@ -46,7 +50,7 @@ export function ContentAnalyzer() {
         </CardHeader>
         <CardContent>
           <ul className="space-y-3">
-            {trends?.trending_topics.map((topic) => (
+            {trends?.trending_topics.map((topic: string) => (
               <li key={topic} className="flex items-center gap-2">
                 <TrendingUp className="h-4 w-4 text-green-500" />
                 <span>{topic}</span>
@@ -68,7 +72,7 @@ export function ContentAnalyzer() {
         </CardHeader>
         <CardContent>
           <div className="flex flex-wrap gap-2">
-            {trends?.trending_hashtags.map((hashtag) => (
+            {trends?.trending_hashtags.map((hashtag: string) => (
               <span
                 key={hashtag}
                 className="px-3 py-1 rounded-full bg-white/10 text-sm"
@@ -92,7 +96,7 @@ export function ContentAnalyzer() {
         </CardHeader>
         <CardContent>
           <div className="space-y-4">
-            {trends?.competitor_insights.map((insight) => (
+            {trends?.competitor_insights.map((insight: { topic: string, engagement: number }) => (
               <div key={insight.topic} className="space-y-2">
                 <div className="flex justify-between text-sm">
                   <span>{insight.topic}</span>

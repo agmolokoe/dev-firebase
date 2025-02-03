@@ -24,17 +24,30 @@ export function ContentGenerator() {
 
     setIsGenerating(true)
     try {
-      // This would typically call your AI service
-      // For now, generating mock ideas
-      const mockIdeas = [
-        `How to optimize your ${topic} strategy for better results`,
-        `5 innovative ways to leverage ${topic} in your business`,
-        `The future of ${topic}: Trends and predictions`,
-        `Case study: Successful ${topic} implementation`,
-        `${topic} tips and tricks for beginners`
-      ]
+      const { data: { user } } = await supabase.auth.getUser()
+      if (!user) throw new Error('Not authenticated')
+
+      const response = await fetch('/api/generate-content', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${user.id}`,
+        },
+        body: JSON.stringify({
+          topic,
+          type: 'ideas'
+        }),
+      })
+
+      if (!response.ok) throw new Error('Failed to generate ideas')
       
-      setIdeas(mockIdeas)
+      const ideas = await response.json()
+      setIdeas(ideas)
+      
+      toast({
+        title: "Ideas Generated",
+        description: "Check out your new content ideas below!",
+      })
     } catch (error) {
       console.error('Error generating ideas:', error)
       toast({
