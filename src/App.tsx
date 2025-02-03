@@ -15,18 +15,16 @@ import { BusinessProfileSetup } from "./components/profile/BusinessProfileSetup"
 
 const queryClient = new QueryClient()
 
-const App = () => {
+function App() {
   const [session, setSession] = useState(null)
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    // Check current session
     supabase.auth.getSession().then(({ data: { session } }) => {
       setSession(session)
       setLoading(false)
     })
 
-    // Listen for auth changes
     const {
       data: { subscription },
     } = supabase.auth.onAuthStateChange((_event, session) => {
@@ -37,7 +35,7 @@ const App = () => {
   }, [])
 
   if (loading) {
-    return null // Or a loading spinner
+    return null
   }
 
   return (
@@ -47,7 +45,6 @@ const App = () => {
         <Sonner />
         <BrowserRouter>
           <Routes>
-            {/* Public routes - accessible when not logged in */}
             <Route
               path="/"
               element={
@@ -70,32 +67,24 @@ const App = () => {
             />
             <Route path="/privacy-policy" element={<PrivacyPolicy />} />
             <Route path="/terms-of-service" element={<TermsOfService />} />
-
-            {/* Protected dashboard routes - require authentication */}
             <Route
               path="/dashboard/*"
               element={
                 session ? <Index /> : <Navigate to="/auth" replace />
               }
             />
-            
-            {/* Profile setup route */}
             <Route
               path="/dashboard/profile/setup"
               element={
                 session ? <BusinessProfileSetup /> : <Navigate to="/auth" replace />
               }
             />
-            
-            {/* Subscription route */}
             <Route
               path="/dashboard/subscription"
               element={
                 session ? <SubscriptionPage /> : <Navigate to="/auth" replace />
               }
             />
-
-            {/* Catch all route */}
             <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>
         </BrowserRouter>
