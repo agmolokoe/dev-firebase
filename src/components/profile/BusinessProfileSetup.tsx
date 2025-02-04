@@ -39,13 +39,34 @@ export function BusinessProfileSetup() {
         throw new Error('No session found');
       }
 
-      const { error } = await supabase
+      // First check if profile exists
+      const { data: existingProfile } = await supabase
         .from('business_profiles')
-        .update({
-          ...formData,
-          updated_at: new Date().toISOString(),
-        })
-        .eq('id', session.user.id);
+        .select('*')
+        .eq('id', session.user.id)
+        .single();
+
+      const profileData = {
+        ...formData,
+        updated_at: new Date().toISOString(),
+      };
+
+      let error;
+
+      if (existingProfile) {
+        // Update existing profile
+        const { error: updateError } = await supabase
+          .from('business_profiles')
+          .update(profileData)
+          .eq('id', session.user.id);
+        error = updateError;
+      } else {
+        // Insert new profile
+        const { error: insertError } = await supabase
+          .from('business_profiles')
+          .insert([{ ...profileData, id: session.user.id }]);
+        error = insertError;
+      }
 
       if (error) throw error;
 
@@ -54,13 +75,16 @@ export function BusinessProfileSetup() {
         description: "Your business profile has been updated successfully",
       });
 
-      navigate('/dashboard');
-    } catch (error) {
+      // Add a small delay before navigation to ensure the toast is visible
+      setTimeout(() => {
+        navigate('/dashboard');
+      }, 1000);
+    } catch (error: any) {
       console.error('Error updating profile:', error);
       toast({
         variant: "destructive",
         title: "Error",
-        description: "Could not update business profile",
+        description: error.message || "Could not update business profile",
       });
     } finally {
       setLoading(false);
@@ -79,101 +103,111 @@ export function BusinessProfileSetup() {
   };
 
   return (
-    <Card className="max-w-2xl mx-auto">
-      <CardHeader>
-        <CardTitle>Complete Your Business Profile</CardTitle>
-      </CardHeader>
-      <CardContent>
-        <form onSubmit={handleSubmit} className="space-y-6">
-          <div className="space-y-2">
-            <Label htmlFor="business_name">Business Name</Label>
-            <Input
-              id="business_name"
-              name="business_name"
-              value={formData.business_name}
-              onChange={handleChange}
-              required
-            />
-          </div>
+    <div className="min-h-screen bg-background p-6">
+      <Card className="max-w-2xl mx-auto">
+        <CardHeader>
+          <CardTitle>Complete Your Business Profile</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <form onSubmit={handleSubmit} className="space-y-6">
+            <div className="space-y-2">
+              <Label htmlFor="business_name">Business Name *</Label>
+              <Input
+                id="business_name"
+                name="business_name"
+                value={formData.business_name}
+                onChange={handleChange}
+                required
+                placeholder="Enter your business name"
+              />
+            </div>
 
-          <div className="space-y-2">
-            <Label htmlFor="industry">Industry</Label>
-            <Select
-              value={formData.industry}
-              onValueChange={handleIndustryChange}
-            >
-              <SelectTrigger>
-                <SelectValue placeholder="Select industry" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="retail">Retail</SelectItem>
-                <SelectItem value="hospitality">Hospitality</SelectItem>
-                <SelectItem value="healthcare">Healthcare</SelectItem>
-                <SelectItem value="technology">Technology</SelectItem>
-                <SelectItem value="manufacturing">Manufacturing</SelectItem>
-                <SelectItem value="education">Education</SelectItem>
-                <SelectItem value="finance">Finance</SelectItem>
-                <SelectItem value="other">Other</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
+            <div className="space-y-2">
+              <Label htmlFor="industry">Industry *</Label>
+              <Select
+                value={formData.industry}
+                onValueChange={handleIndustryChange}
+                required
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="Select industry" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="retail">Retail</SelectItem>
+                  <SelectItem value="hospitality">Hospitality</SelectItem>
+                  <SelectItem value="healthcare">Healthcare</SelectItem>
+                  <SelectItem value="technology">Technology</SelectItem>
+                  <SelectItem value="manufacturing">Manufacturing</SelectItem>
+                  <SelectItem value="education">Education</SelectItem>
+                  <SelectItem value="finance">Finance</SelectItem>
+                  <SelectItem value="other">Other</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
 
-          <div className="space-y-2">
-            <Label htmlFor="contact_email">Contact Email</Label>
-            <Input
-              id="contact_email"
-              name="contact_email"
-              type="email"
-              value={formData.contact_email}
-              onChange={handleChange}
-            />
-          </div>
+            <div className="space-y-2">
+              <Label htmlFor="contact_email">Contact Email *</Label>
+              <Input
+                id="contact_email"
+                name="contact_email"
+                type="email"
+                value={formData.contact_email}
+                onChange={handleChange}
+                required
+                placeholder="Enter contact email"
+              />
+            </div>
 
-          <div className="space-y-2">
-            <Label htmlFor="contact_phone">Contact Phone</Label>
-            <Input
-              id="contact_phone"
-              name="contact_phone"
-              value={formData.contact_phone}
-              onChange={handleChange}
-            />
-          </div>
+            <div className="space-y-2">
+              <Label htmlFor="contact_phone">Contact Phone</Label>
+              <Input
+                id="contact_phone"
+                name="contact_phone"
+                value={formData.contact_phone}
+                onChange={handleChange}
+                placeholder="Enter contact phone"
+              />
+            </div>
 
-          <div className="space-y-2">
-            <Label htmlFor="business_address">Business Address</Label>
-            <Textarea
-              id="business_address"
-              name="business_address"
-              value={formData.business_address}
-              onChange={handleChange}
-            />
-          </div>
+            <div className="space-y-2">
+              <Label htmlFor="business_address">Business Address</Label>
+              <Textarea
+                id="business_address"
+                name="business_address"
+                value={formData.business_address}
+                onChange={handleChange}
+                placeholder="Enter business address"
+              />
+            </div>
 
-          <div className="space-y-2">
-            <Label htmlFor="business_description">Business Description</Label>
-            <Textarea
-              id="business_description"
-              name="business_description"
-              value={formData.business_description}
-              onChange={handleChange}
-            />
-          </div>
+            <div className="space-y-2">
+              <Label htmlFor="business_description">Business Description</Label>
+              <Textarea
+                id="business_description"
+                name="business_description"
+                value={formData.business_description}
+                onChange={handleChange}
+                placeholder="Describe your business"
+              />
+            </div>
 
-          <div className="space-y-2">
-            <Label htmlFor="website_url">Website URL</Label>
-            <Input
-              id="website_url"
-              name="website_url"
-              value={formData.website_url}
-              onChange={handleChange}
-            />
-          </div>
+            <div className="space-y-2">
+              <Label htmlFor="website_url">Website URL</Label>
+              <Input
+                id="website_url"
+                name="website_url"
+                value={formData.website_url}
+                onChange={handleChange}
+                placeholder="Enter website URL"
+              />
+            </div>
 
-          <Button type="submit" disabled={loading}>
-            {loading ? "Saving..." : "Save Profile"}
-          </Button>
-        </form>
-      </CardContent>
-    </Card>
+            <Button type="submit" disabled={loading} className="w-full">
+              {loading ? "Saving..." : "Save Profile"}
+            </Button>
+          </form>
+        </CardContent>
+      </Card>
+    </div>
   );
 }
