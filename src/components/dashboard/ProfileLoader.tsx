@@ -40,7 +40,7 @@ export function ProfileLoader({ children }: { children: React.ReactNode }) {
         }
         
         if (!data) {
-          setError('No business profile found');
+          console.log('No business profile found, redirecting to setup');
           toast({
             title: "Profile Setup Required",
             description: "Please complete your business profile setup",
