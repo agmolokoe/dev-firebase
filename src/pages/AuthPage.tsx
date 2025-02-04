@@ -48,7 +48,7 @@ export default function AuthPage({ mode }: { mode: "login" | "signup" }) {
               },
             }}
             theme="dark"
-            providers={[]}
+            providers={["google"]}
             redirectTo={`${window.location.origin}/dashboard`}
             {...(mode === "signup" && {
               options: {

@@ -11,6 +11,9 @@ function useAuthState() {
     const {
       data: { subscription },
     } = supabase.auth.onAuthStateChange(async (event, session) => {
+      console.log("Auth event:", event);
+      console.log("Session:", session);
+
       if (event === "SIGNED_IN" && session) {
         navigate("/dashboard");
       }
