@@ -3,17 +3,10 @@ import { useNavigate } from "react-router-dom";
 import { supabase } from "@/lib/supabase";
 import { useToast } from "@/hooks/use-toast";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { BusinessBasicInfo } from "./BusinessBasicInfo";
+import { BusinessContactInfo } from "./BusinessContactInfo";
+import { BusinessDetails } from "./BusinessDetails";
 
 export function BusinessProfileSetup() {
   const navigate = useNavigate();
@@ -39,7 +32,6 @@ export function BusinessProfileSetup() {
         throw new Error('No session found');
       }
 
-      // First check if profile exists
       const { data: existingProfile } = await supabase
         .from('business_profiles')
         .select('*')
@@ -54,14 +46,12 @@ export function BusinessProfileSetup() {
       let error;
 
       if (existingProfile) {
-        // Update existing profile
         const { error: updateError } = await supabase
           .from('business_profiles')
           .update(profileData)
           .eq('id', session.user.id);
         error = updateError;
       } else {
-        // Insert new profile
         const { error: insertError } = await supabase
           .from('business_profiles')
           .insert([{ ...profileData, id: session.user.id }]);
@@ -75,7 +65,6 @@ export function BusinessProfileSetup() {
         description: "Your business profile has been updated successfully",
       });
 
-      // Add a small delay before navigation to ensure the toast is visible
       setTimeout(() => {
         navigate('/dashboard');
       }, 1000);
@@ -92,14 +81,10 @@ export function BusinessProfileSetup() {
   };
 
   const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+    name: string,
+    value: string
   ) => {
-    const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
-  };
-
-  const handleIndustryChange = (value: string) => {
-    setFormData((prev) => ({ ...prev, industry: value }));
   };
 
   return (
@@ -110,97 +95,28 @@ export function BusinessProfileSetup() {
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSubmit} className="space-y-6">
-            <div className="space-y-2">
-              <Label htmlFor="business_name">Business Name *</Label>
-              <Input
-                id="business_name"
-                name="business_name"
-                value={formData.business_name}
-                onChange={handleChange}
-                required
-                placeholder="Enter your business name"
-              />
-            </div>
+            <BusinessBasicInfo
+              businessName={formData.business_name}
+              industry={formData.industry}
+              onBusinessNameChange={(e) => handleChange('business_name', e.target.value)}
+              onIndustryChange={(value) => handleChange('industry', value)}
+            />
 
-            <div className="space-y-2">
-              <Label htmlFor="industry">Industry *</Label>
-              <Select
-                value={formData.industry}
-                onValueChange={handleIndustryChange}
-                required
-              >
-                <SelectTrigger>
-                  <SelectValue placeholder="Select industry" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="retail">Retail</SelectItem>
-                  <SelectItem value="hospitality">Hospitality</SelectItem>
-                  <SelectItem value="healthcare">Healthcare</SelectItem>
-                  <SelectItem value="technology">Technology</SelectItem>
-                  <SelectItem value="manufacturing">Manufacturing</SelectItem>
-                  <SelectItem value="education">Education</SelectItem>
-                  <SelectItem value="finance">Finance</SelectItem>
-                  <SelectItem value="other">Other</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
+            <BusinessContactInfo
+              contactEmail={formData.contact_email}
+              contactPhone={formData.contact_phone}
+              businessAddress={formData.business_address}
+              onContactEmailChange={(e) => handleChange('contact_email', e.target.value)}
+              onContactPhoneChange={(e) => handleChange('contact_phone', e.target.value)}
+              onBusinessAddressChange={(e) => handleChange('business_address', e.target.value)}
+            />
 
-            <div className="space-y-2">
-              <Label htmlFor="contact_email">Contact Email *</Label>
-              <Input
-                id="contact_email"
-                name="contact_email"
-                type="email"
-                value={formData.contact_email}
-                onChange={handleChange}
-                required
-                placeholder="Enter contact email"
-              />
-            </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="contact_phone">Contact Phone</Label>
-              <Input
-                id="contact_phone"
-                name="contact_phone"
-                value={formData.contact_phone}
-                onChange={handleChange}
-                placeholder="Enter contact phone"
-              />
-            </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="business_address">Business Address</Label>
-              <Textarea
-                id="business_address"
-                name="business_address"
-                value={formData.business_address}
-                onChange={handleChange}
-                placeholder="Enter business address"
-              />
-            </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="business_description">Business Description</Label>
-              <Textarea
-                id="business_description"
-                name="business_description"
-                value={formData.business_description}
-                onChange={handleChange}
-                placeholder="Describe your business"
-              />
-            </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="website_url">Website URL</Label>
-              <Input
-                id="website_url"
-                name="website_url"
-                value={formData.website_url}
-                onChange={handleChange}
-                placeholder="Enter website URL"
-              />
-            </div>
+            <BusinessDetails
+              businessDescription={formData.business_description}
+              websiteUrl={formData.website_url}
+              onBusinessDescriptionChange={(e) => handleChange('business_description', e.target.value)}
+              onWebsiteUrlChange={(e) => handleChange('website_url', e.target.value)}
+            />
 
             <Button type="submit" disabled={loading} className="w-full">
               {loading ? "Saving..." : "Save Profile"}
