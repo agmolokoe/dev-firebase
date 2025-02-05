@@ -359,6 +359,5 @@ export function ContentPlanner() {
         </div>
       )}
     </div>
-  </div>
   )
 }
