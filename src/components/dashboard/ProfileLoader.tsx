@@ -1,5 +1,6 @@
+
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { supabase } from "@/lib/supabase";
 import { useToast } from "@/hooks/use-toast";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -11,6 +12,7 @@ export function ProfileLoader({ children }: { children: React.ReactNode }) {
   const [error, setError] = useState<string | null>(null);
   const navigate = useNavigate();
   const { toast } = useToast();
+  const location = useLocation();
 
   useEffect(() => {
     const fetchBusinessProfile = async () => {
@@ -22,6 +24,12 @@ export function ProfileLoader({ children }: { children: React.ReactNode }) {
           return;
         }
         
+        // Skip profile check if we're already on the setup page
+        if (location.pathname === '/dashboard/profile/setup') {
+          setLoading(false);
+          return;
+        }
+
         const { data, error } = await supabase
           .from('business_profiles')
           .select('*')
@@ -39,7 +47,7 @@ export function ProfileLoader({ children }: { children: React.ReactNode }) {
           return;
         }
         
-        if (!data) {
+        if (!data && !location.pathname.includes('/profile/setup')) {
           console.log('No business profile found, redirecting to setup');
           toast({
             title: "Profile Setup Required",
@@ -60,7 +68,7 @@ export function ProfileLoader({ children }: { children: React.ReactNode }) {
     };
 
     fetchBusinessProfile();
-  }, [navigate, toast]);
+  }, [navigate, toast, location.pathname]);
 
   if (loading) {
     return (

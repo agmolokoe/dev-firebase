@@ -1,4 +1,5 @@
-import { useState } from "react";
+
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/lib/supabase";
 import { useToast } from "@/hooks/use-toast";
@@ -21,6 +22,20 @@ export function BusinessProfileSetup() {
     business_description: "",
     website_url: "",
   });
+
+  // Pre-fill email from the user's session
+  useEffect(() => {
+    const getSession = async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (session?.user?.email) {
+        setFormData(prev => ({
+          ...prev,
+          contact_email: session.user.email
+        }));
+      }
+    };
+    getSession();
+  }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -65,9 +80,8 @@ export function BusinessProfileSetup() {
         description: "Your business profile has been updated successfully",
       });
 
-      setTimeout(() => {
-        navigate('/dashboard');
-      }, 1000);
+      // Navigate to the main dashboard immediately after successful save
+      navigate('/dashboard');
     } catch (error: any) {
       console.error('Error updating profile:', error);
       toast({
@@ -85,6 +99,10 @@ export function BusinessProfileSetup() {
     value: string
   ) => {
     setFormData((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const handleSkip = () => {
+    navigate('/dashboard');
   };
 
   return (
@@ -118,9 +136,14 @@ export function BusinessProfileSetup() {
               onWebsiteUrlChange={(e) => handleChange('website_url', e.target.value)}
             />
 
-            <Button type="submit" disabled={loading} className="w-full">
-              {loading ? "Saving..." : "Save Profile"}
-            </Button>
+            <div className="flex gap-4">
+              <Button type="submit" disabled={loading} className="flex-1">
+                {loading ? "Saving..." : "Save Profile"}
+              </Button>
+              <Button type="button" variant="outline" onClick={handleSkip} className="flex-1">
+                Skip for Now
+              </Button>
+            </div>
           </form>
         </CardContent>
       </Card>
