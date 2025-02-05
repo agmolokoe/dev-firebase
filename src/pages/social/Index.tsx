@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react"
 import { useToast } from "@/hooks/use-toast"
 import { supabase } from "@/lib/supabase"
@@ -5,6 +6,7 @@ import { WhatsAppForm } from "@/components/social/WhatsAppForm"
 import { InstagramForm } from "@/components/social/InstagramForm"
 import { ContentAnalyzer } from "@/components/social/ContentAnalyzer"
 import { ContentGenerator } from "@/components/social/ContentGenerator"
+import { ContentPlanner } from "@/components/social/ContentPlanner"
 import { SocialConnection } from "@/types/social"
 import { DashboardLayout } from "@/components/DashboardLayout"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
@@ -100,6 +102,16 @@ export default function SocialPage() {
           <ContentAnalyzer />
           <ContentGenerator />
         </div>
+
+        {/* Content Planner */}
+        <Card className="bg-black text-white border-white/10">
+          <CardHeader>
+            <CardTitle>Content Planning</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <ContentPlanner />
+          </CardContent>
+        </Card>
 
         {/* Current Connections */}
         <Card className="bg-black text-white border-white/10">

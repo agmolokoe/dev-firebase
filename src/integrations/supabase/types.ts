@@ -81,6 +81,51 @@ export type Database = {
         }
         Relationships: []
       }
+      content_plans: {
+        Row: {
+          content_type: string
+          created_at: string | null
+          description: string | null
+          hashtags: string[] | null
+          id: string
+          media_url: string[] | null
+          platform: string
+          scheduled_for: string | null
+          status: Database["public"]["Enums"]["content_status"] | null
+          title: string
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          content_type: string
+          created_at?: string | null
+          description?: string | null
+          hashtags?: string[] | null
+          id?: string
+          media_url?: string[] | null
+          platform: string
+          scheduled_for?: string | null
+          status?: Database["public"]["Enums"]["content_status"] | null
+          title: string
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          content_type?: string
+          created_at?: string | null
+          description?: string | null
+          hashtags?: string[] | null
+          id?: string
+          media_url?: string[] | null
+          platform?: string
+          scheduled_for?: string | null
+          status?: Database["public"]["Enums"]["content_status"] | null
+          title?: string
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
       customers: {
         Row: {
           business_id: string | null
@@ -306,6 +351,7 @@ export type Database = {
         | "education"
         | "finance"
         | "other"
+      content_status: "draft" | "scheduled" | "published" | "failed"
       subscription_tier: "free" | "basic" | "premium"
     }
     CompositeTypes: {
