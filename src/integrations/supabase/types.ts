@@ -250,6 +250,9 @@ export type Database = {
           handle: string
           id: string
           platform: string
+          tiktok_access_token: string | null
+          tiktok_refresh_token: string | null
+          tiktok_user_id: string | null
           user_id: string
         }
         Insert: {
@@ -257,6 +260,9 @@ export type Database = {
           handle: string
           id?: string
           platform: string
+          tiktok_access_token?: string | null
+          tiktok_refresh_token?: string | null
+          tiktok_user_id?: string | null
           user_id: string
         }
         Update: {
@@ -264,6 +270,9 @@ export type Database = {
           handle?: string
           id?: string
           platform?: string
+          tiktok_access_token?: string | null
+          tiktok_refresh_token?: string | null
+          tiktok_user_id?: string | null
           user_id?: string
         }
         Relationships: []
