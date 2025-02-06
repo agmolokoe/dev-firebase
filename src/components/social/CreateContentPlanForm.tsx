@@ -36,7 +36,7 @@ import { Textarea } from "@/components/ui/textarea"
 import { UseFormReturn } from "react-hook-form"
 import { ContentPlanFormData } from "@/types/content"
 import { UseMutationResult } from "@tanstack/react-query"
-import { addDays, startOfToday } from "date-fns"
+import { addDays, startOfToday, endOfDay } from "date-fns"
 
 interface CreateContentPlanFormProps {
   form: UseFormReturn<ContentPlanFormData>
@@ -53,21 +53,36 @@ const contentSuggestions = {
       "Customer success story or testimonial",
       "Product feature highlight",
       "Industry tips and tricks",
-      "Team spotlight"
+      "Team spotlight",
+      "User-generated content showcase",
+      "New product launch announcement",
+      "Company milestone celebration",
+      "Educational how-to post",
+      "Industry news commentary"
     ],
     story: [
       "Quick product demo",
       "Poll your audience",
       "Share daily updates",
       "Quick tips",
-      "Q&A session"
+      "Q&A session",
+      "Flash sale announcement",
+      "Behind-the-scenes moment",
+      "Customer shoutout",
+      "New arrival preview",
+      "Team member takeover"
     ],
     reel: [
       "Tutorial or how-to video",
       "Product showcase",
       "Day in the life",
       "Before and after transformation",
-      "Trending audio/challenge participation"
+      "Trending audio/challenge participation",
+      "Customer testimonial video",
+      "Time-lapse process video",
+      "Industry tips in 30 seconds",
+      "Brand story highlight",
+      "Team culture showcase"
     ]
   },
   tiktok: {
@@ -76,8 +91,24 @@ const contentSuggestions = {
       "Quick tutorial",
       "Behind the scenes",
       "Product demonstration",
-      "Day in the life content"
+      "Day in the life content",
+      "Industry hacks and tips",
+      "Customer reviews compilation",
+      "Company culture highlight",
+      "Fun facts about your industry",
+      "Product unboxing"
     ]
+  }
+}
+
+const hashtagSuggestions = {
+  instagram: {
+    post: ["#smallbusiness", "#entrepreneurlife", "#businessgrowth", "#marketing"],
+    story: ["#behindthescenes", "#sneak peek", "#comingsoon", "#exclusive"],
+    reel: ["#trending", "#viral", "#reelsinstagram", "#creativecontent"]
+  },
+  tiktok: {
+    post: ["#fyp", "#viral", "#business", "#smallbusiness", "#entrepreneur"]
   }
 }
 
@@ -93,11 +124,13 @@ export function CreateContentPlanForm({
     const contentType = form.getValues("content_type")
     
     const suggestions = contentSuggestions[platform as keyof typeof contentSuggestions]?.[contentType as keyof (typeof contentSuggestions)['instagram' | 'tiktok']] || []
+    const hashtags = hashtagSuggestions[platform as keyof typeof hashtagSuggestions]?.[contentType as keyof (typeof hashtagSuggestions)['instagram' | 'tiktok']] || []
     
     if (suggestions.length > 0) {
       const randomSuggestion = suggestions[Math.floor(Math.random() * suggestions.length)]
       form.setValue("title", randomSuggestion)
       form.setValue("description", `Content plan for: ${randomSuggestion}`)
+      form.setValue("hashtags", hashtags)
     }
   }
 
@@ -123,7 +156,11 @@ export function CreateContentPlanForm({
                   <FormItem className="flex-1 mr-2">
                     <FormLabel>Platform</FormLabel>
                     <Select
-                      onValueChange={field.onChange}
+                      onValueChange={(value) => {
+                        field.onChange(value)
+                        // Reset content type when platform changes
+                        form.setValue("content_type", "post")
+                      }}
                       defaultValue={field.value}
                     >
                       <FormControl>
@@ -158,8 +195,12 @@ export function CreateContentPlanForm({
                       </FormControl>
                       <SelectContent className="bg-black border-white/10">
                         <SelectItem value="post">Post</SelectItem>
-                        <SelectItem value="story">Story</SelectItem>
-                        <SelectItem value="reel">Reel</SelectItem>
+                        {form.getValues("platform") === "instagram" && (
+                          <>
+                            <SelectItem value="story">Story</SelectItem>
+                            <SelectItem value="reel">Reel</SelectItem>
+                          </>
+                        )}
                       </SelectContent>
                     </Select>
                     <FormMessage />
@@ -232,9 +273,9 @@ export function CreateContentPlanForm({
                           )}
                         >
                           {field.value ? (
-                            format(new Date(field.value), "PPP")
+                            format(new Date(field.value), "PPP 'at' p")
                           ) : (
-                            <span>Pick a date</span>
+                            <span>Pick a date and time</span>
                           )}
                           <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
                         </Button>
@@ -244,9 +285,17 @@ export function CreateContentPlanForm({
                       <Calendar
                         mode="single"
                         selected={field.value ? new Date(field.value) : undefined}
-                        onSelect={(date) => field.onChange(date?.toISOString())}
+                        onSelect={(date) => {
+                          if (date) {
+                            // Set time to current time when selecting a date
+                            const now = new Date()
+                            date.setHours(now.getHours())
+                            date.setMinutes(now.getMinutes())
+                            field.onChange(date.toISOString())
+                          }
+                        }}
                         disabled={(date) =>
-                          date < startOfToday() || date > addDays(new Date(), 90)
+                          date < startOfToday() || date > endOfDay(addDays(new Date(), 90))
                         }
                         initialFocus
                       />
@@ -266,9 +315,9 @@ export function CreateContentPlanForm({
                   <FormControl>
                     <Input
                       placeholder="Enter hashtags (comma-separated)"
-                      {...field}
-                      className="bg-white/5 border-white/10"
+                      value={field.value?.join(', ')}
                       onChange={(e) => field.onChange(e.target.value.split(',').map(tag => tag.trim()))}
+                      className="bg-white/5 border-white/10"
                     />
                   </FormControl>
                   <FormMessage />
@@ -289,4 +338,3 @@ export function CreateContentPlanForm({
     </Dialog>
   )
 }
-
