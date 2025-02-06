@@ -8,6 +8,7 @@ import { BusinessNameInput } from "@/components/auth/BusinessNameInput";
 import { AuthError } from "@/components/auth/AuthError";
 import useAuthState from "@/hooks/useAuthState";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { getAuthErrorMessage } from "@/utils/auth-errors";
 
 export default function AuthPage({ mode }: { mode: "login" | "signup" }) {
   const { errorMessage, setErrorMessage } = useAuthState();
@@ -59,10 +60,6 @@ export default function AuthPage({ mode }: { mode: "login" | "signup" }) {
                 },
               },
             })}
-            onError={(error) => {
-              console.error("Auth error:", error);
-              setErrorMessage(getAuthErrorMessage(error));
-            }}
           />
           <p className="mt-4 text-sm text-gray-400 text-center">
             {mode === "login" ? (
