@@ -1,3 +1,4 @@
+
 import { AuthError, AuthApiError } from "@supabase/supabase-js";
 
 export const getAuthErrorMessage = (error: AuthError) => {
@@ -5,7 +6,7 @@ export const getAuthErrorMessage = (error: AuthError) => {
     switch (error.status) {
       case 400:
         if (error.message.includes("invalid_credentials")) {
-          return "Invalid email or password. Please check your credentials and try again.";
+          return "Invalid email or password. Please check your credentials and try again. If you haven't registered yet, please sign up first.";
         }
         return "Invalid request. Please check your input and try again.";
       case 422:

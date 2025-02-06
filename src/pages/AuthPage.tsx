@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { Auth } from "@supabase/auth-ui-react";
 import { ThemeSupa } from "@supabase/auth-ui-shared";
@@ -6,6 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { BusinessNameInput } from "@/components/auth/BusinessNameInput";
 import { AuthError } from "@/components/auth/AuthError";
 import useAuthState from "@/hooks/useAuthState";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 export default function AuthPage({ mode }: { mode: "login" | "signup" }) {
   const { errorMessage, setErrorMessage } = useAuthState();
@@ -57,7 +59,28 @@ export default function AuthPage({ mode }: { mode: "login" | "signup" }) {
                 },
               },
             })}
+            onError={(error) => {
+              console.error("Auth error:", error);
+              setErrorMessage(getAuthErrorMessage(error));
+            }}
           />
+          <p className="mt-4 text-sm text-gray-400 text-center">
+            {mode === "login" ? (
+              <>
+                Don't have an account?{" "}
+                <a href="/auth?mode=signup" className="text-white hover:underline">
+                  Sign up
+                </a>
+              </>
+            ) : (
+              <>
+                Already have an account?{" "}
+                <a href="/auth?mode=login" className="text-white hover:underline">
+                  Log in
+                </a>
+              </>
+            )}
+          </p>
         </CardContent>
       </Card>
     </div>
