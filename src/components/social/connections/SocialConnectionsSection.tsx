@@ -1,3 +1,4 @@
+
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { WhatsAppForm } from "../WhatsAppForm"
 import { InstagramForm } from "../InstagramForm"
@@ -6,18 +7,56 @@ import { SocialConnection } from "@/types/social"
 import { Button } from "@/components/ui/button"
 import { AlertDialog, AlertDialogTrigger, AlertDialogContent, AlertDialogHeader, AlertDialogTitle, AlertDialogDescription, AlertDialogFooter, AlertDialogCancel, AlertDialogAction } from "@/components/ui/alert-dialog"
 import { Trash2 } from "lucide-react"
+import { Skeleton } from "@/components/ui/skeleton"
 
 interface SocialConnectionsSectionProps {
   connections: SocialConnection[]
   onConnect: () => void
   onDeleteConnection: (id: string) => Promise<void>
+  isLoading: boolean
 }
 
 export function SocialConnectionsSection({
   connections,
   onConnect,
   onDeleteConnection,
+  isLoading,
 }: SocialConnectionsSectionProps) {
+  if (isLoading) {
+    return (
+      <div className="space-y-6">
+        <Card className="bg-black text-white border-white/10">
+          <CardHeader>
+            <CardTitle>Connected Accounts</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-4">
+              {[1, 2].map((i) => (
+                <div key={i} className="flex items-center justify-between p-4 rounded-lg bg-white/5">
+                  <Skeleton className="h-12 w-48 bg-white/5" />
+                  <Skeleton className="h-8 w-8 bg-white/5" />
+                </div>
+              ))}
+            </div>
+          </CardContent>
+        </Card>
+
+        <div className="grid gap-6 md:grid-cols-3">
+          {[1, 2, 3].map((i) => (
+            <Card key={i} className="bg-black text-white border-white/10">
+              <CardHeader>
+                <Skeleton className="h-6 w-32 bg-white/5" />
+              </CardHeader>
+              <CardContent>
+                <Skeleton className="h-32 w-full bg-white/5" />
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+      </div>
+    )
+  }
+
   return (
     <div className="space-y-6">
       <Card className="bg-black text-white border-white/10">
