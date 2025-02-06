@@ -36,7 +36,25 @@ function useAuthState() {
       }
     });
 
-    return () => subscription.unsubscribe();
+    // Listen for auth errors
+    const handleAuthError = (error: any) => {
+      const message = getAuthErrorMessage(error);
+      setErrorMessage(message);
+      toast.error(message);
+    };
+
+    // Subscribe to auth errors
+    const { data: authListener } = supabase.auth.onAuthStateChange((event, session) => {
+      if (event === "PASSWORD_RECOVERY_ERROR" || event === "SIGN_IN_ERROR" || event === "SIGN_UP_ERROR") {
+        console.error("Auth error event:", event);
+        handleAuthError(session);
+      }
+    });
+
+    return () => {
+      subscription.unsubscribe();
+      if (authListener) authListener.unsubscribe();
+    };
   }, [navigate]);
 
   return { errorMessage, setErrorMessage };

@@ -7,8 +7,6 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { BusinessNameInput } from "@/components/auth/BusinessNameInput";
 import { AuthError } from "@/components/auth/AuthError";
 import useAuthState from "@/hooks/useAuthState";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { getAuthErrorMessage } from "@/utils/auth-errors";
 
 export default function AuthPage({ mode }: { mode: "login" | "signup" }) {
   const { errorMessage, setErrorMessage } = useAuthState();
@@ -53,10 +51,6 @@ export default function AuthPage({ mode }: { mode: "login" | "signup" }) {
             theme="dark"
             providers={["google"]}
             redirectTo={`${window.location.origin}/dashboard`}
-            onAuthError={(error) => {
-              console.error("Auth error:", error);
-              setErrorMessage(getAuthErrorMessage(error));
-            }}
             {...(mode === "signup" && {
               options: {
                 data: {
