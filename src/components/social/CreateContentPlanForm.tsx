@@ -1,6 +1,6 @@
 
 import { format } from "date-fns"
-import { Calendar as CalendarIcon, Plus } from "lucide-react"
+import { Calendar as CalendarIcon, Plus, Wand2 } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
 import { Calendar } from "@/components/ui/calendar"
@@ -36,6 +36,7 @@ import { Textarea } from "@/components/ui/textarea"
 import { UseFormReturn } from "react-hook-form"
 import { ContentPlanFormData } from "@/types/content"
 import { UseMutationResult } from "@tanstack/react-query"
+import { addDays, startOfToday } from "date-fns"
 
 interface CreateContentPlanFormProps {
   form: UseFormReturn<ContentPlanFormData>
@@ -45,6 +46,41 @@ interface CreateContentPlanFormProps {
   onSubmit: (data: ContentPlanFormData) => void
 }
 
+const contentSuggestions = {
+  instagram: {
+    post: [
+      "Share a behind-the-scenes look at your business",
+      "Customer success story or testimonial",
+      "Product feature highlight",
+      "Industry tips and tricks",
+      "Team spotlight"
+    ],
+    story: [
+      "Quick product demo",
+      "Poll your audience",
+      "Share daily updates",
+      "Quick tips",
+      "Q&A session"
+    ],
+    reel: [
+      "Tutorial or how-to video",
+      "Product showcase",
+      "Day in the life",
+      "Before and after transformation",
+      "Trending audio/challenge participation"
+    ]
+  },
+  tiktok: {
+    post: [
+      "Trending challenge participation",
+      "Quick tutorial",
+      "Behind the scenes",
+      "Product demonstration",
+      "Day in the life content"
+    ]
+  }
+}
+
 export function CreateContentPlanForm({
   form,
   isOpen,
@@ -52,6 +88,19 @@ export function CreateContentPlanForm({
   createContentPlan,
   onSubmit
 }: CreateContentPlanFormProps) {
+  const generateSuggestion = () => {
+    const platform = form.getValues("platform")
+    const contentType = form.getValues("content_type")
+    
+    const suggestions = contentSuggestions[platform as keyof typeof contentSuggestions]?.[contentType as keyof (typeof contentSuggestions)['instagram' | 'tiktok']] || []
+    
+    if (suggestions.length > 0) {
+      const randomSuggestion = suggestions[Math.floor(Math.random() * suggestions.length)]
+      form.setValue("title", randomSuggestion)
+      form.setValue("description", `Content plan for: ${randomSuggestion}`)
+    }
+  }
+
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogTrigger asChild>
@@ -66,74 +115,87 @@ export function CreateContentPlanForm({
         </DialogHeader>
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-            <FormField
-              control={form.control}
-              name="platform"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Platform</FormLabel>
-                  <Select
-                    onValueChange={field.onChange}
-                    defaultValue={field.value}
-                  >
-                    <FormControl>
-                      <SelectTrigger className="bg-white/5 border-white/10">
-                        <SelectValue placeholder="Select platform" />
-                      </SelectTrigger>
-                    </FormControl>
-                    <SelectContent className="bg-black border-white/10">
-                      <SelectItem value="instagram">Instagram</SelectItem>
-                      <SelectItem value="tiktok">TikTok</SelectItem>
-                    </SelectContent>
-                  </Select>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+            <div className="flex items-center justify-between">
+              <FormField
+                control={form.control}
+                name="platform"
+                render={({ field }) => (
+                  <FormItem className="flex-1 mr-2">
+                    <FormLabel>Platform</FormLabel>
+                    <Select
+                      onValueChange={field.onChange}
+                      defaultValue={field.value}
+                    >
+                      <FormControl>
+                        <SelectTrigger className="bg-white/5 border-white/10">
+                          <SelectValue placeholder="Select platform" />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent className="bg-black border-white/10">
+                        <SelectItem value="instagram">Instagram</SelectItem>
+                        <SelectItem value="tiktok">TikTok</SelectItem>
+                      </SelectContent>
+                    </Select>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
 
-            <FormField
-              control={form.control}
-              name="content_type"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Content Type</FormLabel>
-                  <Select
-                    onValueChange={field.onChange}
-                    defaultValue={field.value}
-                  >
-                    <FormControl>
-                      <SelectTrigger className="bg-white/5 border-white/10">
-                        <SelectValue placeholder="Select content type" />
-                      </SelectTrigger>
-                    </FormControl>
-                    <SelectContent className="bg-black border-white/10">
-                      <SelectItem value="post">Post</SelectItem>
-                      <SelectItem value="story">Story</SelectItem>
-                      <SelectItem value="reel">Reel</SelectItem>
-                    </SelectContent>
-                  </Select>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+              <FormField
+                control={form.control}
+                name="content_type"
+                render={({ field }) => (
+                  <FormItem className="flex-1">
+                    <FormLabel>Content Type</FormLabel>
+                    <Select
+                      onValueChange={field.onChange}
+                      defaultValue={field.value}
+                    >
+                      <FormControl>
+                        <SelectTrigger className="bg-white/5 border-white/10">
+                          <SelectValue placeholder="Select content type" />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent className="bg-black border-white/10">
+                        <SelectItem value="post">Post</SelectItem>
+                        <SelectItem value="story">Story</SelectItem>
+                        <SelectItem value="reel">Reel</SelectItem>
+                      </SelectContent>
+                    </Select>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
 
-            <FormField
-              control={form.control}
-              name="title"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Title</FormLabel>
-                  <FormControl>
-                    <Input
-                      placeholder="Enter title"
-                      {...field}
-                      className="bg-white/5 border-white/10"
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+            <div className="flex items-end gap-2">
+              <FormField
+                control={form.control}
+                name="title"
+                render={({ field }) => (
+                  <FormItem className="flex-1">
+                    <FormLabel>Title</FormLabel>
+                    <FormControl>
+                      <Input
+                        placeholder="Enter title"
+                        {...field}
+                        className="bg-white/5 border-white/10"
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <Button
+                type="button"
+                variant="outline"
+                onClick={generateSuggestion}
+                className="bg-white/5 border-white/10 hover:bg-white/10"
+              >
+                <Wand2 className="h-4 w-4 mr-2" />
+                Suggest
+              </Button>
+            </div>
 
             <FormField
               control={form.control}
@@ -184,7 +246,7 @@ export function CreateContentPlanForm({
                         selected={field.value ? new Date(field.value) : undefined}
                         onSelect={(date) => field.onChange(date?.toISOString())}
                         disabled={(date) =>
-                          date < new Date(new Date().setHours(0, 0, 0, 0))
+                          date < startOfToday() || date > addDays(new Date(), 90)
                         }
                         initialFocus
                       />
@@ -206,7 +268,7 @@ export function CreateContentPlanForm({
                       placeholder="Enter hashtags (comma-separated)"
                       {...field}
                       className="bg-white/5 border-white/10"
-                      onChange={(e) => field.onChange(e.target.value.split(','))}
+                      onChange={(e) => field.onChange(e.target.value.split(',').map(tag => tag.trim()))}
                     />
                   </FormControl>
                   <FormMessage />
@@ -227,3 +289,4 @@ export function CreateContentPlanForm({
     </Dialog>
   )
 }
+

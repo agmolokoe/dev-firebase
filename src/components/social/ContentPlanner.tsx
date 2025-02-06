@@ -7,6 +7,8 @@ import { ContentPlan, ContentPlanFormData } from "@/types/content"
 import { useForm } from "react-hook-form"
 import { CreateContentPlanForm } from "./CreateContentPlanForm"
 import { ContentPlanList } from "./ContentPlanList"
+import { Button } from "@/components/ui/button"
+import { Plus } from "lucide-react"
 
 export function ContentPlanner() {
   const [isOpen, setIsOpen] = useState(false)
@@ -20,15 +22,20 @@ export function ContentPlanner() {
       title: "",
       description: "",
       hashtags: [],
+      scheduled_for: new Date().toISOString(),
     },
   })
 
   const { data: contentPlans, isLoading } = useQuery({
     queryKey: ['content-plans'],
     queryFn: async () => {
+      const { data: { user } } = await supabase.auth.getUser()
+      if (!user) throw new Error('User not authenticated')
+
       const { data, error } = await supabase
         .from('content_plans')
         .select('*')
+        .eq('user_id', user.id)
         .order('scheduled_for', { ascending: true })
 
       if (error) throw error
@@ -38,10 +45,14 @@ export function ContentPlanner() {
 
   const createContentPlan = useMutation({
     mutationFn: async (data: ContentPlanFormData) => {
+      const { data: { user } } = await supabase.auth.getUser()
+      if (!user) throw new Error('User not authenticated')
+
       const { error } = await supabase
         .from('content_plans')
         .insert([{
           ...data,
+          user_id: user.id,
           status: 'draft',
           hashtags: data.hashtags?.join(',').split(',').map(tag => tag.trim()) || [],
         }])
@@ -98,7 +109,10 @@ export function ContentPlanner() {
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
-        <h2 className="text-lg font-semibold">Content Planner</h2>
+        <div>
+          <h2 className="text-lg font-semibold">Content Planner</h2>
+          <p className="text-sm text-white/60">Plan and schedule your social media content</p>
+        </div>
         <CreateContentPlanForm
           form={form}
           isOpen={isOpen}
@@ -116,3 +130,4 @@ export function ContentPlanner() {
     </div>
   )
 }
+
