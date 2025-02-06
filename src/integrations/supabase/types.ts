@@ -128,7 +128,7 @@ export type Database = {
       }
       customers: {
         Row: {
-          business_id: string | null
+          business_id: string
           created_at: string | null
           email: string
           id: number
@@ -136,7 +136,7 @@ export type Database = {
           phone: string | null
         }
         Insert: {
-          business_id?: string | null
+          business_id: string
           created_at?: string | null
           email: string
           id?: number
@@ -144,7 +144,7 @@ export type Database = {
           phone?: string | null
         }
         Update: {
-          business_id?: string | null
+          business_id?: string
           created_at?: string | null
           email?: string
           id?: number
@@ -159,31 +159,45 @@ export type Database = {
             referencedRelation: "business_profiles"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "fk_customers_business"
+            columns: ["business_id"]
+            isOneToOne: false
+            referencedRelation: "business_profiles"
+            referencedColumns: ["id"]
+          },
         ]
       }
       orders: {
         Row: {
-          business_id: string | null
+          business_id: string
           created_at: string | null
           customer_id: number | null
           id: number
           total_amount: number
         }
         Insert: {
-          business_id?: string | null
+          business_id: string
           created_at?: string | null
           customer_id?: number | null
           id?: number
           total_amount: number
         }
         Update: {
-          business_id?: string | null
+          business_id?: string
           created_at?: string | null
           customer_id?: number | null
           id?: number
           total_amount?: number
         }
         Relationships: [
+          {
+            foreignKeyName: "fk_orders_business"
+            columns: ["business_id"]
+            isOneToOne: false
+            referencedRelation: "business_profiles"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "orders_business_id_fkey"
             columns: ["business_id"]
@@ -202,7 +216,7 @@ export type Database = {
       }
       products: {
         Row: {
-          business_id: string | null
+          business_id: string
           cost_price: number
           created_at: string | null
           description: string | null
@@ -213,7 +227,7 @@ export type Database = {
           stock: number | null
         }
         Insert: {
-          business_id?: string | null
+          business_id: string
           cost_price?: number
           created_at?: string | null
           description?: string | null
@@ -224,7 +238,7 @@ export type Database = {
           stock?: number | null
         }
         Update: {
-          business_id?: string | null
+          business_id?: string
           cost_price?: number
           created_at?: string | null
           description?: string | null
@@ -235,6 +249,13 @@ export type Database = {
           stock?: number | null
         }
         Relationships: [
+          {
+            foreignKeyName: "fk_products_business"
+            columns: ["business_id"]
+            isOneToOne: false
+            referencedRelation: "business_profiles"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "products_business_id_fkey"
             columns: ["business_id"]

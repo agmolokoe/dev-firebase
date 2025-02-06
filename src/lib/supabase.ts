@@ -1,3 +1,4 @@
+
 import { createClient } from '@supabase/supabase-js'
 
 const supabaseUrl = 'https://plquxmkydifejukpoocr.supabase.co'
@@ -13,6 +14,7 @@ export type Customer = {
   phone: string
   lastPurchase: string
   totalOrders: number
+  business_id: string
   created_at?: string
 }
 
@@ -23,6 +25,7 @@ export type Product = {
   stock: number
   category: string
   status: string
+  business_id: string
   created_at?: string
 }
 
@@ -33,6 +36,7 @@ export type Order = {
   status: string
   total: number
   items: number
+  business_id: string
   created_at?: string
 }
 
@@ -40,6 +44,9 @@ export type Order = {
 export const db = {
   customers: {
     getAll: async () => {
+      const { data: { user } } = await supabase.auth.getUser()
+      if (!user) throw new Error('Not authenticated')
+
       const { data, error } = await supabase
         .from('customers')
         .select('*')
@@ -48,10 +55,13 @@ export const db = {
       if (error) throw error
       return data
     },
-    create: async (customer: Omit<Customer, 'id' | 'created_at'>) => {
+    create: async (customer: Omit<Customer, 'id' | 'created_at' | 'business_id'>) => {
+      const { data: { user } } = await supabase.auth.getUser()
+      if (!user) throw new Error('Not authenticated')
+
       const { data, error } = await supabase
         .from('customers')
-        .insert([customer])
+        .insert([{ ...customer, business_id: user.id }])
         .select()
         .single()
       
@@ -59,10 +69,14 @@ export const db = {
       return data
     },
     update: async (id: string, customer: Partial<Customer>) => {
+      const { data: { user } } = await supabase.auth.getUser()
+      if (!user) throw new Error('Not authenticated')
+
       const { data, error } = await supabase
         .from('customers')
         .update(customer)
         .eq('id', id)
+        .eq('business_id', user.id)
         .select()
         .single()
       
@@ -70,16 +84,23 @@ export const db = {
       return data
     },
     delete: async (id: string) => {
+      const { data: { user } } = await supabase.auth.getUser()
+      if (!user) throw new Error('Not authenticated')
+
       const { error } = await supabase
         .from('customers')
         .delete()
         .eq('id', id)
+        .eq('business_id', user.id)
       
       if (error) throw error
     }
   },
   products: {
     getAll: async () => {
+      const { data: { user } } = await supabase.auth.getUser()
+      if (!user) throw new Error('Not authenticated')
+
       const { data, error } = await supabase
         .from('products')
         .select('*')
@@ -88,10 +109,13 @@ export const db = {
       if (error) throw error
       return data
     },
-    create: async (product: Omit<Product, 'id' | 'created_at'>) => {
+    create: async (product: Omit<Product, 'id' | 'created_at' | 'business_id'>) => {
+      const { data: { user } } = await supabase.auth.getUser()
+      if (!user) throw new Error('Not authenticated')
+
       const { data, error } = await supabase
         .from('products')
-        .insert([product])
+        .insert([{ ...product, business_id: user.id }])
         .select()
         .single()
       
@@ -99,10 +123,14 @@ export const db = {
       return data
     },
     update: async (id: string, product: Partial<Product>) => {
+      const { data: { user } } = await supabase.auth.getUser()
+      if (!user) throw new Error('Not authenticated')
+
       const { data, error } = await supabase
         .from('products')
         .update(product)
         .eq('id', id)
+        .eq('business_id', user.id)
         .select()
         .single()
       
@@ -110,16 +138,23 @@ export const db = {
       return data
     },
     delete: async (id: string) => {
+      const { data: { user } } = await supabase.auth.getUser()
+      if (!user) throw new Error('Not authenticated')
+
       const { error } = await supabase
         .from('products')
         .delete()
         .eq('id', id)
+        .eq('business_id', user.id)
       
       if (error) throw error
     }
   },
   orders: {
     getAll: async () => {
+      const { data: { user } } = await supabase.auth.getUser()
+      if (!user) throw new Error('Not authenticated')
+
       const { data, error } = await supabase
         .from('orders')
         .select(`
@@ -134,10 +169,13 @@ export const db = {
       if (error) throw error
       return data
     },
-    create: async (order: Omit<Order, 'id' | 'created_at'>) => {
+    create: async (order: Omit<Order, 'id' | 'created_at' | 'business_id'>) => {
+      const { data: { user } } = await supabase.auth.getUser()
+      if (!user) throw new Error('Not authenticated')
+
       const { data, error } = await supabase
         .from('orders')
-        .insert([order])
+        .insert([{ ...order, business_id: user.id }])
         .select()
         .single()
       
@@ -145,10 +183,14 @@ export const db = {
       return data
     },
     update: async (id: string, order: Partial<Order>) => {
+      const { data: { user } } = await supabase.auth.getUser()
+      if (!user) throw new Error('Not authenticated')
+
       const { data, error } = await supabase
         .from('orders')
         .update(order)
         .eq('id', id)
+        .eq('business_id', user.id)
         .select()
         .single()
       
@@ -156,10 +198,14 @@ export const db = {
       return data
     },
     delete: async (id: string) => {
+      const { data: { user } } = await supabase.auth.getUser()
+      if (!user) throw new Error('Not authenticated')
+
       const { error } = await supabase
         .from('orders')
         .delete()
         .eq('id', id)
+        .eq('business_id', user.id)
       
       if (error) throw error
     }
