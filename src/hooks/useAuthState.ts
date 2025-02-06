@@ -28,19 +28,20 @@ function useAuthState() {
       }
 
       if (event === "USER_UPDATED" && !session) {
-        const { error } = await supabase.auth.getSession();
-        if (error) {
-          const message = getAuthErrorMessage(error);
-          setErrorMessage(message);
-          toast.error(message);
+        try {
+          const { error: sessionError } = await supabase.auth.getSession();
+          if (sessionError) {
+            const message = getAuthErrorMessage(sessionError);
+            setErrorMessage(message);
+            toast.error(message);
+          }
+        } catch (err) {
+          if (err instanceof AuthError) {
+            const message = getAuthErrorMessage(err);
+            setErrorMessage(message);
+            toast.error(message);
+          }
         }
-      }
-
-      // Handle auth errors
-      if (error instanceof AuthError) {
-        const message = getAuthErrorMessage(error);
-        setErrorMessage(message);
-        toast.error(message);
       }
     });
 
