@@ -246,36 +246,101 @@ export type Database = {
       }
       social_connections: {
         Row: {
+          access_token: string | null
           created_at: string | null
           handle: string
           id: string
+          last_synced_at: string | null
           platform: string
+          profile_data: Json | null
+          refresh_token: string | null
           tiktok_access_token: string | null
           tiktok_refresh_token: string | null
           tiktok_user_id: string | null
+          token_expires_at: string | null
           user_id: string
         }
         Insert: {
+          access_token?: string | null
           created_at?: string | null
           handle: string
           id?: string
+          last_synced_at?: string | null
           platform: string
+          profile_data?: Json | null
+          refresh_token?: string | null
           tiktok_access_token?: string | null
           tiktok_refresh_token?: string | null
           tiktok_user_id?: string | null
+          token_expires_at?: string | null
           user_id: string
         }
         Update: {
+          access_token?: string | null
           created_at?: string | null
           handle?: string
           id?: string
+          last_synced_at?: string | null
           platform?: string
+          profile_data?: Json | null
+          refresh_token?: string | null
           tiktok_access_token?: string | null
           tiktok_refresh_token?: string | null
           tiktok_user_id?: string | null
+          token_expires_at?: string | null
           user_id?: string
         }
         Relationships: []
+      }
+      social_media_feeds: {
+        Row: {
+          connection_id: string
+          content: string | null
+          created_at: string | null
+          engagement_stats: Json | null
+          id: string
+          media_urls: string[] | null
+          platform: string
+          post_id: string
+          posted_at: string | null
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          connection_id: string
+          content?: string | null
+          created_at?: string | null
+          engagement_stats?: Json | null
+          id?: string
+          media_urls?: string[] | null
+          platform: string
+          post_id: string
+          posted_at?: string | null
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          connection_id?: string
+          content?: string | null
+          created_at?: string | null
+          engagement_stats?: Json | null
+          id?: string
+          media_urls?: string[] | null
+          platform?: string
+          post_id?: string
+          posted_at?: string | null
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "social_media_feeds_connection_id_fkey"
+            columns: ["connection_id"]
+            isOneToOne: false
+            referencedRelation: "social_connections"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       subscriptions: {
         Row: {
