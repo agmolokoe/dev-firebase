@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { useState } from "react"
 import { useToast } from "@/hooks/use-toast"
-import { BrandTiktok } from "lucide-react"
+import { Share2 } from "lucide-react"
 import {
   Card,
   CardContent,
@@ -88,7 +88,7 @@ export function TikTokForm({ connections, onConnect }: TikTokFormProps) {
     <Card className="bg-black text-white border-white/10">
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
-          <BrandTiktok className="h-5 w-5" />
+          <Share2 className="h-5 w-5" />
           TikTok
         </CardTitle>
         <CardDescription className="text-white/60">
