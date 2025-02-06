@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { supabase } from "@/lib/supabase";
 import { getAuthErrorMessage } from "@/utils/auth-errors";
 import { toast } from "sonner";
+import { AuthError } from "@supabase/supabase-js";
 
 function useAuthState() {
   const navigate = useNavigate();
@@ -34,26 +35,17 @@ function useAuthState() {
           toast.error(message);
         }
       }
-    });
 
-    // Listen for auth errors
-    const handleAuthError = (error: any) => {
-      const message = getAuthErrorMessage(error);
-      setErrorMessage(message);
-      toast.error(message);
-    };
-
-    // Subscribe to auth errors
-    const { data: authListener } = supabase.auth.onAuthStateChange((event, session) => {
-      if (event === "PASSWORD_RECOVERY_ERROR" || event === "SIGN_IN_ERROR" || event === "SIGN_UP_ERROR") {
-        console.error("Auth error event:", event);
-        handleAuthError(session);
+      // Handle auth errors
+      if (error instanceof AuthError) {
+        const message = getAuthErrorMessage(error);
+        setErrorMessage(message);
+        toast.error(message);
       }
     });
 
     return () => {
       subscription.unsubscribe();
-      if (authListener) authListener.unsubscribe();
     };
   }, [navigate]);
 
