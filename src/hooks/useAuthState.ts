@@ -18,6 +18,7 @@ function useAuthState() {
       console.log("Session:", session);
 
       if (event === "SIGNED_IN" && session) {
+        setErrorMessage(""); // Clear any previous errors
         toast.success("Successfully signed in!");
         navigate("/dashboard");
       }
@@ -25,21 +26,32 @@ function useAuthState() {
       if (event === "SIGNED_OUT") {
         setErrorMessage("");
         toast.success("Successfully signed out!");
+        navigate("/auth");
       }
 
       if (event === "USER_UPDATED" && !session) {
         try {
-          const { error: sessionError } = await supabase.auth.getSession();
+          const { data, error: sessionError } = await supabase.auth.getSession();
+          
           if (sessionError) {
             const message = getAuthErrorMessage(sessionError);
             setErrorMessage(message);
             toast.error(message);
+            return;
+          }
+
+          if (!data.session) {
+            setErrorMessage("Please sign in to continue.");
+            navigate("/auth");
           }
         } catch (err) {
           if (err instanceof AuthError) {
             const message = getAuthErrorMessage(err);
             setErrorMessage(message);
             toast.error(message);
+          } else {
+            console.error("Unexpected error:", err);
+            toast.error("An unexpected error occurred. Please try again.");
           }
         }
       }
