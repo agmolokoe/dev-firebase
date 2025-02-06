@@ -30,14 +30,14 @@ export function ProfileLoader({ children }: { children: React.ReactNode }) {
           return;
         }
 
-        const { data, error } = await supabase
+        const { data, error: fetchError } = await supabase
           .from('business_profiles')
           .select('*')
           .eq('id', session.user.id)
           .maybeSingle();
         
-        if (error) {
-          console.error('Error fetching business profile:', error);
+        if (fetchError) {
+          console.error('Error fetching business profile:', fetchError);
           setError('Could not load business profile');
           toast({
             variant: "destructive",
@@ -90,3 +90,4 @@ export function ProfileLoader({ children }: { children: React.ReactNode }) {
 
   return children;
 }
+
