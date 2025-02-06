@@ -53,6 +53,10 @@ export default function AuthPage({ mode }: { mode: "login" | "signup" }) {
             theme="dark"
             providers={["google"]}
             redirectTo={`${window.location.origin}/dashboard`}
+            onAuthError={(error) => {
+              console.error("Auth error:", error);
+              setErrorMessage(getAuthErrorMessage(error));
+            }}
             {...(mode === "signup" && {
               options: {
                 data: {
