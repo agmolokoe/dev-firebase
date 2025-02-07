@@ -78,7 +78,7 @@ export function ProductDialog({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[425px] max-h-[90vh] bg-[#000000] text-[#FFFFFF] border-[#FFFFFF]/10">
+      <DialogContent className="sm:max-w-[425px] h-[90vh] bg-[#000000] text-[#FFFFFF] border-[#FFFFFF]/10 flex flex-col">
         <DialogHeader>
           <DialogTitle className="text-[#FFFFFF]">
             {product ? "Edit Product" : "Add New Product"}
@@ -87,46 +87,49 @@ export function ProductDialog({
             Fill in the product details below. Images will be uploaded automatically.
           </DialogDescription>
         </DialogHeader>
-        <ScrollArea className="flex-grow pr-4">
-          <Form {...form}>
-            <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-4">
-              <div className="flex justify-center mb-4">
-                <ProductImageUpload
-                  previewUrl={previewUrl}
-                  onImageUpload={setPreviewUrl}
-                  disabled={isSubmitting}
-                />
-              </div>
-              
-              <ProductFormFields form={form} />
-
-              <div className="flex justify-end space-x-2 sticky bottom-0 pt-4">
-                <Button
-                  type="button"
-                  variant="outline"
-                  onClick={() => onOpenChange(false)}
-                  disabled={isSubmitting}
-                  className="text-[#FFFFFF] border-[#FFFFFF]/10 hover:bg-[#FFFFFF]/5"
-                >
-                  Cancel
-                </Button>
-                <Button 
-                  type="submit" 
-                  disabled={isSubmitting}
-                  className="bg-[#FE2C55] text-[#FFFFFF] hover:bg-[#FE2C55]/90"
-                >
-                  {isSubmitting ? (
-                    <Loader2 className="w-4 h-4 animate-spin" />
-                  ) : product ? (
-                    "Update"
-                  ) : (
-                    "Create"
-                  )}
-                </Button>
-              </div>
-            </form>
-          </Form>
-        </ScrollArea>
+        
+        <div className="flex-1 overflow-hidden flex flex-col min-h-0">
+          <ScrollArea className="flex-1 pr-4">
+            <Form {...form}>
+              <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-4">
+                <div className="flex justify-center mb-4">
+                  <ProductImageUpload
+                    previewUrl={previewUrl}
+                    onImageUpload={setPreviewUrl}
+                    disabled={isSubmitting}
+                  />
+                </div>
+                
+                <ProductFormFields form={form} />
+              </form>
+            </Form>
+          </ScrollArea>
+          
+          <div className="flex justify-end space-x-2 pt-4 border-t border-[#FFFFFF]/10 mt-4">
+            <Button
+              type="button"
+              variant="outline"
+              onClick={() => onOpenChange(false)}
+              disabled={isSubmitting}
+              className="text-[#FFFFFF] border-[#FFFFFF]/10 hover:bg-[#FFFFFF]/5"
+            >
+              Cancel
+            </Button>
+            <Button 
+              onClick={form.handleSubmit(handleSubmit)}
+              disabled={isSubmitting}
+              className="bg-[#FE2C55] text-[#FFFFFF] hover:bg-[#FE2C55]/90"
+            >
+              {isSubmitting ? (
+                <Loader2 className="w-4 h-4 animate-spin" />
+              ) : product ? (
+                "Update"
+              ) : (
+                "Create"
+              )}
+            </Button>
+          </div>
+        </div>
       </DialogContent>
     </Dialog>
   )
