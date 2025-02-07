@@ -1,7 +1,9 @@
+
 import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Users, Package, ShoppingCart } from "lucide-react";
+import { Users, Package, ShoppingCart, ExternalLink } from "lucide-react";
 import { formatCurrency } from "@/lib/utils";
+import { useNavigate } from 'react-router-dom';
 
 interface DashboardMetricsProps {
   totalCustomers: number;
@@ -20,6 +22,8 @@ export function DashboardMetrics({
   lowStockProducts,
   isLoading
 }: DashboardMetricsProps) {
+  const navigate = useNavigate();
+
   if (isLoading) {
     return (
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
@@ -34,10 +38,16 @@ export function DashboardMetrics({
 
   return (
     <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-      <Card className="bg-gradient-to-br from-primary/20 to-black text-white border-white/10 transition-all hover:scale-105">
+      <Card 
+        className="bg-gradient-to-br from-primary/20 to-black text-white border-white/10 transition-all hover:scale-105 cursor-pointer group"
+        onClick={() => navigate('/dashboard/customers')}
+      >
         <CardHeader className="flex flex-row items-center justify-between pb-2">
           <CardTitle className="text-sm font-medium">Total Customers</CardTitle>
-          <Users className="h-4 w-4 text-primary" />
+          <div className="flex items-center gap-2">
+            <Users className="h-4 w-4 text-primary" />
+            <ExternalLink className="h-4 w-4 text-primary opacity-0 group-hover:opacity-100 transition-opacity" />
+          </div>
         </CardHeader>
         <CardContent>
           <div className="text-2xl font-bold">{totalCustomers}</div>
@@ -45,10 +55,16 @@ export function DashboardMetrics({
         </CardContent>
       </Card>
 
-      <Card className="bg-gradient-to-br from-secondary/20 to-black text-white border-white/10 transition-all hover:scale-105">
+      <Card 
+        className="bg-gradient-to-br from-secondary/20 to-black text-white border-white/10 transition-all hover:scale-105 cursor-pointer group"
+        onClick={() => navigate('/dashboard/products')}
+      >
         <CardHeader className="flex flex-row items-center justify-between pb-2">
           <CardTitle className="text-sm font-medium">Total Products</CardTitle>
-          <Package className="h-4 w-4 text-secondary" />
+          <div className="flex items-center gap-2">
+            <Package className="h-4 w-4 text-secondary" />
+            <ExternalLink className="h-4 w-4 text-secondary opacity-0 group-hover:opacity-100 transition-opacity" />
+          </div>
         </CardHeader>
         <CardContent>
           <div className="text-2xl font-bold">{totalProducts}</div>
@@ -56,10 +72,16 @@ export function DashboardMetrics({
         </CardContent>
       </Card>
 
-      <Card className="bg-gradient-to-br from-success/20 to-black text-white border-white/10 transition-all hover:scale-105">
+      <Card 
+        className="bg-gradient-to-br from-success/20 to-black text-white border-white/10 transition-all hover:scale-105 cursor-pointer group"
+        onClick={() => navigate('/dashboard/orders')}
+      >
         <CardHeader className="flex flex-row items-center justify-between pb-2">
           <CardTitle className="text-sm font-medium">Total Orders</CardTitle>
-          <ShoppingCart className="h-4 w-4 text-success" />
+          <div className="flex items-center gap-2">
+            <ShoppingCart className="h-4 w-4 text-success" />
+            <ExternalLink className="h-4 w-4 text-success opacity-0 group-hover:opacity-100 transition-opacity" />
+          </div>
         </CardHeader>
         <CardContent>
           <div className="text-2xl font-bold">{totalOrders}</div>
