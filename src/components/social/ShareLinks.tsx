@@ -15,12 +15,17 @@ export function ShareLinks({ url, title, description }: ShareLinksProps) {
   const shareTitle = title || 'Check out this product!'
   const shareDescription = description || 'I found this amazing product I thought you might like.'
   
+  console.log("Sharing with params:", { shareUrl, shareTitle, shareDescription })
+  
   const handleShare = (platform: string) => {
     let shareLink = ''
+    
+    console.log(`Sharing to ${platform}`)
     
     switch (platform) {
       case 'facebook':
         shareLink = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(shareUrl)}&quote=${encodeURIComponent(shareTitle)}`
+        console.log("Facebook share link:", shareLink)
         break
       case 'instagram':
         // Instagram doesn't have a direct share link API, we'll copy to clipboard instead
@@ -32,6 +37,7 @@ export function ShareLinks({ url, title, description }: ShareLinksProps) {
         return
       case 'whatsapp':
         shareLink = `https://api.whatsapp.com/send?text=${encodeURIComponent(`${shareTitle}\n${shareDescription}\n${shareUrl}`)}`
+        console.log("WhatsApp share link:", shareLink)
         break
       case 'tiktok':
         // TikTok doesn't have a direct share API, copy to clipboard

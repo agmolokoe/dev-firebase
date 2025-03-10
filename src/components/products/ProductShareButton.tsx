@@ -8,6 +8,7 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover"
 import { ShareLinks } from "@/components/social/ShareLinks"
+import { db } from "@/lib/supabase"
 
 interface ProductShareButtonProps {
   product: {
@@ -19,6 +20,11 @@ interface ProductShareButtonProps {
 
 export function ProductShareButton({ product }: ProductShareButtonProps) {
   const [open, setOpen] = useState(false)
+  
+  // Generate a proper share URL for the product
+  const shareUrl = db.getShareUrl(product.id)
+  
+  console.log("Product share URL:", shareUrl)
 
   return (
     <Popover open={open} onOpenChange={setOpen}>
@@ -36,8 +42,9 @@ export function ProductShareButton({ product }: ProductShareButtonProps) {
         <div className="space-y-2">
           <h4 className="text-sm font-medium text-white">Share product</h4>
           <ShareLinks 
+            url={shareUrl}
             title={product.name} 
-            description={product.description || ""}
+            description={product.description || "Check out this amazing product!"}
           />
         </div>
       </PopoverContent>
