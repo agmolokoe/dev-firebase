@@ -1,5 +1,5 @@
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
 import {
@@ -17,6 +17,7 @@ import { ProductFormFields, formSchema } from "./ProductFormFields"
 import * as z from "zod"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { ShareLinks } from "@/components/social/ShareLinks"
+import { supabase } from "@/lib/supabase"
 
 type ProductDialogProps = {
   open: boolean
@@ -44,6 +45,29 @@ export function ProductDialog({
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [previewUrl, setPreviewUrl] = useState<string | null>(product?.image_url || null)
   
+  // Reset form when product changes
+  useEffect(() => {
+    if (product) {
+      form.reset({
+        name: product.name || "",
+        description: product.description || "",
+        cost_price: product.cost_price?.toString() || "",
+        selling_price: product.selling_price?.toString() || "",
+        stock: product.stock?.toString() || "0",
+      })
+      setPreviewUrl(product.image_url || null)
+    } else {
+      form.reset({
+        name: "",
+        description: "",
+        cost_price: "",
+        selling_price: "",
+        stock: "0",
+      })
+      setPreviewUrl(null)
+    }
+  }, [product, open])
+  
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -68,10 +92,8 @@ export function ProductDialog({
       } else {
         await onSubmit(formData)
       }
-      
-      form.reset()
-      setPreviewUrl(null)
-      onOpenChange(false)
+    } catch (error) {
+      console.error("Error submitting product form:", error)
     } finally {
       setIsSubmitting(false)
     }

@@ -1,4 +1,5 @@
-import { useState } from "react"
+
+import { useState, useEffect } from "react"
 import { DashboardLayout } from "@/components/DashboardLayout"
 import { Button } from "@/components/ui/button"
 import { Plus } from "lucide-react"
@@ -14,29 +15,74 @@ export default function ProductsPage() {
   const [searchTerm, setSearchTerm] = useState("")
   const [isDialogOpen, setIsDialogOpen] = useState(false)
   const [selectedProduct, setSelectedProduct] = useState<any>(null)
+  const [userId, setUserId] = useState<string | null>(null)
   const { toast } = useToast()
   const queryClient = useQueryClient()
 
-  const getUserSession = async () => {
-    const { data: { session } } = await supabase.auth.getSession()
-    return session?.user?.id
-  }
+  // Check user session on component mount
+  useEffect(() => {
+    const checkSession = async () => {
+      try {
+        const { data: { session } } = await supabase.auth.getSession()
+        const currentUserId = session?.user?.id || null
+        setUserId(currentUserId)
+        
+        if (!currentUserId) {
+          toast({
+            title: "Authentication Error",
+            description: "You must be logged in to view products",
+            variant: "destructive",
+          })
+        }
+      } catch (error) {
+        console.error("Error checking session:", error)
+        toast({
+          title: "Error",
+          description: "Failed to verify authentication",
+          variant: "destructive",
+        })
+      }
+    }
+    
+    checkSession()
+    
+    // Subscribe to auth changes
+    const { data: authListener } = supabase.auth.onAuthStateChange(async (event, session) => {
+      const currentUserId = session?.user?.id || null
+      setUserId(currentUserId)
+    })
+    
+    return () => {
+      authListener?.subscription.unsubscribe()
+    }
+  }, [toast])
 
-  const { data: products = [], isLoading } = useQuery({
-    queryKey: ['products'],
+  const { data: products = [], isLoading, error } = useQuery({
+    queryKey: ['products', userId],
     queryFn: async () => {
-      const userId = await getUserSession()
-      if (!userId) throw new Error("Not authenticated")
+      if (!userId) return []
       
-      const { data, error } = await supabase
-        .from('products')
-        .select('*')
-        .eq('business_id', userId)
-        .order('created_at', { ascending: false })
-      
-      if (error) throw error
-      return data
+      try {
+        const { data, error } = await supabase
+          .from('products')
+          .select('*')
+          .eq('business_id', userId)
+          .order('created_at', { ascending: false })
+        
+        if (error) throw error
+        console.log("Products fetched:", data)
+        return data || []
+      } catch (error) {
+        console.error("Error fetching products:", error)
+        toast({
+          title: "Error",
+          description: "Failed to load products",
+          variant: "destructive",
+        })
+        return []
+      }
     },
+    enabled: !!userId,
   })
 
   const filteredProducts = products.filter((product) =>
@@ -55,7 +101,6 @@ export default function ProductsPage() {
 
   const handleCreateProduct = async (productData: any) => {
     try {
-      const userId = await getUserSession()
       if (!userId) {
         toast({
           title: "Error",
@@ -65,7 +110,10 @@ export default function ProductsPage() {
         return
       }
 
-      const { error } = await supabase
+      console.log("Creating product with business_id:", userId)
+      console.log("Product data:", productData)
+
+      const { error, data } = await supabase
         .from('products')
         .insert([{
           name: productData.name,
@@ -76,10 +124,16 @@ export default function ProductsPage() {
           image_url: productData.image_url,
           business_id: userId
         }])
+        .select()
       
-      if (error) throw error
+      if (error) {
+        console.error("Supabase error creating product:", error)
+        throw error
+      }
       
-      await queryClient.invalidateQueries({ queryKey: ['products'] })
+      console.log("Product created successfully:", data)
+      await queryClient.invalidateQueries({ queryKey: ['products', userId] })
+      
       toast({
         title: "Success",
         description: "Product created successfully",
@@ -97,7 +151,6 @@ export default function ProductsPage() {
 
   const handleUpdateProduct = async (id: number, productData: any) => {
     try {
-      const userId = await getUserSession()
       if (!userId) {
         toast({
           title: "Error",
@@ -107,7 +160,10 @@ export default function ProductsPage() {
         return
       }
 
-      const { error } = await supabase
+      console.log("Updating product ID:", id)
+      console.log("Update data:", productData)
+
+      const { error, data } = await supabase
         .from('products')
         .update({
           name: productData.name,
@@ -119,10 +175,16 @@ export default function ProductsPage() {
         })
         .eq('id', id)
         .eq('business_id', userId)
+        .select()
       
-      if (error) throw error
+      if (error) {
+        console.error("Supabase error updating product:", error)
+        throw error
+      }
       
-      await queryClient.invalidateQueries({ queryKey: ['products'] })
+      console.log("Product updated successfully:", data)
+      await queryClient.invalidateQueries({ queryKey: ['products', userId] })
+      
       toast({
         title: "Success",
         description: "Product updated successfully",
@@ -140,25 +202,65 @@ export default function ProductsPage() {
 
   const handleDeleteProduct = async (id: number) => {
     try {
+      if (!userId) {
+        toast({
+          title: "Error",
+          description: "You must be logged in to delete products",
+          variant: "destructive",
+        })
+        return
+      }
+
+      console.log("Deleting product ID:", id)
+
       const { error } = await supabase
         .from('products')
         .delete()
         .eq('id', id)
+        .eq('business_id', userId)
       
-      if (error) throw error
+      if (error) {
+        console.error("Supabase error deleting product:", error)
+        throw error
+      }
       
-      await queryClient.invalidateQueries({ queryKey: ['products'] })
+      console.log("Product deleted successfully")
+      await queryClient.invalidateQueries({ queryKey: ['products', userId] })
+      
       toast({
         title: "Success",
         description: "Product deleted successfully",
       })
     } catch (error) {
+      console.error('Error deleting product:', error)
       toast({
         title: "Error",
         description: "Failed to delete product",
         variant: "destructive",
       })
     }
+  }
+
+  // If we have an authentication error and no userId, show a message
+  if (error && !userId) {
+    return (
+      <DashboardLayout>
+        <div className="container mx-auto p-6 space-y-6">
+          <div className="text-center p-8">
+            <h2 className="text-2xl font-bold text-[#FFFFFF] mb-4">Authentication Required</h2>
+            <p className="text-[#FFFFFF]/70 mb-6">
+              You need to be logged in to view and manage products.
+            </p>
+            <Button 
+              onClick={() => window.location.href = '/auth'}
+              className="bg-[#FE2C55] text-[#FFFFFF] hover:bg-[#FE2C55]/90"
+            >
+              Go to Login
+            </Button>
+          </div>
+        </div>
+      </DashboardLayout>
+    )
   }
 
   return (
@@ -187,15 +289,21 @@ export default function ProductsPage() {
           onChange={setSearchTerm}
         />
 
-        <ProductList
-          products={filteredProducts}
-          isLoading={isLoading}
-          onEdit={(product) => {
-            setSelectedProduct(product)
-            setIsDialogOpen(true)
-          }}
-          onDelete={handleDeleteProduct}
-        />
+        {isLoading ? (
+          <div className="text-center p-8">
+            <p className="text-[#FFFFFF]/70">Loading products...</p>
+          </div>
+        ) : (
+          <ProductList
+            products={filteredProducts}
+            isLoading={isLoading}
+            onEdit={(product) => {
+              setSelectedProduct(product)
+              setIsDialogOpen(true)
+            }}
+            onDelete={handleDeleteProduct}
+          />
+        )}
 
         <ProductDialog
           open={isDialogOpen}
