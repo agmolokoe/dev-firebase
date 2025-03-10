@@ -17,12 +17,21 @@ export default function ProductsPage() {
   const { toast } = useToast()
   const queryClient = useQueryClient()
 
+  const getUserSession = async () => {
+    const { data: { session } } = await supabase.auth.getSession()
+    return session?.user?.id
+  }
+
   const { data: products = [], isLoading } = useQuery({
     queryKey: ['products'],
     queryFn: async () => {
+      const userId = await getUserSession()
+      if (!userId) throw new Error("Not authenticated")
+      
       const { data, error } = await supabase
         .from('products')
         .select('*')
+        .eq('business_id', userId)
         .order('created_at', { ascending: false })
       
       if (error) throw error
@@ -35,7 +44,6 @@ export default function ProductsPage() {
     product.description?.toLowerCase().includes(searchTerm.toLowerCase())
   )
 
-  // Calculate total value and total profit
   const totalValue = products.reduce((sum, product) => 
     sum + (product.cost_price * (product.stock || 0)), 0
   )
@@ -47,6 +55,16 @@ export default function ProductsPage() {
 
   const handleCreateProduct = async (productData: any) => {
     try {
+      const userId = await getUserSession()
+      if (!userId) {
+        toast({
+          title: "Error",
+          description: "You must be logged in to create products",
+          variant: "destructive",
+        })
+        return
+      }
+
       const { error } = await supabase
         .from('products')
         .insert([{
@@ -56,6 +74,7 @@ export default function ProductsPage() {
           selling_price: Number(productData.selling_price),
           stock: Number(productData.stock),
           image_url: productData.image_url,
+          business_id: userId
         }])
       
       if (error) throw error
@@ -67,6 +86,7 @@ export default function ProductsPage() {
       })
       setIsDialogOpen(false)
     } catch (error) {
+      console.error('Error creating product:', error)
       toast({
         title: "Error",
         description: "Failed to create product",
@@ -77,6 +97,16 @@ export default function ProductsPage() {
 
   const handleUpdateProduct = async (id: number, productData: any) => {
     try {
+      const userId = await getUserSession()
+      if (!userId) {
+        toast({
+          title: "Error",
+          description: "You must be logged in to update products",
+          variant: "destructive",
+        })
+        return
+      }
+
       const { error } = await supabase
         .from('products')
         .update({
@@ -88,6 +118,7 @@ export default function ProductsPage() {
           image_url: productData.image_url,
         })
         .eq('id', id)
+        .eq('business_id', userId)
       
       if (error) throw error
       
@@ -98,6 +129,7 @@ export default function ProductsPage() {
       })
       setIsDialogOpen(false)
     } catch (error) {
+      console.error('Error updating product:', error)
       toast({
         title: "Error",
         description: "Failed to update product",
