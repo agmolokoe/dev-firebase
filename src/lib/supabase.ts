@@ -1,4 +1,3 @@
-
 import { createClient } from '@supabase/supabase-js'
 
 const supabaseUrl = 'https://plquxmkydifejukpoocr.supabase.co'
@@ -209,5 +208,9 @@ export const db = {
       
       if (error) throw error
     }
+  },
+  getShareUrl: (productId: string | number) => {
+    const baseUrl = typeof window !== 'undefined' ? window.location.origin : '';
+    return `${baseUrl}/products/${productId}`;
   }
 }

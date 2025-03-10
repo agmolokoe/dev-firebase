@@ -16,6 +16,7 @@ import { ProductImageUpload } from "./ProductImageUpload"
 import { ProductFormFields, formSchema } from "./ProductFormFields"
 import * as z from "zod"
 import { ScrollArea } from "@/components/ui/scroll-area"
+import { ShareLinks } from "@/components/social/ShareLinks"
 
 type ProductDialogProps = {
   open: boolean
@@ -88,9 +89,9 @@ export function ProductDialog({
           </DialogDescription>
         </DialogHeader>
         
-        <div className="flex-1 overflow-auto min-h-0">
+        <ScrollArea className="flex-1 overflow-auto pr-4">
           <Form {...form}>
-            <form className="space-y-4 pr-3">
+            <form className="space-y-4">
               <div className="flex justify-center mb-4">
                 <ProductImageUpload
                   previewUrl={previewUrl}
@@ -100,9 +101,19 @@ export function ProductDialog({
               </div>
               
               <ProductFormFields form={form} />
+
+              {product && (
+                <div className="mt-6 pt-4 border-t border-[#FFFFFF]/10">
+                  <h4 className="text-sm font-medium mb-2">Share this product</h4>
+                  <ShareLinks 
+                    title={product.name}
+                    description={product.description || ""}
+                  />
+                </div>
+              )}
             </form>
           </Form>
-        </div>
+        </ScrollArea>
         
         <div className="flex justify-end space-x-2 pt-4 border-t border-[#FFFFFF]/10 mt-4 bg-black sticky bottom-0">
           <Button

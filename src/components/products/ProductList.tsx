@@ -1,3 +1,4 @@
+
 import { Button } from "@/components/ui/button"
 import {
   Table,
@@ -8,6 +9,7 @@ import {
   TableRow,
 } from "@/components/ui/table"
 import { formatCurrency } from "@/lib/utils"
+import { ProductShareButton } from "./ProductShareButton"
 
 type Product = {
   id: number
@@ -81,7 +83,8 @@ export function ProductList({ products, isLoading, onEdit, onDelete }: ProductLi
                     {formatCurrency(profit)}
                   </TableCell>
                   <TableCell className="text-[#FFFFFF]">{product.stock}</TableCell>
-                  <TableCell className="text-right space-x-2">
+                  <TableCell className="text-right flex items-center justify-end space-x-1">
+                    <ProductShareButton product={product} />
                     <Button
                       variant="ghost"
                       onClick={() => onEdit(product)}
