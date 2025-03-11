@@ -16,6 +16,7 @@ import SubscriptionPage from "./pages/subscription/Index"
 import { BusinessProfileSetup } from "./components/profile/BusinessProfileSetup"
 import StorePage from "./pages/store/StorePage"
 import ProductDetailPage from "./pages/store/ProductDetailPage"
+import { CartProvider } from "./context/CartContext"
 
 const queryClient = new QueryClient()
 
@@ -45,58 +46,60 @@ function App() {
   return (
     <QueryClientProvider client={queryClient}>
       <TooltipProvider>
-        <Toaster />
-        <Sonner />
-        <BrowserRouter>
-          <Routes>
-            <Route
-              path="/"
-              element={
-                !session ? (
-                  <LandingPage />
-                ) : (
-                  <Navigate to="/dashboard" replace />
-                )
-              }
-            />
-            <Route
-              path="/auth"
-              element={
-                !session ? (
-                  <AuthPage mode="login" />
-                ) : (
-                  <Navigate to="/dashboard" replace />
-                )
-              }
-            />
-            <Route path="/privacy-policy" element={<PrivacyPolicy />} />
-            <Route path="/terms-of-service" element={<TermsOfService />} />
-            <Route
-              path="/dashboard/*"
-              element={
-                session ? <Index /> : <Navigate to="/auth" replace />
-              }
-            />
-            <Route
-              path="/dashboard/profile/setup"
-              element={
-                session ? <BusinessProfileSetup /> : <Navigate to="/auth" replace />
-              }
-            />
-            <Route
-              path="/dashboard/subscription"
-              element={
-                session ? <SubscriptionPage /> : <Navigate to="/auth" replace />
-              }
-            />
-            
-            {/* Store Routes - These are public facing */}
-            <Route path="/store/:businessId" element={<StorePage />} />
-            <Route path="/store/:businessId/product/:productId" element={<ProductDetailPage />} />
-            
-            <Route path="*" element={<Navigate to="/" replace />} />
-          </Routes>
-        </BrowserRouter>
+        <CartProvider>
+          <Toaster />
+          <Sonner />
+          <BrowserRouter>
+            <Routes>
+              <Route
+                path="/"
+                element={
+                  !session ? (
+                    <LandingPage />
+                  ) : (
+                    <Navigate to="/dashboard" replace />
+                  )
+                }
+              />
+              <Route
+                path="/auth"
+                element={
+                  !session ? (
+                    <AuthPage mode="login" />
+                  ) : (
+                    <Navigate to="/dashboard" replace />
+                  )
+                }
+              />
+              <Route path="/privacy-policy" element={<PrivacyPolicy />} />
+              <Route path="/terms-of-service" element={<TermsOfService />} />
+              <Route
+                path="/dashboard/*"
+                element={
+                  session ? <Index /> : <Navigate to="/auth" replace />
+                }
+              />
+              <Route
+                path="/dashboard/profile/setup"
+                element={
+                  session ? <BusinessProfileSetup /> : <Navigate to="/auth" replace />
+                }
+              />
+              <Route
+                path="/dashboard/subscription"
+                element={
+                  session ? <SubscriptionPage /> : <Navigate to="/auth" replace />
+                }
+              />
+              
+              {/* Store Routes - These are public facing */}
+              <Route path="/store/:businessId" element={<StorePage />} />
+              <Route path="/store/:businessId/product/:productId" element={<ProductDetailPage />} />
+              
+              <Route path="*" element={<Navigate to="/" replace />} />
+            </Routes>
+          </BrowserRouter>
+        </CartProvider>
       </TooltipProvider>
     </QueryClientProvider>
   )
