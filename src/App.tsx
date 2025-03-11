@@ -1,3 +1,4 @@
+
 import React, { useEffect, useState } from "react"
 import { Toaster } from "@/components/ui/toaster"
 import { Toaster as Sonner } from "@/components/ui/sonner"
@@ -13,6 +14,8 @@ import PrivacyPolicy from "./pages/legal/PrivacyPolicy"
 import TermsOfService from "./pages/legal/TermsOfService"
 import SubscriptionPage from "./pages/subscription/Index"
 import { BusinessProfileSetup } from "./components/profile/BusinessProfileSetup"
+import StorePage from "./pages/store/StorePage"
+import ProductDetailPage from "./pages/store/ProductDetailPage"
 
 const queryClient = new QueryClient()
 
@@ -86,6 +89,11 @@ function App() {
                 session ? <SubscriptionPage /> : <Navigate to="/auth" replace />
               }
             />
+            
+            {/* Store Routes - These are public facing */}
+            <Route path="/store/:businessId" element={<StorePage />} />
+            <Route path="/store/:businessId/product/:productId" element={<ProductDetailPage />} />
+            
             <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>
         </BrowserRouter>

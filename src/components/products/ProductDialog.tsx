@@ -11,7 +11,7 @@ import {
 } from "@/components/ui/dialog"
 import { Form } from "@/components/ui/form"
 import { Button } from "@/components/ui/button"
-import { Loader2 } from "lucide-react"
+import { Loader2, ExternalLink } from "lucide-react"
 import { ProductImageUpload } from "./ProductImageUpload"
 import { ProductFormFields, formSchema } from "./ProductFormFields"
 import * as z from "zod"
@@ -44,6 +44,16 @@ export function ProductDialog({
 }: ProductDialogProps) {
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [previewUrl, setPreviewUrl] = useState<string | null>(product?.image_url || null)
+  const [businessId, setBusinessId] = useState<string | null>(null)
+  
+  // Get business ID on mount
+  useEffect(() => {
+    const getBusinessId = async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      setBusinessId(session?.user?.id || null);
+    };
+    getBusinessId();
+  }, []);
   
   // Reset form when product changes
   useEffect(() => {
@@ -99,6 +109,10 @@ export function ProductDialog({
     }
   }
 
+  const getStoreUrl = () => {
+    return `/store/${businessId}`;
+  };
+
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-[425px] md:max-w-[600px] max-h-[90vh] bg-[#000000] text-[#FFFFFF] border-[#FFFFFF]/10 flex flex-col overflow-hidden">
@@ -131,6 +145,20 @@ export function ProductDialog({
                     title={product.name}
                     description={product.description || ""}
                   />
+                </div>
+              )}
+              
+              {businessId && (
+                <div className="mt-6 pt-4 border-t border-[#FFFFFF]/10">
+                  <Button
+                    type="button"
+                    variant="outline"
+                    className="w-full text-[#FFFFFF] border-[#25F4EE]/40 hover:bg-[#25F4EE]/10"
+                    onClick={() => window.open(getStoreUrl(), '_blank')}
+                  >
+                    <ExternalLink className="mr-2 h-4 w-4" />
+                    View Your Store
+                  </Button>
                 </div>
               )}
             </form>
