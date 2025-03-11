@@ -8,7 +8,7 @@ type Product = {
   image_url?: string | null;
   description?: string | null;
   business_id: string;
-  stock?: number;
+  stock?: number | null;
 };
 
 type RelatedProductsProps = {
@@ -16,7 +16,8 @@ type RelatedProductsProps = {
 };
 
 export function RelatedProducts({ products }: RelatedProductsProps) {
-  if (products.length === 0) return null;
+  // Don't render anything if no related products
+  if (!products || products.length === 0) return null;
 
   return (
     <div className="container mx-auto px-4 py-12">
@@ -31,7 +32,7 @@ export function RelatedProducts({ products }: RelatedProductsProps) {
             image_url={product.image_url}
             description={product.description}
             business_id={product.business_id}
-            stock={product.stock}
+            stock={product.stock ?? 0}
           />
         ))}
       </div>

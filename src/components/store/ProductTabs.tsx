@@ -6,17 +6,20 @@ import { formatCurrency } from "@/lib/utils"
 type ProductTabsProps = {
   product: {
     id: number;
-    description?: string;
+    description?: string | null;
     selling_price: number;
-    stock?: number;
+    stock?: number | null;
   };
   businessName: string;
 };
 
 export function ProductTabs({ product, businessName }: ProductTabsProps) {
-  const stockStatus = product.stock > 10 
+  // Handle null values gracefully
+  const stock = product.stock ?? 0;
+  
+  const stockStatus = stock > 10 
     ? { text: "In Stock", color: "text-green-500" }
-    : product.stock > 0 
+    : stock > 0 
       ? { text: "Low Stock", color: "text-amber-500" }
       : { text: "Out of Stock", color: "text-red-500" };
 
