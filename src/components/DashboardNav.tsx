@@ -1,3 +1,4 @@
+
 import { Link, useLocation } from "react-router-dom"
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
@@ -7,7 +8,8 @@ import {
   ShoppingCart,
   Package,
   Share2,
-  CreditCard
+  CreditCard,
+  Store
 } from "lucide-react"
 
 export function DashboardNav() {
@@ -77,6 +79,16 @@ export function DashboardNav() {
         <Link to="/dashboard/subscription">
           <CreditCard className="mr-2 h-4 w-4" />
           Subscription
+        </Link>
+      </Button>
+      <Button
+        asChild
+        variant={isActive("/dashboard/view-store") ? "secondary" : "ghost"}
+        className="justify-start"
+      >
+        <Link to="/dashboard/view-store">
+          <Store className="mr-2 h-4 w-4" />
+          View Store
         </Link>
       </Button>
     </nav>

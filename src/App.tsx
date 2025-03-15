@@ -16,7 +16,6 @@ import SubscriptionPage from "./pages/subscription/Index"
 import { BusinessProfileSetup } from "./components/profile/BusinessProfileSetup"
 import StorePage from "./pages/store/StorePage"
 import ProductDetailPage from "./pages/store/ProductDetailPage"
-import ViewStorePage from "./pages/dashboard/ViewStorePage"
 import { CartProvider } from "./context/CartContext"
 
 const queryClient = new QueryClient()
@@ -90,12 +89,6 @@ function App() {
                 path="/dashboard/subscription"
                 element={
                   session ? <SubscriptionPage /> : <Navigate to="/auth" replace />
-                }
-              />
-              <Route
-                path="/dashboard/view-store"
-                element={
-                  session ? <ViewStorePage /> : <Navigate to="/auth" replace />
                 }
               />
               

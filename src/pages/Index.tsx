@@ -1,7 +1,7 @@
 
 import { lazy, Suspense } from "react";
 import { Routes, Route, Navigate } from "react-router-dom";
-import DashboardLayout from "@/components/DashboardLayout";
+import { DashboardLayout } from "@/components/DashboardLayout";
 import { ProfileLoader } from "@/components/dashboard/ProfileLoader";
 import { DashboardError } from "@/components/dashboard/DashboardError";
 
@@ -21,22 +21,20 @@ const LoadingFallback = () => (
 
 export default function Index() {
   return (
-    <ProfileLoader>
-      <DashboardLayout>
-        <Suspense fallback={<LoadingFallback />}>
-          <Routes>
-            <Route path="/" element={<Dashboard />} />
-            <Route path="/customers" element={<CustomersPage />} />
-            <Route path="/products" element={<ProductsPage />} />
-            <Route path="/orders" element={<OrdersPage />} />
-            <Route path="/social/*" element={<SocialPage />} />
-            <Route path="/view-store" element={<ViewStorePage />} />
-            <Route path="/subscription" element={<Navigate to="/dashboard/subscription" replace />} />
-            <Route path="/profile/*" element={<Navigate to="/dashboard/profile/setup" replace />} />
-            <Route path="*" element={<DashboardError />} />
-          </Routes>
-        </Suspense>
-      </DashboardLayout>
-    </ProfileLoader>
+    <DashboardLayout>
+      <Suspense fallback={<LoadingFallback />}>
+        <Routes>
+          <Route path="/" element={<Dashboard />} />
+          <Route path="/customers" element={<CustomersPage />} />
+          <Route path="/products" element={<ProductsPage />} />
+          <Route path="/orders" element={<OrdersPage />} />
+          <Route path="/social/*" element={<SocialPage />} />
+          <Route path="/view-store" element={<ViewStorePage />} />
+          <Route path="/subscription" element={<Navigate to="/dashboard/subscription" replace />} />
+          <Route path="/profile/*" element={<Navigate to="/dashboard/profile/setup" replace />} />
+          <Route path="*" element={<DashboardError />} />
+        </Routes>
+      </Suspense>
+    </DashboardLayout>
   );
 }
