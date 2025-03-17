@@ -1,6 +1,6 @@
 
 import { useState } from "react";
-import { Motion } from "lucide-react";
+import { Image } from "lucide-react";
 
 type ProductImagesProps = {
   imageUrl?: string | null;
@@ -33,7 +33,7 @@ export function ProductImages({ imageUrl, productName }: ProductImagesProps) {
           </div>
         ) : (
           <div className="w-full h-full flex flex-col items-center justify-center bg-black/50 p-4">
-            <Motion className="h-12 w-12 text-white/30 mb-4" />
+            <Image className="h-12 w-12 text-white/30 mb-4" />
             <span className="text-white/50 text-center">No image available</span>
           </div>
         )}
