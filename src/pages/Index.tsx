@@ -6,13 +6,13 @@ import { ProfileLoader } from "@/components/dashboard/ProfileLoader";
 import { DashboardError } from "@/components/dashboard/DashboardError";
 
 // Lazy load page components
-// Using relative paths to match the actual file structure
-const Dashboard = lazy(() => import("../pages/dashboard/Index"));
-const CustomersPage = lazy(() => import("../pages/customers/Index"));
-const ProductsPage = lazy(() => import("../pages/products/Index"));
-const OrdersPage = lazy(() => import("../pages/orders/Index"));
-const SocialPage = lazy(() => import("../pages/social/Index"));
-const ViewStorePage = lazy(() => import("../pages/dashboard/ViewStorePage"));
+// Using correct relative paths
+const Dashboard = lazy(() => import("./dashboard/Index"));
+const CustomersPage = lazy(() => import("./customers/Index"));
+const ProductsPage = lazy(() => import("./products/Index"));
+const OrdersPage = lazy(() => import("./orders/Index"));
+const SocialPage = lazy(() => import("./social/Index"));
+const ViewStorePage = lazy(() => import("./dashboard/ViewStorePage"));
 
 // Loading fallback
 const LoadingFallback = () => (
