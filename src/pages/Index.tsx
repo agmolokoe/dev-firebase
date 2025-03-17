@@ -6,7 +6,6 @@ import { ProfileLoader } from "@/components/dashboard/ProfileLoader";
 import { DashboardError } from "@/components/dashboard/DashboardError";
 
 // Lazy load page components
-// Using correct relative paths
 const Dashboard = lazy(() => import("./dashboard/Index"));
 const CustomersPage = lazy(() => import("./customers/Index"));
 const ProductsPage = lazy(() => import("./products/Index"));
