@@ -1,7 +1,7 @@
 
 import { ProductCard } from "./ProductCard";
 import { Button } from "@/components/ui/button";
-import { ChevronLeft, ChevronRight, Sparkles } from "lucide-react";
+import { ChevronLeft, ChevronRight, Sparkles, Heart } from "lucide-react";
 import { useState } from "react";
 
 type Product = {
@@ -40,10 +40,18 @@ export function RelatedProducts({ products }: RelatedProductsProps) {
   };
 
   return (
-    <div className="container mx-auto px-4 py-12">
-      <div className="mb-8 flex items-center justify-between">
+    <div className="container mx-auto px-4 py-12 relative">
+      {/* Background decorations */}
+      <div className="absolute top-0 left-0 w-full h-full overflow-hidden pointer-events-none">
+        <div className="absolute -top-24 -left-24 w-64 h-64 bg-primary/5 rounded-full blur-3xl"></div>
+        <div className="absolute -bottom-32 -right-32 w-80 h-80 bg-secondary/5 rounded-full blur-3xl"></div>
+      </div>
+      
+      <div className="mb-8 flex items-center justify-between relative z-10">
         <div className="flex items-center space-x-3">
-          <Sparkles className="h-6 w-6 text-[#FE2C55]" />
+          <div className="bg-primary/10 p-2 rounded-full">
+            <Heart className="h-5 w-5 text-primary" />
+          </div>
           <h2 className="text-2xl font-bold">You may also like</h2>
         </div>
         
@@ -53,7 +61,7 @@ export function RelatedProducts({ products }: RelatedProductsProps) {
               variant="outline" 
               size="icon" 
               onClick={prevPage}
-              className="border-white/10 hover:bg-white/10"
+              className="border-white/10 hover:bg-white/10 rounded-full"
             >
               <ChevronLeft className="h-4 w-4" />
             </Button>
@@ -61,7 +69,7 @@ export function RelatedProducts({ products }: RelatedProductsProps) {
               variant="outline" 
               size="icon" 
               onClick={nextPage}
-              className="border-white/10 hover:bg-white/10"
+              className="border-white/10 hover:bg-white/10 rounded-full"
             >
               <ChevronRight className="h-4 w-4" />
             </Button>
@@ -88,12 +96,12 @@ export function RelatedProducts({ products }: RelatedProductsProps) {
         </div>
         
         {/* Gradient overlay on sides */}
-        <div className="absolute top-0 bottom-0 left-0 w-8 bg-gradient-to-r from-black to-transparent pointer-events-none"></div>
-        <div className="absolute top-0 bottom-0 right-0 w-8 bg-gradient-to-l from-black to-transparent pointer-events-none"></div>
+        <div className="absolute top-0 bottom-0 left-0 w-16 bg-gradient-to-r from-black to-transparent pointer-events-none"></div>
+        <div className="absolute top-0 bottom-0 right-0 w-16 bg-gradient-to-l from-black to-transparent pointer-events-none"></div>
       </div>
       
       <div className="mt-8 flex justify-center">
-        <Button className="bg-[#25F4EE] hover:bg-[#25F4EE]/80 text-black font-medium">
+        <Button className="bg-[#25F4EE] hover:bg-[#25F4EE]/80 text-black font-medium px-6 py-2 rounded-full">
           View All Related Products
         </Button>
       </div>
