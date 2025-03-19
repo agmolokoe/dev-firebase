@@ -53,7 +53,7 @@ export default function ViewStorePage() {
 
   const handleViewStore = () => {
     if (businessProfile?.id) {
-      window.open(`/${businessProfile.id}`, '_blank');
+      window.open(`/shopapp/${businessProfile.id}`, '_blank');
     }
   };
 
@@ -105,12 +105,12 @@ export default function ViewStorePage() {
               <h3 className="font-medium mb-2">Store URL</h3>
               <div className="flex items-center gap-2">
                 <code className="bg-background p-2 rounded flex-1 overflow-x-auto">
-                  {window.location.origin}/{businessProfile.id}
+                  www.baseti.co.za/shopapp/{businessProfile.id}
                 </code>
                 <Button 
                   variant="outline" 
                   onClick={() => {
-                    navigator.clipboard.writeText(`${window.location.origin}/${businessProfile.id}`);
+                    navigator.clipboard.writeText(`www.baseti.co.za/shopapp/${businessProfile.id}`);
                     toast({
                       title: "Copied to clipboard",
                       description: "Store URL has been copied to your clipboard",

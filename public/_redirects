@@ -1,1 +1,7 @@
+
 /*    /index.html   200
+/store/:businessId    /shopapp/:businessId    301
+/:businessId    /shopapp/:businessId    301
+/store/:businessId/product/:productId    /shopapp/:businessId/product/:productId    301
+/:businessId/product/:productId    /shopapp/:businessId/product/:productId    301
+

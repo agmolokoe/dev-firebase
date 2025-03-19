@@ -90,7 +90,7 @@ function ProductDetail() {
           <h1 className="text-2xl font-bold mb-4">Product not found</h1>
           <p className="text-muted-foreground mb-6">The product you're looking for doesn't exist or has been removed.</p>
           <Button asChild>
-            <Link to={`/store/${businessId}`}>Back to Store</Link>
+            <Link to={`/shopapp/${businessId}`}>Back to Store</Link>
           </Button>
         </div>
       </div>
@@ -112,7 +112,7 @@ function ProductDetail() {
       {/* Breadcrumb Navigation */}
       <div className="container mx-auto px-4 py-4">
         <Button variant="ghost" asChild size="sm" className="text-muted-foreground">
-          <Link to={`/store/${businessId}`} className="flex items-center">
+          <Link to={`/shopapp/${businessId}`} className="flex items-center">
             <ChevronLeft className="h-4 w-4 mr-1" />
             Back to store
           </Link>

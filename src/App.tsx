@@ -1,3 +1,4 @@
+
 import React, { useEffect, useState } from "react"
 import { Toaster } from "@/components/ui/toaster"
 import { Toaster as Sonner } from "@/components/ui/sonner"
@@ -91,13 +92,15 @@ function App() {
                 }
               />
               
-              {/* Modified Store Routes - These are public facing */}
-              <Route path="/:businessId" element={<StorePage />} />
-              <Route path="/:businessId/product/:productId" element={<ProductDetailPage />} />
+              {/* New store routes with the requested URL structure */}
+              <Route path="/shopapp/:businessId" element={<StorePage />} />
+              <Route path="/shopapp/:businessId/product/:productId" element={<ProductDetailPage />} />
               
-              {/* Keep old routes temporarily for backward compatibility */}
-              <Route path="/store/:businessId" element={<Navigate to="/:businessId" replace />} />
-              <Route path="/store/:businessId/product/:productId" element={<Navigate to="/:businessId/product/:productId" replace />} />
+              {/* Redirects from old routes */}
+              <Route path="/:businessId" element={<Navigate to="/shopapp/:businessId" replace />} />
+              <Route path="/:businessId/product/:productId" element={<Navigate to="/shopapp/:businessId/product/:productId" replace />} />
+              <Route path="/store/:businessId" element={<Navigate to="/shopapp/:businessId" replace />} />
+              <Route path="/store/:businessId/product/:productId" element={<Navigate to="/shopapp/:businessId/product/:productId" replace />} />
               
               <Route path="*" element={<Navigate to="/" replace />} />
             </Routes>
