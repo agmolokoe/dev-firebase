@@ -10,14 +10,14 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog"
 import { Form } from "@/components/ui/form"
-import { Button } from "@/components/ui/button"
-import { Loader2, ExternalLink } from "lucide-react"
-import { ProductImageUpload } from "./ProductImageUpload"
+import { ScrollArea } from "@/components/ui/scroll-area"
 import { ProductFormFields, formSchema } from "./ProductFormFields"
 import * as z from "zod"
-import { ScrollArea } from "@/components/ui/scroll-area"
-import { ShareLinks } from "@/components/social/ShareLinks"
 import { supabase } from "@/lib/supabase"
+import { ProductImageSection } from "./ProductImageSection"
+import { ProductShareSection } from "./ProductShareSection"
+import { ProductStoreLink } from "./ProductStoreLink"
+import { ProductDialogActions } from "./ProductDialogActions"
 
 type ProductDialogProps = {
   open: boolean
@@ -109,10 +109,6 @@ export function ProductDialog({
     }
   }
 
-  const getStoreUrl = () => {
-    return `/store/${businessId}`;
-  };
-
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-[425px] md:max-w-[600px] max-h-[90vh] bg-[#000000] text-[#FFFFFF] border-[#FFFFFF]/10 flex flex-col overflow-hidden">
@@ -128,67 +124,32 @@ export function ProductDialog({
         <ScrollArea className="flex-1 overflow-auto pr-4">
           <Form {...form}>
             <form className="space-y-4">
-              <div className="flex justify-center mb-4">
-                <ProductImageUpload
-                  previewUrl={previewUrl}
-                  onImageUpload={setPreviewUrl}
-                  disabled={isSubmitting}
-                />
-              </div>
+              <ProductImageSection 
+                previewUrl={previewUrl}
+                setPreviewUrl={setPreviewUrl}
+                isSubmitting={isSubmitting}
+              />
               
               <ProductFormFields form={form} />
 
               {product && (
-                <div className="mt-6 pt-4 border-t border-[#FFFFFF]/10">
-                  <h4 className="text-sm font-medium mb-2">Share this product</h4>
-                  <ShareLinks 
-                    title={product.name}
-                    description={product.description || ""}
-                  />
-                </div>
+                <ProductShareSection product={product} />
               )}
               
               {businessId && (
-                <div className="mt-6 pt-4 border-t border-[#FFFFFF]/10">
-                  <Button
-                    type="button"
-                    variant="outline"
-                    className="w-full text-[#FFFFFF] border-[#25F4EE]/40 hover:bg-[#25F4EE]/10"
-                    onClick={() => window.open(getStoreUrl(), '_blank')}
-                  >
-                    <ExternalLink className="mr-2 h-4 w-4" />
-                    View Your Store
-                  </Button>
-                </div>
+                <ProductStoreLink businessId={businessId} />
               )}
             </form>
           </Form>
         </ScrollArea>
         
-        <div className="flex justify-end space-x-2 pt-4 border-t border-[#FFFFFF]/10 mt-4 bg-black sticky bottom-0">
-          <Button
-            type="button"
-            variant="outline"
-            onClick={() => onOpenChange(false)}
-            disabled={isSubmitting}
-            className="text-[#FFFFFF] border-[#FFFFFF]/10 hover:bg-[#FFFFFF]/5"
-          >
-            Cancel
-          </Button>
-          <Button 
-            onClick={form.handleSubmit(handleSubmit)}
-            disabled={isSubmitting}
-            className="bg-[#FE2C55] text-[#FFFFFF] hover:bg-[#FE2C55]/90"
-          >
-            {isSubmitting ? (
-              <Loader2 className="w-4 h-4 animate-spin" />
-            ) : product ? (
-              "Update"
-            ) : (
-              "Create"
-            )}
-          </Button>
-        </div>
+        <ProductDialogActions
+          isSubmitting={isSubmitting}
+          onOpenChange={onOpenChange}
+          form={form}
+          onSubmit={handleSubmit}
+          isEditMode={!!product}
+        />
       </DialogContent>
     </Dialog>
   )
