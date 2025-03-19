@@ -1,5 +1,5 @@
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { ProductCard } from "./ProductCard";
 import { supabase } from "@/lib/supabase";
 
@@ -12,45 +12,45 @@ export function FeaturedProducts({ businessId, limit = 4 }: FeaturedProductsProp
   const [products, setProducts] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   
-  useEffect(() => {
-    const fetchFeaturedProducts = async () => {
-      try {
-        setLoading(true);
-        
-        const { data, error } = await supabase
-          .from('products')
-          .select('*')
-          .eq('business_id', businessId)
-          .order('created_at', { ascending: false })
-          .limit(limit);
-        
-        if (error) throw error;
-        
-        // Mark some products as featured for demo purposes
-        const productsWithFlags = data.map((product, index) => ({
-          ...product,
-          isFeatured: index < 2,
-          isNew: index >= 2
-        }));
-        
-        setProducts(productsWithFlags);
-      } catch (error) {
-        console.error("Error fetching featured products:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
+  const fetchFeaturedProducts = useCallback(async () => {
+    if (!businessId) return;
     
-    if (businessId) {
-      fetchFeaturedProducts();
+    try {
+      setLoading(true);
+      
+      const { data, error } = await supabase
+        .from('products')
+        .select('*')
+        .eq('business_id', businessId)
+        .order('created_at', { ascending: false })
+        .limit(limit);
+      
+      if (error) throw error;
+      
+      // Mark some products as featured for demo purposes
+      const productsWithFlags = data.map((product, index) => ({
+        ...product,
+        isFeatured: index < 2,
+        isNew: index >= 2
+      }));
+      
+      setProducts(productsWithFlags);
+    } catch (error) {
+      console.error("Error fetching featured products:", error);
+    } finally {
+      setLoading(false);
     }
   }, [businessId, limit]);
   
+  useEffect(() => {
+    fetchFeaturedProducts();
+  }, [fetchFeaturedProducts]);
+  
   if (loading) {
     return (
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 animate-pulse">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         {Array(limit).fill(0).map((_, i) => (
-          <div key={i} className="h-[320px] bg-muted rounded"></div>
+          <div key={i} className="h-[320px] bg-muted rounded-lg animate-pulse"></div>
         ))}
       </div>
     );

@@ -1,5 +1,5 @@
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Image, ZoomIn, ZoomOut } from "lucide-react";
 
 type ProductImagesProps = {
@@ -10,6 +10,12 @@ type ProductImagesProps = {
 export function ProductImages({ imageUrl, productName }: ProductImagesProps) {
   const [imageError, setImageError] = useState(false);
   const [isZoomed, setIsZoomed] = useState(false);
+  const [isImageLoaded, setIsImageLoaded] = useState(false);
+
+  // Reset image loaded state when imageUrl changes
+  useEffect(() => {
+    setIsImageLoaded(false);
+  }, [imageUrl]);
 
   const handleZoomToggle = () => {
     setIsZoomed(!isZoomed);
@@ -23,11 +29,18 @@ export function ProductImages({ imageUrl, productName }: ProductImagesProps) {
       >
         {imageUrl && !imageError ? (
           <div className="w-full h-full overflow-hidden bg-gradient-to-b from-black/5 to-black/20">
+            {!isImageLoaded && (
+              <div className="absolute inset-0 flex items-center justify-center bg-black/20">
+                <div className="h-8 w-8 rounded-full border-4 border-white/30 border-t-transparent animate-spin"></div>
+              </div>
+            )}
             <img 
               src={imageUrl} 
               alt={productName} 
-              className={`w-full h-full object-contain transition-transform duration-500 ${isZoomed ? 'scale-150' : 'scale-100'} ${isZoomed ? 'cursor-zoom-out' : 'cursor-zoom-in'} hover:scale-110`}
+              className={`w-full h-full object-contain transition-transform duration-500 ${isZoomed ? 'scale-150' : 'scale-100'} ${isZoomed ? 'cursor-zoom-out' : 'cursor-zoom-in'} hover:scale-110 ${isImageLoaded ? 'opacity-100' : 'opacity-0'}`}
               onError={() => setImageError(true)}
+              onLoad={() => setIsImageLoaded(true)}
+              loading="lazy"
             />
             <div className="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none"></div>
           </div>
@@ -70,6 +83,7 @@ export function ProductImages({ imageUrl, productName }: ProductImagesProps) {
               alt={productName} 
               className="w-full h-full object-cover hover:opacity-90 transition-opacity"
               onError={() => setImageError(true)}
+              loading="lazy"
             />
           ) : (
             <div className="w-full h-full flex items-center justify-center">

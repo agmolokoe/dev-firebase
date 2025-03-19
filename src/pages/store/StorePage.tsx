@@ -1,5 +1,5 @@
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, useCallback } from "react"
 import { useParams } from "react-router-dom"
 import { supabase } from "@/lib/supabase"
 import { useToast } from "@/hooks/use-toast"
@@ -17,51 +17,51 @@ export default function StorePage() {
   const [products, setProducts] = useState<any[]>([])
   const [businessProfile, setBusinessProfile] = useState<any>(null)
   
-  useEffect(() => {
-    const fetchStoreData = async () => {
-      try {
-        setLoading(true)
-        
-        // Fetch business profile
-        const { data: profileData, error: profileError } = await supabase
+  const fetchStoreData = useCallback(async () => {
+    if (!businessId) return;
+    
+    try {
+      setLoading(true)
+      
+      // Fetch both business profile and products in parallel
+      const [profileResponse, productsResponse] = await Promise.all([
+        supabase
           .from('business_profiles')
           .select('*')
           .eq('id', businessId)
-          .single()
+          .single(),
         
-        if (profileError) throw profileError
-        
-        // Fetch products
-        const { data: productsData, error: productsError } = await supabase
+        supabase
           .from('products')
           .select('*')
           .eq('business_id', businessId)
-        
-        if (productsError) throw productsError
-        
-        setBusinessProfile(profileData)
-        setProducts(productsData || [])
-      } catch (error) {
-        console.error("Error fetching store data:", error)
-        toast({
-          title: "Error",
-          description: "Failed to load store data",
-          variant: "destructive",
-        })
-      } finally {
-        setLoading(false)
-      }
+      ]);
+      
+      if (profileResponse.error) throw profileResponse.error;
+      if (productsResponse.error) throw productsResponse.error;
+      
+      setBusinessProfile(profileResponse.data);
+      setProducts(productsResponse.data || []);
+    } catch (error) {
+      console.error("Error fetching store data:", error)
+      toast({
+        title: "Error",
+        description: "Failed to load store data",
+        variant: "destructive",
+      })
+    } finally {
+      setLoading(false)
     }
-    
-    if (businessId) {
-      fetchStoreData()
-    }
-  }, [businessId, toast])
+  }, [businessId, toast]);
+  
+  useEffect(() => {
+    fetchStoreData();
+  }, [fetchStoreData]);
 
   if (loading) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
-        <div className="animate-pulse">Loading store...</div>
+        <div className="h-8 w-8 rounded-full border-4 border-primary border-t-transparent animate-spin"></div>
       </div>
     )
   }

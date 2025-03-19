@@ -1,5 +1,5 @@
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, useCallback } from "react"
 import { useParams, Link } from "react-router-dom"
 import { supabase } from "@/lib/supabase"
 import { useToast } from "@/hooks/use-toast"
@@ -21,64 +21,62 @@ function ProductDetail() {
   const [businessProfile, setBusinessProfile] = useState<any>(null)
   const [relatedProducts, setRelatedProducts] = useState<any[]>([])
 
-  useEffect(() => {
-    const fetchProductData = async () => {
-      try {
-        setLoading(true)
-        
-        // Fetch product
-        const { data: productData, error: productError } = await supabase
+  const fetchProductData = useCallback(async () => {
+    if (!businessId || !productId) return;
+    
+    try {
+      setLoading(true)
+      
+      // Perform all fetches in parallel for better performance
+      const [productResponse, profileResponse, relatedResponse] = await Promise.all([
+        supabase
           .from('products')
           .select('*')
           .eq('id', productId)
           .eq('business_id', businessId)
-          .single()
+          .single(),
         
-        if (productError) throw productError
-        
-        // Fetch business profile
-        const { data: profileData, error: profileError } = await supabase
+        supabase
           .from('business_profiles')
           .select('*')
           .eq('id', businessId)
-          .single()
+          .single(),
         
-        if (profileError) throw profileError
-        
-        // Fetch related products (same business, different product)
-        const { data: relatedData, error: relatedError } = await supabase
+        supabase
           .from('products')
           .select('*')
           .eq('business_id', businessId)
           .neq('id', productId)
           .limit(4)
-        
-        if (relatedError) throw relatedError
-        
-        setProduct(productData)
-        setBusinessProfile(profileData)
-        setRelatedProducts(relatedData || [])
-      } catch (error) {
-        console.error("Error fetching product data:", error)
-        toast({
-          title: "Error",
-          description: "Failed to load product data",
-          variant: "destructive",
-        })
-      } finally {
-        setLoading(false)
-      }
+      ]);
+      
+      if (productResponse.error) throw productResponse.error;
+      if (profileResponse.error) throw profileResponse.error;
+      if (relatedResponse.error) throw relatedResponse.error;
+      
+      setProduct(productResponse.data);
+      setBusinessProfile(profileResponse.data);
+      setRelatedProducts(relatedResponse.data || []);
+    } catch (error) {
+      console.error("Error fetching product data:", error)
+      toast({
+        title: "Error",
+        description: "Failed to load product data",
+        variant: "destructive",
+      })
+    } finally {
+      setLoading(false)
     }
-    
-    if (businessId && productId) {
-      fetchProductData()
-    }
-  }, [businessId, productId, toast])
+  }, [businessId, productId, toast]);
+  
+  useEffect(() => {
+    fetchProductData();
+  }, [fetchProductData]);
 
   if (loading) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
-        <div className="animate-pulse">Loading product...</div>
+        <div className="h-8 w-8 rounded-full border-4 border-primary border-t-transparent animate-spin"></div>
       </div>
     )
   }

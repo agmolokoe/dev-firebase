@@ -1,5 +1,5 @@
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { supabase } from "@/lib/supabase";
 import { useToast } from "@/hooks/use-toast";
@@ -14,61 +14,61 @@ export function ProfileLoader({ children }: { children: React.ReactNode }) {
   const { toast } = useToast();
   const location = useLocation();
 
-  useEffect(() => {
-    const fetchBusinessProfile = async () => {
-      try {
-        const { data: { session } } = await supabase.auth.getSession();
-        if (!session) {
-          setLoading(false);
-          navigate('/auth');
-          return;
-        }
-        
-        // Skip profile check if we're already on the setup page
-        if (location.pathname === '/dashboard/profile/setup') {
-          setLoading(false);
-          return;
-        }
-
-        const { data, error: fetchError } = await supabase
-          .from('business_profiles')
-          .select('*')
-          .eq('id', session.user.id)
-          .maybeSingle();
-        
-        if (fetchError) {
-          console.error('Error fetching business profile:', fetchError);
-          setError('Could not load business profile');
-          toast({
-            variant: "destructive",
-            title: "Error",
-            description: "Could not load business profile",
-          });
-          return;
-        }
-        
-        if (!data && !location.pathname.includes('/profile/setup')) {
-          console.log('No business profile found, redirecting to setup');
-          toast({
-            title: "Profile Setup Required",
-            description: "Please complete your business profile setup",
-          });
-          navigate('/dashboard/profile/setup');
-          return;
-        }
-        
-        setBusinessProfile(data);
-        setError(null);
-      } catch (error) {
-        console.error('Error:', error);
-        setError('An unexpected error occurred');
-      } finally {
+  const fetchBusinessProfile = useCallback(async () => {
+    try {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) {
         setLoading(false);
+        navigate('/auth');
+        return;
       }
-    };
+      
+      // Skip profile check if we're already on the setup page
+      if (location.pathname === '/dashboard/profile/setup') {
+        setLoading(false);
+        return;
+      }
 
-    fetchBusinessProfile();
+      const { data, error: fetchError } = await supabase
+        .from('business_profiles')
+        .select('*')
+        .eq('id', session.user.id)
+        .maybeSingle();
+      
+      if (fetchError) {
+        console.error('Error fetching business profile:', fetchError);
+        setError('Could not load business profile');
+        toast({
+          variant: "destructive",
+          title: "Error",
+          description: "Could not load business profile",
+        });
+        return;
+      }
+      
+      if (!data && !location.pathname.includes('/profile/setup')) {
+        console.log('No business profile found, redirecting to setup');
+        toast({
+          title: "Profile Setup Required",
+          description: "Please complete your business profile setup",
+        });
+        navigate('/dashboard/profile/setup');
+        return;
+      }
+      
+      setBusinessProfile(data);
+      setError(null);
+    } catch (error) {
+      console.error('Error:', error);
+      setError('An unexpected error occurred');
+    } finally {
+      setLoading(false);
+    }
   }, [navigate, toast, location.pathname]);
+
+  useEffect(() => {
+    fetchBusinessProfile();
+  }, [fetchBusinessProfile]);
 
   if (loading) {
     return (
@@ -90,4 +90,3 @@ export function ProfileLoader({ children }: { children: React.ReactNode }) {
 
   return children;
 }
-
