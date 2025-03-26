@@ -1,5 +1,5 @@
 
-import { useEffect, useState } from "react"
+import { useEffect, useState, useCallback, memo } from "react"
 import { Form } from "@/components/ui/form"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { ProductFormFields } from "./ProductFormFields"
@@ -34,7 +34,7 @@ interface ProductFormProps {
   businessId: string | null
 }
 
-export function ProductForm({
+export const ProductForm = memo(function ProductForm({
   form,
   product,
   previewUrl,
@@ -44,6 +44,11 @@ export function ProductForm({
   onOpenChange,
   businessId
 }: ProductFormProps) {
+  
+  const handleFormSubmit = useCallback(async (values: z.infer<typeof formSchema>) => {
+    await onSubmit(values);
+  }, [onSubmit]);
+
   return (
     <ScrollArea className="flex-1 overflow-auto pr-4">
       <Form {...form}>
@@ -70,9 +75,9 @@ export function ProductForm({
         isSubmitting={isSubmitting}
         onOpenChange={onOpenChange}
         form={form}
-        onSubmit={onSubmit}
+        onSubmit={handleFormSubmit}
         isEditMode={!!product}
       />
     </ScrollArea>
   )
-}
+})

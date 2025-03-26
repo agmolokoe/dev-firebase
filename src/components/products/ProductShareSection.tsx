@@ -1,4 +1,5 @@
 
+import { memo } from "react"
 import { Product } from "./ProductForm"
 import { ProductShareButton } from "./ProductShareButton"
 
@@ -6,7 +7,7 @@ interface ProductShareSectionProps {
   product: Product
 }
 
-export function ProductShareSection({ product }: ProductShareSectionProps) {
+export const ProductShareSection = memo(function ProductShareSection({ product }: ProductShareSectionProps) {
   return (
     <div className="border-t border-[#FFFFFF]/10 pt-4 mt-4">
       <div className="flex items-center justify-between">
@@ -18,4 +19,4 @@ export function ProductShareSection({ product }: ProductShareSectionProps) {
       </p>
     </div>
   )
-}
+})

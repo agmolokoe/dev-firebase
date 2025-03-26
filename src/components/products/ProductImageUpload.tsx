@@ -1,4 +1,5 @@
-import { useState } from "react"
+
+import { useState, useCallback, memo } from "react"
 import { Input } from "@/components/ui/input"
 import { Image, Loader2 } from "lucide-react"
 import { supabase } from "@/lib/supabase"
@@ -10,44 +11,55 @@ type ProductImageUploadProps = {
   disabled?: boolean
 }
 
-export function ProductImageUpload({ previewUrl, onImageUpload, disabled }: ProductImageUploadProps) {
-  const [uploadingImage, setUploadingImage] = useState(false)
-  const { toast } = useToast()
+export const ProductImageUpload = memo(function ProductImageUpload({ 
+  previewUrl, 
+  onImageUpload, 
+  disabled 
+}: ProductImageUploadProps) {
+  const [uploadingImage, setUploadingImage] = useState(false);
+  const { toast } = useToast();
 
-  const handleImageUpload = async (file: File) => {
+  const handleImageUpload = useCallback(async (file: File) => {
     try {
-      setUploadingImage(true)
+      setUploadingImage(true);
       
-      const fileExt = file.name.split('.').pop()
-      const fileName = `${Math.random().toString(36).substring(2)}.${fileExt}`
+      const fileExt = file.name.split('.').pop();
+      const fileName = `${Math.random().toString(36).substring(2)}.${fileExt}`;
       
       const { data, error } = await supabase.storage
         .from('product-images')
-        .upload(fileName, file)
+        .upload(fileName, file);
       
       if (error) {
-        console.error('Storage upload error:', error)
-        throw error
+        console.error('Storage upload error:', error);
+        throw error;
       }
       
       const { data: { publicUrl } } = supabase.storage
         .from('product-images')
-        .getPublicUrl(fileName)
+        .getPublicUrl(fileName);
       
-      onImageUpload(publicUrl)
-      return publicUrl
+      onImageUpload(publicUrl);
+      return publicUrl;
     } catch (error) {
-      console.error('Error uploading image:', error)
+      console.error('Error uploading image:', error);
       toast({
         title: "Error",
         description: "Failed to upload image. Please try again.",
         variant: "destructive",
-      })
-      return null
+      });
+      return null;
     } finally {
-      setUploadingImage(false)
+      setUploadingImage(false);
     }
-  }
+  }, [onImageUpload, toast]);
+
+  const handleFileChange = useCallback(async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      await handleImageUpload(file);
+    }
+  }, [handleImageUpload]);
 
   return (
     <div className="relative w-32 h-32 border-2 border-dashed border-[#FFFFFF]/20 rounded-lg overflow-hidden">
@@ -66,12 +78,7 @@ export function ProductImageUpload({ previewUrl, onImageUpload, disabled }: Prod
         type="file"
         accept="image/*"
         className="absolute inset-0 opacity-0 cursor-pointer"
-        onChange={async (e) => {
-          const file = e.target.files?.[0]
-          if (file) {
-            await handleImageUpload(file)
-          }
-        }}
+        onChange={handleFileChange}
         disabled={disabled || uploadingImage}
       />
       {uploadingImage && (
@@ -80,5 +87,5 @@ export function ProductImageUpload({ previewUrl, onImageUpload, disabled }: Prod
         </div>
       )}
     </div>
-  )
-}
+  );
+})

@@ -1,5 +1,5 @@
 
-import { useState } from "react"
+import { useState, useCallback } from "react"
 import { useProductData } from "./useProductData"
 import { useProductActions } from "./useProductActions"
 
@@ -23,15 +23,23 @@ export function useProducts() {
     handleDeleteProduct
   } = useProductActions(userId)
   
-  const openAddDialog = () => {
+  const openAddDialog = useCallback(() => {
     setSelectedProduct(null)
     setIsDialogOpen(true)
-  }
+  }, [])
   
-  const openEditDialog = (product: any) => {
+  const openEditDialog = useCallback((product: any) => {
     setSelectedProduct(product)
     setIsDialogOpen(true)
-  }
+  }, [])
+  
+  const setIsDialogOpenCallback = useCallback((isOpen: boolean) => {
+    setIsDialogOpen(isOpen);
+  }, []);
+  
+  const setSelectedProductCallback = useCallback((product: any) => {
+    setSelectedProduct(product);
+  }, []);
 
   return {
     userId,
@@ -45,9 +53,9 @@ export function useProducts() {
     handleUpdateProduct,
     handleDeleteProduct,
     selectedProduct,
-    setSelectedProduct,
+    setSelectedProduct: setSelectedProductCallback,
     isDialogOpen,
-    setIsDialogOpen,
+    setIsDialogOpen: setIsDialogOpenCallback,
     openAddDialog,
     openEditDialog
   }

@@ -1,4 +1,5 @@
 
+import { memo, useCallback } from "react"
 import { ProductImageUpload } from "./ProductImageUpload"
 
 interface ProductImageSectionProps {
@@ -7,18 +8,23 @@ interface ProductImageSectionProps {
   isSubmitting: boolean;
 }
 
-export function ProductImageSection({ 
+export const ProductImageSection = memo(function ProductImageSection({ 
   previewUrl, 
   setPreviewUrl, 
   isSubmitting 
 }: ProductImageSectionProps) {
+  
+  const handleImageUpload = useCallback((url: string) => {
+    setPreviewUrl(url);
+  }, [setPreviewUrl]);
+  
   return (
     <div className="flex justify-center mb-4">
       <ProductImageUpload
         previewUrl={previewUrl}
-        onImageUpload={setPreviewUrl}
+        onImageUpload={handleImageUpload}
         disabled={isSubmitting}
       />
     </div>
   );
-}
+})

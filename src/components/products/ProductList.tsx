@@ -1,4 +1,5 @@
 
+import { memo, useCallback } from "react"
 import { Button } from "@/components/ui/button"
 import {
   Table,
@@ -11,7 +12,7 @@ import {
 import { formatCurrency } from "@/lib/utils"
 import { ProductShareButton } from "./ProductShareButton"
 
-type Product = {
+export type Product = {
   id: number
   name: string
   description: string | null
@@ -19,6 +20,7 @@ type Product = {
   selling_price: number
   stock: number
   image_url?: string | null
+  business_id: string
 }
 
 type ProductListProps = {
@@ -28,7 +30,21 @@ type ProductListProps = {
   onDelete: (id: number) => void
 }
 
-export function ProductList({ products, isLoading, onEdit, onDelete }: ProductListProps) {
+export const ProductList = memo(function ProductList({ 
+  products, 
+  isLoading, 
+  onEdit, 
+  onDelete 
+}: ProductListProps) {
+  
+  const handleEdit = useCallback((product: Product) => {
+    onEdit(product)
+  }, [onEdit])
+  
+  const handleDelete = useCallback((id: number) => {
+    onDelete(id)
+  }, [onDelete])
+
   return (
     <div className="rounded-md border border-[#FFFFFF]/10">
       <Table>
@@ -87,14 +103,14 @@ export function ProductList({ products, isLoading, onEdit, onDelete }: ProductLi
                     <ProductShareButton product={product} />
                     <Button
                       variant="ghost"
-                      onClick={() => onEdit(product)}
+                      onClick={() => handleEdit(product)}
                       className="text-[#25F4EE] hover:text-[#25F4EE]/90 hover:bg-[#FFFFFF]/5"
                     >
                       Edit
                     </Button>
                     <Button
                       variant="ghost"
-                      onClick={() => onDelete(product.id)}
+                      onClick={() => handleDelete(product.id)}
                       className="text-[#FE2C55] hover:text-[#FE2C55]/90 hover:bg-[#FFFFFF]/5"
                     >
                       Delete
@@ -108,4 +124,4 @@ export function ProductList({ products, isLoading, onEdit, onDelete }: ProductLi
       </Table>
     </div>
   )
-}
+})

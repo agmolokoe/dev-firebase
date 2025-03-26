@@ -1,4 +1,5 @@
 
+import { useCallback } from "react"
 import { useQueryClient } from "@tanstack/react-query"
 import { supabase } from "@/lib/supabase"
 import { useToast } from "@/hooks/use-toast"
@@ -7,7 +8,7 @@ export function useProductActions(userId: string | null) {
   const { toast } = useToast()
   const queryClient = useQueryClient()
 
-  const handleCreateProduct = async (productData: any) => {
+  const handleCreateProduct = useCallback(async (productData: any) => {
     try {
       if (!userId) {
         toast({
@@ -17,9 +18,6 @@ export function useProductActions(userId: string | null) {
         })
         return false
       }
-
-      console.log("Creating product with business_id:", userId)
-      console.log("Product data:", productData)
 
       const { error, data } = await supabase
         .from('products')
@@ -39,7 +37,6 @@ export function useProductActions(userId: string | null) {
         throw error
       }
       
-      console.log("Product created successfully:", data)
       await queryClient.invalidateQueries({ queryKey: ['products', userId] })
       
       toast({
@@ -56,9 +53,9 @@ export function useProductActions(userId: string | null) {
       })
       return false
     }
-  }
+  }, [userId, toast, queryClient]);
 
-  const handleUpdateProduct = async (id: number, productData: any) => {
+  const handleUpdateProduct = useCallback(async (id: number, productData: any) => {
     try {
       if (!userId) {
         toast({
@@ -69,10 +66,7 @@ export function useProductActions(userId: string | null) {
         return false
       }
 
-      console.log("Updating product ID:", id)
-      console.log("Update data:", productData)
-
-      const { error, data } = await supabase
+      const { error } = await supabase
         .from('products')
         .update({
           name: productData.name,
@@ -91,7 +85,6 @@ export function useProductActions(userId: string | null) {
         throw error
       }
       
-      console.log("Product updated successfully:", data)
       await queryClient.invalidateQueries({ queryKey: ['products', userId] })
       
       toast({
@@ -108,9 +101,9 @@ export function useProductActions(userId: string | null) {
       })
       return false
     }
-  }
+  }, [userId, toast, queryClient]);
 
-  const handleDeleteProduct = async (id: number) => {
+  const handleDeleteProduct = useCallback(async (id: number) => {
     try {
       if (!userId) {
         toast({
@@ -120,8 +113,6 @@ export function useProductActions(userId: string | null) {
         })
         return false
       }
-
-      console.log("Deleting product ID:", id)
 
       const { error } = await supabase
         .from('products')
@@ -134,7 +125,6 @@ export function useProductActions(userId: string | null) {
         throw error
       }
       
-      console.log("Product deleted successfully")
       await queryClient.invalidateQueries({ queryKey: ['products', userId] })
       
       toast({
@@ -151,7 +141,7 @@ export function useProductActions(userId: string | null) {
       })
       return false
     }
-  }
+  }, [userId, toast, queryClient]);
 
   return {
     handleCreateProduct,

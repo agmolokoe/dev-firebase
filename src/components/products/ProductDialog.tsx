@@ -1,5 +1,5 @@
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, useCallback, useMemo, memo } from "react"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
 import {
@@ -23,7 +23,7 @@ interface ProductDialogProps {
   onUpdate: (id: number, data: z.infer<typeof formSchema>) => Promise<void>
 }
 
-export function ProductDialog({
+export const ProductDialog = memo(function ProductDialog({
   open,
   onOpenChange,
   product,
@@ -34,6 +34,17 @@ export function ProductDialog({
   const [previewUrl, setPreviewUrl] = useState<string | null>(null)
   const [businessId, setBusinessId] = useState<string | null>(null)
   const { toast } = useToast()
+  
+  const form = useForm<z.infer<typeof formSchema>>({
+    resolver: zodResolver(formSchema),
+    defaultValues: useMemo(() => ({
+      name: product?.name || "",
+      description: product?.description || "",
+      cost_price: product?.cost_price?.toString() || "",
+      selling_price: product?.selling_price?.toString() || "",
+      stock: product?.stock?.toString() || "0",
+    }), [product])
+  })
   
   // Get business ID on mount
   useEffect(() => {
@@ -65,20 +76,13 @@ export function ProductDialog({
       })
       setPreviewUrl(null)
     }
-  }, [product, open])
+  }, [product, open, form])
   
-  const form = useForm<z.infer<typeof formSchema>>({
-    resolver: zodResolver(formSchema),
-    defaultValues: {
-      name: product?.name || "",
-      description: product?.description || "",
-      cost_price: product?.cost_price?.toString() || "",
-      selling_price: product?.selling_price?.toString() || "",
-      stock: product?.stock?.toString() || "0",
-    },
-  })
+  const handleSetPreviewUrl = useCallback((url: string | null) => {
+    setPreviewUrl(url);
+  }, []);
 
-  const handleSubmit = async (values: z.infer<typeof formSchema>) => {
+  const handleSubmit = useCallback(async (values: z.infer<typeof formSchema>) => {
     try {
       setIsSubmitting(true)
       const formData = {
@@ -101,7 +105,7 @@ export function ProductDialog({
     } finally {
       setIsSubmitting(false)
     }
-  }
+  }, [product, previewUrl, onSubmit, onUpdate, toast]);
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -119,7 +123,7 @@ export function ProductDialog({
           form={form}
           product={product}
           previewUrl={previewUrl}
-          setPreviewUrl={setPreviewUrl}
+          setPreviewUrl={handleSetPreviewUrl}
           isSubmitting={isSubmitting}
           onSubmit={handleSubmit}
           onOpenChange={onOpenChange}
@@ -128,4 +132,4 @@ export function ProductDialog({
       </DialogContent>
     </Dialog>
   )
-}
+})

@@ -1,10 +1,12 @@
+
+import { memo } from "react"
 import { FormField, FormItem, FormLabel, FormControl, FormMessage } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 import { UseFormReturn } from "react-hook-form"
 import * as z from "zod"
 
-const formSchema = z.object({
+export const formSchema = z.object({
   name: z.string().min(2, "Name must be at least 2 characters"),
   description: z.string().optional(),
   cost_price: z.string().refine((val) => !isNaN(Number(val)) && Number(val) >= 0, {
@@ -22,7 +24,7 @@ type ProductFormFieldsProps = {
   form: UseFormReturn<z.infer<typeof formSchema>>
 }
 
-export function ProductFormFields({ form }: ProductFormFieldsProps) {
+export const ProductFormFields = memo(function ProductFormFields({ form }: ProductFormFieldsProps) {
   return (
     <>
       <FormField
@@ -124,6 +126,4 @@ export function ProductFormFields({ form }: ProductFormFieldsProps) {
       />
     </>
   )
-}
-
-export { formSchema }
+})

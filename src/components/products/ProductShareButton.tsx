@@ -1,5 +1,5 @@
 
-import { useState } from "react"
+import { useState, useCallback, memo } from "react"
 import { Button } from "@/components/ui/button"
 import { Share2 } from "lucide-react"
 import {
@@ -20,16 +20,18 @@ interface ProductShareButtonProps {
   }
 }
 
-export function ProductShareButton({ product }: ProductShareButtonProps) {
+export const ProductShareButton = memo(function ProductShareButton({ product }: ProductShareButtonProps) {
   const [open, setOpen] = useState(false)
   
   // Generate a proper share URL for the product
   const shareUrl = db.getShareUrl(product.business_id, product.id.toString())
   
-  console.log("Product share URL:", shareUrl)
+  const handleOpenChange = useCallback((newOpen: boolean) => {
+    setOpen(newOpen)
+  }, [])
 
   return (
-    <Popover open={open} onOpenChange={setOpen}>
+    <Popover open={open} onOpenChange={handleOpenChange}>
       <PopoverTrigger asChild>
         <Button
           variant="ghost"
@@ -52,4 +54,4 @@ export function ProductShareButton({ product }: ProductShareButtonProps) {
       </PopoverContent>
     </Popover>
   )
-}
+})

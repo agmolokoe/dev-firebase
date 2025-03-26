@@ -1,4 +1,5 @@
 
+import { memo, useCallback } from "react"
 import { Button } from "@/components/ui/button"
 import { Loader2 } from "lucide-react"
 import { UseFormReturn } from "react-hook-form"
@@ -13,26 +14,35 @@ interface ProductDialogActionsProps {
   isEditMode: boolean;
 }
 
-export function ProductDialogActions({ 
+export const ProductDialogActions = memo(function ProductDialogActions({ 
   isSubmitting,
   onOpenChange,
   form,
   onSubmit,
   isEditMode
 }: ProductDialogActionsProps) {
+  
+  const handleCancel = useCallback(() => {
+    onOpenChange(false);
+  }, [onOpenChange]);
+
+  const handleSubmit = useCallback(() => {
+    form.handleSubmit(onSubmit)();
+  }, [form, onSubmit]);
+
   return (
     <div className="flex justify-end space-x-2 pt-4 border-t border-[#FFFFFF]/10 mt-4 bg-black sticky bottom-0">
       <Button
         type="button"
         variant="outline"
-        onClick={() => onOpenChange(false)}
+        onClick={handleCancel}
         disabled={isSubmitting}
         className="text-[#FFFFFF] border-[#FFFFFF]/10 hover:bg-[#FFFFFF]/5"
       >
         Cancel
       </Button>
       <Button 
-        onClick={form.handleSubmit(onSubmit)}
+        onClick={handleSubmit}
         disabled={isSubmitting}
         className="bg-[#FE2C55] text-[#FFFFFF] hover:bg-[#FE2C55]/90"
       >
@@ -46,4 +56,4 @@ export function ProductDialogActions({
       </Button>
     </div>
   );
-}
+})

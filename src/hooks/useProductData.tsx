@@ -1,5 +1,5 @@
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, useMemo, useCallback } from "react"
 import { useQuery } from "@tanstack/react-query"
 import { supabase } from "@/lib/supabase"
 import { useToast } from "@/hooks/use-toast"
@@ -46,6 +46,10 @@ export function useProductData() {
       authListener?.subscription.unsubscribe()
     }
   }, [toast])
+  
+  const setSearchTermCallback = useCallback((term: string) => {
+    setSearchTerm(term);
+  }, []);
 
   const { data: products = [], isLoading, error } = useQuery({
     queryKey: ['products', userId],
@@ -60,7 +64,6 @@ export function useProductData() {
           .order('created_at', { ascending: false })
         
         if (error) throw error
-        console.log("Products fetched:", data)
         return data || []
       } catch (error) {
         console.error("Error fetching products:", error)
@@ -75,35 +78,42 @@ export function useProductData() {
     enabled: !!userId,
   })
 
-  const filteredProducts = products.filter((product) =>
-    product.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    product.description?.toLowerCase().includes(searchTerm.toLowerCase())
-  )
+  const filteredProducts = useMemo(() => 
+    products.filter((product) =>
+      product.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      product.description?.toLowerCase().includes(searchTerm.toLowerCase())
+    ), 
+    [products, searchTerm]
+  );
 
-  // Calculate product stats
-  const totalValue = products.reduce((sum, product) => 
-    sum + (product.cost_price * (product.stock || 0)), 0
-  )
-  
-  const totalProfit = products.reduce((sum, product) => 
-    sum + ((product.selling_price - product.cost_price) * (product.stock || 0)), 0
-  )
-  
-  const totalProducts = products.length
-  const lowStockProducts = products.filter((product) => (product.stock || 0) < 10).length
+  // Calculate product stats with memoization
+  const stats = useMemo(() => {
+    const totalValue = products.reduce((sum, product) => 
+      sum + (product.cost_price * (product.stock || 0)), 0
+    );
+    
+    const totalProfit = products.reduce((sum, product) => 
+      sum + ((product.selling_price - product.cost_price) * (product.stock || 0)), 0
+    );
+    
+    const totalProducts = products.length;
+    const lowStockProducts = products.filter((product) => (product.stock || 0) < 10).length;
+
+    return {
+      totalProducts,
+      totalValue,
+      totalProfit,
+      lowStockProducts
+    };
+  }, [products]);
 
   return {
     userId,
     products: filteredProducts,
     isLoading,
     error,
-    stats: {
-      totalProducts,
-      totalValue,
-      totalProfit,
-      lowStockProducts
-    },
+    stats,
     searchTerm,
-    setSearchTerm
+    setSearchTerm: setSearchTermCallback
   }
 }
