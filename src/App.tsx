@@ -16,7 +16,7 @@ const Index = lazy(() => import("./pages/Index"))
 const PrivacyPolicy = lazy(() => import("./pages/legal/PrivacyPolicy"))
 const TermsOfService = lazy(() => import("./pages/legal/TermsOfService"))
 const SubscriptionPage = lazy(() => import("./pages/subscription/Index"))
-const BusinessProfileSetup = lazy(() => import("./components/profile/BusinessProfileSetup"))
+const BusinessProfileSetupPage = lazy(() => import("./pages/profile/BusinessProfileSetupPage"))
 const StorePage = lazy(() => import("./pages/store/StorePage"))
 const ProductDetailPage = lazy(() => import("./pages/store/ProductDetailPage"))
 
@@ -99,7 +99,7 @@ function App() {
                 <Route
                   path="/dashboard/profile/setup"
                   element={
-                    session ? <BusinessProfileSetup /> : <Navigate to="/auth" replace />
+                    session ? <BusinessProfileSetupPage /> : <Navigate to="/auth" replace />
                   }
                 />
                 <Route
