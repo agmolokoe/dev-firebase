@@ -1,5 +1,4 @@
 
-import { useState } from "react"
 import { DashboardLayout } from "@/components/DashboardLayout"
 import { ProductDialog } from "@/components/products/ProductDialog"
 import { ProductStats } from "@/components/products/ProductStats"
@@ -11,9 +10,6 @@ import { ProductsAuthError } from "@/components/products/ProductsAuthError"
 import { useProducts } from "@/hooks/useProducts"
 
 export default function ProductsPage() {
-  const [isDialogOpen, setIsDialogOpen] = useState(false)
-  const [selectedProduct, setSelectedProduct] = useState<any>(null)
-  
   const { 
     userId,
     products, 
@@ -24,22 +20,17 @@ export default function ProductsPage() {
     setSearchTerm,
     handleCreateProduct,
     handleUpdateProduct,
-    handleDeleteProduct
+    handleDeleteProduct,
+    selectedProduct,
+    isDialogOpen,
+    setIsDialogOpen,
+    openAddDialog,
+    openEditDialog
   } = useProducts()
 
   // If we have an authentication error and no userId, show a message
   if (error && !userId) {
     return <ProductsAuthError />
-  }
-
-  const handleOpenAddDialog = () => {
-    setSelectedProduct(null)
-    setIsDialogOpen(true)
-  }
-
-  const handleOpenEditDialog = (product: any) => {
-    setSelectedProduct(product)
-    setIsDialogOpen(true)
   }
 
   const handleFormSubmit = async (productData: any) => {
@@ -55,7 +46,7 @@ export default function ProductsPage() {
   return (
     <DashboardLayout>
       <div className="container mx-auto p-6 space-y-6">
-        <ProductsHeader onAddProduct={handleOpenAddDialog} />
+        <ProductsHeader onAddProduct={openAddDialog} />
 
         <ProductStats
           totalProducts={stats.totalProducts}
@@ -75,7 +66,7 @@ export default function ProductsPage() {
           <ProductList
             products={products}
             isLoading={isLoading}
-            onEdit={handleOpenEditDialog}
+            onEdit={openEditDialog}
             onDelete={handleDeleteProduct}
           />
         )}

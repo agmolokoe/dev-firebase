@@ -15,6 +15,7 @@ interface ProductShareButtonProps {
     id: number
     name: string
     description: string | null
+    business_id: string // Added business_id property
   }
 }
 
@@ -22,7 +23,7 @@ export function ProductShareButton({ product }: ProductShareButtonProps) {
   const [open, setOpen] = useState(false)
   
   // Generate a proper share URL for the product
-  const shareUrl = db.getShareUrl(product.id)
+  const shareUrl = db.getShareUrl(product.business_id, product.id.toString())
   
   console.log("Product share URL:", shareUrl)
 
