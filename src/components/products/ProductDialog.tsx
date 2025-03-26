@@ -9,28 +9,16 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog"
-import { Form } from "@/components/ui/form"
-import { ScrollArea } from "@/components/ui/scroll-area"
-import { ProductFormFields, formSchema } from "./ProductFormFields"
 import * as z from "zod"
 import { supabase } from "@/lib/supabase"
-import { ProductImageSection } from "./ProductImageSection"
-import { ProductShareSection } from "./ProductShareSection"
-import { ProductStoreLink } from "./ProductStoreLink"
-import { ProductDialogActions } from "./ProductDialogActions"
+import { ProductForm, Product } from "./ProductForm"
+import { formSchema } from "./ProductFormFields"
+import { useToast } from "@/hooks/use-toast"
 
-type ProductDialogProps = {
+interface ProductDialogProps {
   open: boolean
   onOpenChange: (open: boolean) => void
-  product?: {
-    id: number
-    name: string
-    description: string | null
-    cost_price: number
-    selling_price: number
-    stock: number
-    image_url?: string | null
-  } | null
+  product: Product | null
   onSubmit: (data: z.infer<typeof formSchema>) => Promise<void>
   onUpdate: (id: number, data: z.infer<typeof formSchema>) => Promise<void>
 }
@@ -43,8 +31,9 @@ export function ProductDialog({
   onUpdate,
 }: ProductDialogProps) {
   const [isSubmitting, setIsSubmitting] = useState(false)
-  const [previewUrl, setPreviewUrl] = useState<string | null>(product?.image_url || null)
+  const [previewUrl, setPreviewUrl] = useState<string | null>(null)
   const [businessId, setBusinessId] = useState<string | null>(null)
+  const { toast } = useToast()
   
   // Get business ID on mount
   useEffect(() => {
@@ -104,6 +93,11 @@ export function ProductDialog({
       }
     } catch (error) {
       console.error("Error submitting product form:", error)
+      toast({
+        title: "Error",
+        description: "Failed to save product. Please try again.",
+        variant: "destructive",
+      })
     } finally {
       setIsSubmitting(false)
     }
@@ -121,34 +115,15 @@ export function ProductDialog({
           </DialogDescription>
         </DialogHeader>
         
-        <ScrollArea className="flex-1 overflow-auto pr-4">
-          <Form {...form}>
-            <form className="space-y-4">
-              <ProductImageSection 
-                previewUrl={previewUrl}
-                setPreviewUrl={setPreviewUrl}
-                isSubmitting={isSubmitting}
-              />
-              
-              <ProductFormFields form={form} />
-
-              {product && (
-                <ProductShareSection product={product} />
-              )}
-              
-              {businessId && (
-                <ProductStoreLink businessId={businessId} />
-              )}
-            </form>
-          </Form>
-        </ScrollArea>
-        
-        <ProductDialogActions
-          isSubmitting={isSubmitting}
-          onOpenChange={onOpenChange}
+        <ProductForm
           form={form}
+          product={product}
+          previewUrl={previewUrl}
+          setPreviewUrl={setPreviewUrl}
+          isSubmitting={isSubmitting}
           onSubmit={handleSubmit}
-          isEditMode={!!product}
+          onOpenChange={onOpenChange}
+          businessId={businessId}
         />
       </DialogContent>
     </Dialog>

@@ -1,21 +1,21 @@
 
-import { ShareLinks } from "@/components/social/ShareLinks"
+import { Product } from "./ProductForm"
+import { ProductShareButton } from "./ProductShareButton"
 
 interface ProductShareSectionProps {
-  product: {
-    name: string;
-    description: string | null;
-  };
+  product: Product
 }
 
 export function ProductShareSection({ product }: ProductShareSectionProps) {
   return (
-    <div className="mt-6 pt-4 border-t border-[#FFFFFF]/10">
-      <h4 className="text-sm font-medium mb-2">Share this product</h4>
-      <ShareLinks 
-        title={product.name}
-        description={product.description || ""}
-      />
+    <div className="border-t border-[#FFFFFF]/10 pt-4 mt-4">
+      <div className="flex items-center justify-between">
+        <h3 className="text-sm font-medium text-[#FFFFFF]">Share Product</h3>
+        <ProductShareButton product={product} />
+      </div>
+      <p className="text-xs text-[#FFFFFF]/50 mt-1">
+        Share this product on social media or via direct link
+      </p>
     </div>
-  );
+  )
 }

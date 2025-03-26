@@ -10,12 +10,13 @@ import {
 import { ShareLinks } from "@/components/social/ShareLinks"
 import { db } from "@/lib/supabase"
 
+// Define a proper TypeScript interface for the product
 interface ProductShareButtonProps {
   product: {
     id: number
     name: string
     description: string | null
-    business_id: string // Added business_id property
+    business_id: string
   }
 }
 

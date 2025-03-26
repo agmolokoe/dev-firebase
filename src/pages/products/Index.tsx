@@ -8,6 +8,8 @@ import { ProductsHeader } from "@/components/products/ProductsHeader"
 import { ProductsLoading } from "@/components/products/ProductsLoading"
 import { ProductsAuthError } from "@/components/products/ProductsAuthError"
 import { useProducts } from "@/hooks/useProducts"
+import { formSchema } from "@/components/products/ProductFormFields"
+import { z } from "zod"
 
 export default function ProductsPage() {
   const { 
@@ -33,12 +35,12 @@ export default function ProductsPage() {
     return <ProductsAuthError />
   }
 
-  const handleFormSubmit = async (productData: any) => {
+  const handleFormSubmit = async (productData: z.infer<typeof formSchema>) => {
     const success = await handleCreateProduct(productData)
     if (success) setIsDialogOpen(false)
   }
 
-  const handleFormUpdate = async (id: number, productData: any) => {
+  const handleFormUpdate = async (id: number, productData: z.infer<typeof formSchema>) => {
     const success = await handleUpdateProduct(id, productData)
     if (success) setIsDialogOpen(false)
   }
