@@ -8,6 +8,8 @@ interface ProductShareSectionProps {
 }
 
 export const ProductShareSection = memo(function ProductShareSection({ product }: ProductShareSectionProps) {
+  console.log("Rendering ProductShareSection for product:", product.id)
+  
   return (
     <div className="border-t border-[#FFFFFF]/10 pt-4 mt-4">
       <div className="flex items-center justify-between">

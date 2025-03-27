@@ -13,8 +13,10 @@ export const ProductImageSection = memo(function ProductImageSection({
   setPreviewUrl, 
   isSubmitting 
 }: ProductImageSectionProps) {
+  console.log("Rendering ProductImageSection. Has image:", !!previewUrl)
   
   const handleImageUpload = useCallback((url: string) => {
+    console.log("Image uploaded:", url.substring(0, 50) + "...")
     setPreviewUrl(url);
   }, [setPreviewUrl]);
   

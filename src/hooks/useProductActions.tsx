@@ -10,7 +10,11 @@ export function useProductActions(userId: string | null) {
 
   const handleCreateProduct = useCallback(async (productData: any) => {
     try {
+      console.log("Creating new product:", productData)
+      console.time("createProduct")
+      
       if (!userId) {
+        console.error("Cannot create product: No authenticated user")
         toast({
           title: "Error",
           description: "You must be logged in to create products",
@@ -37,12 +41,14 @@ export function useProductActions(userId: string | null) {
         throw error
       }
       
+      console.log("Product created successfully:", data?.[0]?.id)
       await queryClient.invalidateQueries({ queryKey: ['products', userId] })
       
       toast({
         title: "Success",
         description: "Product created successfully",
       })
+      console.timeEnd("createProduct")
       return true
     } catch (error) {
       console.error('Error creating product:', error)
@@ -57,7 +63,11 @@ export function useProductActions(userId: string | null) {
 
   const handleUpdateProduct = useCallback(async (id: number, productData: any) => {
     try {
+      console.log(`Updating product ${id}:`, productData)
+      console.time("updateProduct")
+      
       if (!userId) {
+        console.error("Cannot update product: No authenticated user")
         toast({
           title: "Error",
           description: "You must be logged in to update products",
@@ -85,12 +95,14 @@ export function useProductActions(userId: string | null) {
         throw error
       }
       
+      console.log("Product updated successfully")
       await queryClient.invalidateQueries({ queryKey: ['products', userId] })
       
       toast({
         title: "Success",
         description: "Product updated successfully",
       })
+      console.timeEnd("updateProduct")
       return true
     } catch (error) {
       console.error('Error updating product:', error)
@@ -105,7 +117,11 @@ export function useProductActions(userId: string | null) {
 
   const handleDeleteProduct = useCallback(async (id: number) => {
     try {
+      console.log(`Deleting product ${id}`)
+      console.time("deleteProduct")
+      
       if (!userId) {
+        console.error("Cannot delete product: No authenticated user")
         toast({
           title: "Error",
           description: "You must be logged in to delete products",
@@ -125,12 +141,14 @@ export function useProductActions(userId: string | null) {
         throw error
       }
       
+      console.log("Product deleted successfully")
       await queryClient.invalidateQueries({ queryKey: ['products', userId] })
       
       toast({
         title: "Success",
         description: "Product deleted successfully",
       })
+      console.timeEnd("deleteProduct")
       return true
     } catch (error) {
       console.error('Error deleting product:', error)
