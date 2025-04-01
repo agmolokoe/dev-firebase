@@ -1,5 +1,5 @@
 
-import { useEffect, useState, useCallback, memo } from "react"
+import { useCallback, memo } from "react"
 import { Form } from "@/components/ui/form"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { ProductFormFields } from "./ProductFormFields"

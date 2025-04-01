@@ -26,7 +26,7 @@ export const ProductShareButton = memo(function ProductShareButton({ product }: 
       setIsLoading(true)
       
       // Get the share URL from the utility function
-      const url = await db.getShareUrl(product.business_id, product.id)
+      const url = await db.getShareUrl(product.business_id.toString(), product.id.toString())
       console.log("Generated share URL:", url)
       
       setShareUrl(url)
