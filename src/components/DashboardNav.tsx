@@ -9,10 +9,17 @@ import {
   Package,
   Share2,
   CreditCard,
-  Store
+  Store,
+  Building2,
+  BarChart4,
+  Shield
 } from "lucide-react"
 
-export function DashboardNav() {
+interface DashboardNavProps {
+  isAdmin?: boolean;
+}
+
+export function DashboardNav({ isAdmin = false }: DashboardNavProps) {
   const location = useLocation()
 
   const isActive = (path: string) => {
@@ -21,6 +28,53 @@ export function DashboardNav() {
 
   return (
     <nav className="grid items-start gap-2 p-4">
+      {/* Admin section */}
+      {isAdmin && (
+        <>
+          <div className="px-2 py-2">
+            <h2 className="mb-2 px-2 text-lg font-semibold tracking-tight text-primary">Admin</h2>
+            <div className="space-y-1">
+              <Button
+                asChild
+                variant={isActive("/admin/businesses") ? "secondary" : "ghost"}
+                className="justify-start w-full"
+              >
+                <Link to="/admin/businesses">
+                  <Building2 className="mr-2 h-4 w-4" />
+                  Businesses
+                </Link>
+              </Button>
+              <Button
+                asChild
+                variant={isActive("/admin/analytics") ? "secondary" : "ghost"}
+                className="justify-start w-full"
+              >
+                <Link to="/admin/analytics">
+                  <BarChart4 className="mr-2 h-4 w-4" />
+                  Platform Analytics
+                </Link>
+              </Button>
+              <Button
+                asChild
+                variant={isActive("/admin/settings") ? "secondary" : "ghost"}
+                className="justify-start w-full"
+              >
+                <Link to="/admin/settings">
+                  <Shield className="mr-2 h-4 w-4" />
+                  Admin Settings
+                </Link>
+              </Button>
+            </div>
+          </div>
+          
+          <div className="px-3 py-2">
+            <div className="h-[1px] w-full bg-gray-800 mb-2" />
+            <h2 className="mb-2 px-2 text-lg font-semibold tracking-tight">Business</h2>
+          </div>
+        </>
+      )}
+      
+      {/* Standard business navigation */}
       <Button
         asChild
         variant={isActive("/dashboard") && !isActive("/dashboard/") ? "secondary" : "ghost"}

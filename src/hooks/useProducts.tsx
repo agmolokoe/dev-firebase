@@ -2,11 +2,16 @@
 import { useState, useCallback } from "react"
 import { useProductData } from "./useProductData"
 import { useProductActions } from "./useProductActions"
+import { useTenant } from "@/middleware/TenantMiddleware"
 
 export function useProducts() {
   const [selectedProduct, setSelectedProduct] = useState<any>(null)
   const [isDialogOpen, setIsDialogOpen] = useState(false)
   
+  // Get tenant information
+  const { currentTenantId, isAdmin } = useTenant();
+  
+  // Pass tenant information to useProductData
   const {
     userId,
     products,
@@ -15,13 +20,14 @@ export function useProducts() {
     stats,
     searchTerm,
     setSearchTerm
-  } = useProductData()
+  } = useProductData(currentTenantId, isAdmin)
   
+  // Pass tenant information to useProductActions
   const {
     handleCreateProduct,
     handleUpdateProduct,
     handleDeleteProduct
-  } = useProductActions(userId)
+  } = useProductActions(currentTenantId || userId, isAdmin)
   
   const openAddDialog = useCallback(() => {
     setSelectedProduct(null)
@@ -42,7 +48,7 @@ export function useProducts() {
   }, []);
 
   return {
-    userId,
+    userId: currentTenantId || userId,
     products,
     isLoading,
     error,
@@ -57,6 +63,7 @@ export function useProducts() {
     isDialogOpen,
     setIsDialogOpen: setIsDialogOpenCallback,
     openAddDialog,
-    openEditDialog
+    openEditDialog,
+    isAdmin
   }
 }

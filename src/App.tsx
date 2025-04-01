@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState, lazy, Suspense } from "react"
 import { Toaster } from "@/components/ui/toaster"
 import { Toaster as Sonner } from "@/components/ui/sonner"
@@ -8,6 +7,7 @@ import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom"
 import { supabase } from "@/lib/supabase"
 import { Session } from "@supabase/supabase-js"
 import { CartProvider } from "./context/CartContext"
+import { TenantProvider } from "./middleware/TenantMiddleware"
 
 // Lazy load pages
 const LandingPage = lazy(() => import("./pages/LandingPage"))
@@ -62,68 +62,70 @@ function App() {
   return (
     <QueryClientProvider client={queryClient}>
       <TooltipProvider>
-        <CartProvider>
-          <Toaster />
-          <Sonner />
-          <BrowserRouter>
-            <Suspense fallback={<PageLoader />}>
-              <Routes>
-                <Route
-                  path="/"
-                  element={
-                    !session ? (
-                      <LandingPage />
-                    ) : (
-                      <Navigate to="/dashboard" replace />
-                    )
-                  }
-                />
-                <Route
-                  path="/auth"
-                  element={
-                    !session ? (
-                      <AuthPage mode="login" />
-                    ) : (
-                      <Navigate to="/dashboard" replace />
-                    )
-                  }
-                />
-                <Route path="/privacy-policy" element={<PrivacyPolicy />} />
-                <Route path="/terms-of-service" element={<TermsOfService />} />
-                <Route
-                  path="/dashboard/*"
-                  element={
-                    session ? <Index /> : <Navigate to="/auth" replace />
-                  }
-                />
-                <Route
-                  path="/dashboard/profile/setup"
-                  element={
-                    session ? <BusinessProfileSetupPage /> : <Navigate to="/auth" replace />
-                  }
-                />
-                <Route
-                  path="/dashboard/subscription"
-                  element={
-                    session ? <SubscriptionPage /> : <Navigate to="/auth" replace />
-                  }
-                />
-                
-                {/* New store routes with the requested URL structure */}
-                <Route path="/shopapp/:businessId" element={<StorePage />} />
-                <Route path="/shopapp/:businessId/product/:productId" element={<ProductDetailPage />} />
-                
-                {/* Redirects from old routes */}
-                <Route path="/:businessId" element={<Navigate to="/shopapp/:businessId" replace />} />
-                <Route path="/:businessId/product/:productId" element={<Navigate to="/shopapp/:businessId/product/:productId" replace />} />
-                <Route path="/store/:businessId" element={<Navigate to="/shopapp/:businessId" replace />} />
-                <Route path="/store/:businessId/product/:productId" element={<Navigate to="/shopapp/:businessId/product/:productId" replace />} />
-                
-                <Route path="*" element={<Navigate to="/" replace />} />
-              </Routes>
-            </Suspense>
-          </BrowserRouter>
-        </CartProvider>
+        <BrowserRouter>
+          <TenantProvider>
+            <CartProvider>
+              <Toaster />
+              <Sonner />
+              <Suspense fallback={<PageLoader />}>
+                <Routes>
+                  <Route
+                    path="/"
+                    element={
+                      !session ? (
+                        <LandingPage />
+                      ) : (
+                        <Navigate to="/dashboard" replace />
+                      )
+                    }
+                  />
+                  <Route
+                    path="/auth"
+                    element={
+                      !session ? (
+                        <AuthPage mode="login" />
+                      ) : (
+                        <Navigate to="/dashboard" replace />
+                      )
+                    }
+                  />
+                  <Route path="/privacy-policy" element={<PrivacyPolicy />} />
+                  <Route path="/terms-of-service" element={<TermsOfService />} />
+                  <Route
+                    path="/dashboard/*"
+                    element={
+                      session ? <Index /> : <Navigate to="/auth" replace />
+                    }
+                  />
+                  <Route
+                    path="/dashboard/profile/setup"
+                    element={
+                      session ? <BusinessProfileSetupPage /> : <Navigate to="/auth" replace />
+                    }
+                  />
+                  <Route
+                    path="/dashboard/subscription"
+                    element={
+                      session ? <SubscriptionPage /> : <Navigate to="/auth" replace />
+                    }
+                  />
+                  
+                  {/* New store routes with the requested URL structure */}
+                  <Route path="/shopapp/:businessId" element={<StorePage />} />
+                  <Route path="/shopapp/:businessId/product/:productId" element={<ProductDetailPage />} />
+                  
+                  {/* Redirects from old routes */}
+                  <Route path="/:businessId" element={<Navigate to="/shopapp/:businessId" replace />} />
+                  <Route path="/:businessId/product/:productId" element={<Navigate to="/shopapp/:businessId/product/:productId" replace />} />
+                  <Route path="/store/:businessId" element={<Navigate to="/shopapp/:businessId" replace />} />
+                  <Route path="/store/:businessId/product/:productId" element={<Navigate to="/shopapp/:businessId/product/:productId" replace />} />
+                  
+                  <Route path="*" element={<Navigate to="/" replace />} />
+                </Routes>
+              </Suspense>
+            </CartProvider>
+          </TenantProvider>
+        </BrowserRouter>
       </TooltipProvider>
     </QueryClientProvider>
   )

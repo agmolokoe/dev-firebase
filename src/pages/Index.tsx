@@ -13,6 +13,10 @@ const OrdersPage = lazy(() => import("./orders/Index"));
 const SocialPage = lazy(() => import("./social/Index"));
 const ViewStorePage = lazy(() => import("./dashboard/ViewStorePage"));
 
+// Admin pages
+const BusinessList = lazy(() => import("./admin/BusinessList"));
+const BusinessDetail = lazy(() => import("./admin/BusinessDetail"));
+
 // Loading fallback with better styling
 const LoadingFallback = () => (
   <div className="flex items-center justify-center h-[calc(100vh-80px)]">
@@ -23,19 +27,28 @@ const LoadingFallback = () => (
 export default function Index() {
   return (
     <DashboardLayout>
-      <Suspense fallback={<LoadingFallback />}>
-        <Routes>
-          <Route path="/" element={<Dashboard />} />
-          <Route path="/customers" element={<CustomersPage />} />
-          <Route path="/products" element={<ProductsPage />} />
-          <Route path="/orders" element={<OrdersPage />} />
-          <Route path="/social/*" element={<SocialPage />} />
-          <Route path="/view-store" element={<ViewStorePage />} />
-          <Route path="/subscription" element={<Navigate to="/dashboard/subscription" replace />} />
-          <Route path="/profile/*" element={<Navigate to="/dashboard/profile/setup" replace />} />
-          <Route path="*" element={<DashboardError />} />
-        </Routes>
-      </Suspense>
+      <ProfileLoader>
+        <Suspense fallback={<LoadingFallback />}>
+          <Routes>
+            {/* Standard routes */}
+            <Route path="/" element={<Dashboard />} />
+            <Route path="/customers" element={<CustomersPage />} />
+            <Route path="/products" element={<ProductsPage />} />
+            <Route path="/orders" element={<OrdersPage />} />
+            <Route path="/social/*" element={<SocialPage />} />
+            <Route path="/view-store" element={<ViewStorePage />} />
+            
+            {/* Admin routes */}
+            <Route path="/admin/businesses" element={<BusinessList />} />
+            <Route path="/admin/business/:id/:section" element={<BusinessDetail />} />
+            
+            {/* Redirects */}
+            <Route path="/subscription" element={<Navigate to="/dashboard/subscription" replace />} />
+            <Route path="/profile/*" element={<Navigate to="/dashboard/profile/setup" replace />} />
+            <Route path="*" element={<DashboardError />} />
+          </Routes>
+        </Suspense>
+      </ProfileLoader>
     </DashboardLayout>
   );
 }

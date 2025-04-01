@@ -10,6 +10,7 @@ import { ProductDialogActions } from "./ProductDialogActions"
 import { UseFormReturn } from "react-hook-form"
 import * as z from "zod"
 import { formSchema } from "./ProductFormFields"
+import { useTenant } from "@/middleware/TenantMiddleware"
 
 // Define proper TypeScript interfaces
 export interface Product {
@@ -44,6 +45,11 @@ export const ProductForm = memo(function ProductForm({
   onOpenChange,
   businessId
 }: ProductFormProps) {
+  // Get tenant information for more context-aware rendering
+  const { currentTenantId, isAdmin } = useTenant();
+  
+  // Determine which business ID to use - important for admin impersonation mode
+  const effectiveBusinessId = businessId || currentTenantId;
   
   const handleFormSubmit = useCallback(async (values: z.infer<typeof formSchema>) => {
     await onSubmit(values);
@@ -65,8 +71,18 @@ export const ProductForm = memo(function ProductForm({
             <ProductShareSection product={product} />
           )}
           
-          {businessId && (
-            <ProductStoreLink businessId={businessId} />
+          {effectiveBusinessId && (
+            <ProductStoreLink businessId={effectiveBusinessId} />
+          )}
+          
+          {/* Add additional context for admin users */}
+          {isAdmin && product && product.business_id !== currentTenantId && (
+            <div className="mt-2 px-3 py-2 bg-yellow-500/10 border border-yellow-500/20 rounded-md text-yellow-300 text-sm">
+              <p>
+                <strong>Admin Notice:</strong> You are editing a product that belongs to another business.
+                Any changes will affect their store.
+              </p>
+            </div>
           )}
         </form>
       </Form>

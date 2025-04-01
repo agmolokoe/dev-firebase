@@ -4,7 +4,7 @@ import { useQuery } from "@tanstack/react-query"
 import { supabase } from "@/lib/supabase"
 import { useToast } from "@/hooks/use-toast"
 
-export function useProductData() {
+export function useProductData(tenantId: string | null = null, isAdmin: boolean = false) {
   const [userId, setUserId] = useState<string | null>(null)
   const [searchTerm, setSearchTerm] = useState("")
   const { toast } = useToast()
@@ -19,8 +19,8 @@ export function useProductData() {
         setUserId(currentUserId)
         console.log("Auth session check complete. User ID:", currentUserId || "not logged in")
         
-        if (!currentUserId) {
-          console.warn("No user is authenticated")
+        if (!currentUserId && !tenantId) {
+          console.warn("No user is authenticated and no tenant ID provided")
           toast({
             title: "Authentication Error",
             description: "You must be logged in to view products",
@@ -37,41 +37,55 @@ export function useProductData() {
       }
     }
     
-    checkSession()
+    if (!tenantId) {
+      checkSession()
     
-    // Subscribe to auth changes
-    console.log("Setting up auth state change listener")
-    const { data: authListener } = supabase.auth.onAuthStateChange(async (event, session) => {
-      console.log("Auth state changed. Event:", event)
-      const currentUserId = session?.user?.id || null
-      setUserId(currentUserId)
-    })
-    
-    return () => {
-      console.log("Cleaning up auth state change listener")
-      authListener?.subscription.unsubscribe()
+      // Subscribe to auth changes
+      console.log("Setting up auth state change listener")
+      const { data: authListener } = supabase.auth.onAuthStateChange(async (event, session) => {
+        console.log("Auth state changed. Event:", event)
+        const currentUserId = session?.user?.id || null
+        setUserId(currentUserId)
+      })
+      
+      return () => {
+        console.log("Cleaning up auth state change listener")
+        authListener?.subscription.unsubscribe()
+      }
+    } else {
+      // If tenant ID is provided, use it directly
+      setUserId(tenantId)
     }
-  }, [toast])
+  }, [toast, tenantId])
   
   const setSearchTermCallback = useCallback((term: string) => {
     console.log("Search term updated:", term)
     setSearchTerm(term);
   }, []);
 
+  // Use the tenant ID if provided, otherwise fall back to userId
+  const effectiveUserId = tenantId || userId;
+
   const { data: products = [], isLoading, error } = useQuery({
-    queryKey: ['products', userId],
+    queryKey: ['products', effectiveUserId],
     queryFn: async () => {
-      if (!userId) return []
+      if (!effectiveUserId) return []
       
       try {
-        console.log("Fetching products for user ID:", userId)
+        console.log(`Fetching products for ${tenantId ? 'tenant' : 'user'} ID:`, effectiveUserId)
         const startTime = performance.now()
         
-        const { data, error } = await supabase
+        let query = supabase
           .from('products')
           .select('*')
-          .eq('business_id', userId)
-          .order('created_at', { ascending: false })
+          .order('created_at', { ascending: false });
+          
+        // If we're not in admin mode or we're in admin mode but viewing a specific tenant
+        if (!isAdmin || (isAdmin && tenantId)) {
+          query = query.eq('business_id', effectiveUserId);
+        }
+        
+        const { data, error } = await query;
         
         const endTime = performance.now()
         console.log(`Products fetch completed in ${(endTime - startTime).toFixed(2)}ms`)
@@ -93,7 +107,7 @@ export function useProductData() {
         return []
       }
     },
-    enabled: !!userId,
+    enabled: !!effectiveUserId,
   })
 
   const filteredProducts = useMemo(() => {
@@ -134,7 +148,7 @@ export function useProductData() {
   }, [products]);
 
   return {
-    userId,
+    userId: effectiveUserId,
     products: filteredProducts,
     isLoading,
     error,

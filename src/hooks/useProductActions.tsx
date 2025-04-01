@@ -4,7 +4,7 @@ import { useQueryClient } from "@tanstack/react-query"
 import { supabase } from "@/lib/supabase"
 import { useToast } from "@/hooks/use-toast"
 
-export function useProductActions(userId: string | null) {
+export function useProductActions(userId: string | null, isAdmin: boolean = false) {
   const { toast } = useToast()
   const queryClient = useQueryClient()
 
@@ -76,7 +76,8 @@ export function useProductActions(userId: string | null) {
         return false
       }
 
-      const { error } = await supabase
+      // For admins, we allow updating products of other businesses
+      let query = supabase
         .from('products')
         .update({
           name: productData.name,
@@ -86,9 +87,14 @@ export function useProductActions(userId: string | null) {
           stock: Number(productData.stock),
           image_url: productData.image_url,
         })
-        .eq('id', id)
-        .eq('business_id', userId)
-        .select()
+        .eq('id', id);
+      
+      // If not admin, must check business_id
+      if (!isAdmin) {
+        query = query.eq('business_id', userId);
+      }
+      
+      const { error, data } = await query.select();
       
       if (error) {
         console.error("Supabase error updating product:", error)
@@ -96,7 +102,14 @@ export function useProductActions(userId: string | null) {
       }
       
       console.log("Product updated successfully")
-      await queryClient.invalidateQueries({ queryKey: ['products', userId] })
+      
+      // If we're an admin, potentially need to invalidate multiple queries
+      if (isAdmin) {
+        // Invalidate both the admin's view and the specific business's view
+        await queryClient.invalidateQueries({ queryKey: ['products'] });
+      } else {
+        await queryClient.invalidateQueries({ queryKey: ['products', userId] });
+      }
       
       toast({
         title: "Success",
@@ -113,7 +126,7 @@ export function useProductActions(userId: string | null) {
       })
       return false
     }
-  }, [userId, toast, queryClient]);
+  }, [userId, toast, queryClient, isAdmin]);
 
   const handleDeleteProduct = useCallback(async (id: number) => {
     try {
@@ -130,11 +143,18 @@ export function useProductActions(userId: string | null) {
         return false
       }
 
-      const { error } = await supabase
+      // For admins, we allow deleting products of other businesses
+      let query = supabase
         .from('products')
         .delete()
-        .eq('id', id)
-        .eq('business_id', userId)
+        .eq('id', id);
+      
+      // If not admin, must check business_id
+      if (!isAdmin) {
+        query = query.eq('business_id', userId);
+      }
+      
+      const { error } = await query;
       
       if (error) {
         console.error("Supabase error deleting product:", error)
@@ -142,7 +162,14 @@ export function useProductActions(userId: string | null) {
       }
       
       console.log("Product deleted successfully")
-      await queryClient.invalidateQueries({ queryKey: ['products', userId] })
+      
+      // If we're an admin, potentially need to invalidate multiple queries
+      if (isAdmin) {
+        // Invalidate both the admin's view and the specific business's view
+        await queryClient.invalidateQueries({ queryKey: ['products'] });
+      } else {
+        await queryClient.invalidateQueries({ queryKey: ['products', userId] });
+      }
       
       toast({
         title: "Success",
@@ -159,7 +186,7 @@ export function useProductActions(userId: string | null) {
       })
       return false
     }
-  }, [userId, toast, queryClient]);
+  }, [userId, toast, queryClient, isAdmin]);
 
   return {
     handleCreateProduct,
