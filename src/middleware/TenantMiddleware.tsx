@@ -160,6 +160,7 @@ export const withTenantProtection = (Component: React.ComponentType<any>) => {
   return (props: any) => {
     const { currentTenantId, isTenantLoading } = useTenant();
     const navigate = useNavigate();
+    const { toast } = useToast();
     
     useEffect(() => {
       if (!isTenantLoading && !currentTenantId) {
@@ -188,6 +189,7 @@ export const withAdminProtection = (Component: React.ComponentType<any>) => {
   return (props: any) => {
     const { isAdmin, isTenantLoading } = useTenant();
     const navigate = useNavigate();
+    const { toast } = useToast();
     
     useEffect(() => {
       if (!isTenantLoading && !isAdmin) {
@@ -198,7 +200,7 @@ export const withAdminProtection = (Component: React.ComponentType<any>) => {
           variant: "destructive",
         });
       }
-    }, [isAdmin, isTenantLoading, navigate]);
+    }, [isAdmin, isTenantLoading, navigate, toast]);
     
     if (isTenantLoading) {
       return (

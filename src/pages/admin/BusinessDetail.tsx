@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect, useCallback } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { supabase } from "@/lib/supabase";
@@ -31,15 +30,6 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -159,7 +149,7 @@ function BusinessDetail() {
       
       // Generate analytics data if on analytics tab
       if (section === 'analytics') {
-        generateAnalyticsData(productsData || [], customersData || [], ordersData || []);
+        generateAnalyticsData(products, customers, orders);
       }
     } catch (error) {
       console.error("Unexpected error loading business data:", error);
@@ -171,7 +161,7 @@ function BusinessDetail() {
     } finally {
       setIsLoading(false);
     }
-  }, [businessId, section, toast]);
+  }, [businessId, section, toast, products, customers, orders]);
 
   const generateAnalyticsData = (products: any[], customers: any[], orders: any[]) => {
     // Generate monthly sales data for the past 6 months
@@ -703,5 +693,4 @@ function BusinessDetail() {
   );
 }
 
-// Export with admin protection
 export default withAdminProtection(BusinessDetail);
