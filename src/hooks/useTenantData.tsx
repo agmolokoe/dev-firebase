@@ -17,7 +17,7 @@ export function useTenantData(tableName: string) {
     
     // Only add tenant filter if not admin or if admin has selected a specific tenant
     if (currentTenantId && (!isAdmin || (isAdmin && currentTenantId))) {
-      return query.filter('business_id', 'eq', currentTenantId);
+      return query.eq('business_id', currentTenantId);
     }
     
     return query;
@@ -50,7 +50,7 @@ export function useTenantData(tableName: string) {
       
       // Apply additional filters
       Object.entries(filters).forEach(([key, value]) => {
-        query = query.filter(key, 'eq', value);
+        query = query.eq(key, value);
       });
       
       // Apply custom filter function if provided
@@ -158,7 +158,7 @@ export function useTenantData(tableName: string) {
         const { data: existingRecord, error: fetchError } = await supabase
           .from(tableName)
           .select('business_id')
-          .filter('id', 'eq', id)
+          .eq('id', id)
           .single();
         
         if (fetchError) {
@@ -188,7 +188,7 @@ export function useTenantData(tableName: string) {
       const { data: result, error } = await supabase
         .from(tableName)
         .update(data)
-        .filter('id', 'eq', id)
+        .eq('id', id)
         .select();
       
       if (error) {
@@ -233,7 +233,7 @@ export function useTenantData(tableName: string) {
         const { data: existingRecord, error: fetchError } = await supabase
           .from(tableName)
           .select('business_id')
-          .filter('id', 'eq', id)
+          .eq('id', id)
           .single();
         
         if (fetchError) {
@@ -263,7 +263,7 @@ export function useTenantData(tableName: string) {
       const { error } = await supabase
         .from(tableName)
         .delete()
-        .filter('id', 'eq', id);
+        .eq('id', id);
       
       if (error) {
         console.error(`Error deleting from ${tableName}:`, error);
@@ -305,11 +305,11 @@ export function useTenantData(tableName: string) {
       let query = supabase
         .from(tableName)
         .select('*')
-        .filter('id', 'eq', id);
+        .eq('id', id);
       
       // Add tenant filter for non-admins
       if (!isAdmin && currentTenantId) {
-        query = query.filter('business_id', 'eq', currentTenantId);
+        query = query.eq('business_id', currentTenantId);
       }
       
       const { data, error } = await query.single();
