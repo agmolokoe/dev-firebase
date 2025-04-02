@@ -22,7 +22,7 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
   // Check if we're in admin impersonation mode
   useEffect(() => {
     const isImpersonating = localStorage.getItem('adminUserId') === 'true' && currentTenantId;
-    setShowAdminAlert(isImpersonating);
+    setShowAdminAlert(!!isImpersonating); // Convert to boolean with !! to fix the TypeScript error
   }, [currentTenantId]);
 
   // Exit impersonation mode
