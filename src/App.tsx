@@ -7,7 +7,7 @@ import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom"
 import { supabase } from "@/lib/supabase"
 import { Session } from "@supabase/supabase-js"
 import { CartProvider } from "./context/CartContext"
-import { TenantProvider } from "./middleware/TenantMiddleware"
+import { TenantProvider } from "@/middleware"
 
 // Lazy load pages
 const LandingPage = lazy(() => import("./pages/LandingPage"))

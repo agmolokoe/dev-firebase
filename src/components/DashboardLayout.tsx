@@ -4,7 +4,7 @@ import { cn } from "@/lib/utils";
 import { DashboardNav } from "./DashboardNav";
 import { X } from "lucide-react";
 import { TopBar } from "./dashboard/TopBar";
-import { useTenant } from "@/middleware/TenantMiddleware";
+import { useTenant } from "@/middleware";
 import { AlertCircle } from "lucide-react";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 

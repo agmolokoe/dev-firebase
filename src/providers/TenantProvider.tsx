@@ -1,29 +1,9 @@
 
-import { useEffect, createContext, useContext, useState, ReactNode } from "react";
+import { ReactNode, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/lib/supabase";
 import { useToast } from "@/hooks/use-toast";
-
-// Create a context to hold the current tenant information
-interface TenantContextType {
-  currentTenantId: string | null;
-  isAdmin: boolean;
-  tenantName: string | null;
-  tenantRole: 'owner' | 'admin' | 'staff' | null;
-  isTenantLoading: boolean;
-  setCurrentTenant: (tenantId: string | null) => void;
-}
-
-const TenantContext = createContext<TenantContextType>({
-  currentTenantId: null,
-  isAdmin: false,
-  tenantName: null,
-  tenantRole: null,
-  isTenantLoading: true,
-  setCurrentTenant: () => {}
-});
-
-export const useTenant = () => useContext(TenantContext);
+import { TenantContext } from "@/context/TenantContext";
 
 interface TenantProviderProps {
   children: ReactNode;
@@ -153,67 +133,4 @@ export const TenantProvider = ({ children }: TenantProviderProps) => {
       {children}
     </TenantContext.Provider>
   );
-};
-
-// Higher-order component to restrict access to tenant-specific routes
-export const withTenantProtection = (Component: React.ComponentType<any>) => {
-  return (props: any) => {
-    const { currentTenantId, isTenantLoading } = useTenant();
-    const navigate = useNavigate();
-    const { toast } = useToast();
-    
-    useEffect(() => {
-      if (!isTenantLoading && !currentTenantId) {
-        navigate('/auth');
-      }
-    }, [currentTenantId, isTenantLoading, navigate]);
-    
-    if (isTenantLoading) {
-      return (
-        <div className="flex items-center justify-center h-screen">
-          <div className="h-12 w-12 rounded-full border-4 border-primary border-t-transparent animate-spin"></div>
-        </div>
-      );
-    }
-    
-    if (!currentTenantId) {
-      return null; // Will redirect via effect
-    }
-    
-    return <Component {...props} />;
-  };
-};
-
-// Higher-order component to restrict access to admin-only routes
-export const withAdminProtection = (Component: React.ComponentType<any>) => {
-  return (props: any) => {
-    const { isAdmin, isTenantLoading } = useTenant();
-    const navigate = useNavigate();
-    const { toast } = useToast();
-    
-    useEffect(() => {
-      if (!isTenantLoading && !isAdmin) {
-        navigate('/dashboard');
-        toast({
-          title: "Access Denied",
-          description: "You don't have permission to access this area",
-          variant: "destructive",
-        });
-      }
-    }, [isAdmin, isTenantLoading, navigate, toast]);
-    
-    if (isTenantLoading) {
-      return (
-        <div className="flex items-center justify-center h-screen">
-          <div className="h-12 w-12 rounded-full border-4 border-primary border-t-transparent animate-spin"></div>
-        </div>
-      );
-    }
-    
-    if (!isAdmin) {
-      return null; // Will redirect via effect
-    }
-    
-    return <Component {...props} />;
-  };
 };

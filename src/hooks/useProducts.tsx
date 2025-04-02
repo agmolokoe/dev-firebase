@@ -2,7 +2,7 @@
 import { useState, useCallback } from "react"
 import { useProductData } from "./useProductData"
 import { useProductActions } from "./useProductActions"
-import { useTenant } from "@/middleware/TenantMiddleware"
+import { useTenant } from "@/middleware"
 
 export function useProducts() {
   const [selectedProduct, setSelectedProduct] = useState<any>(null)
