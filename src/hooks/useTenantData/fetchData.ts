@@ -1,7 +1,7 @@
 
 import { supabase } from "@/lib/supabase";
 import { useToast } from "@/hooks/use-toast";
-import type { PostgrestFilterBuilder } from "@supabase/supabase-js";
+import type { PostgrestFilterBuilder } from "@supabase/postgrest-js";
 
 export async function fetchData({
   tableName,

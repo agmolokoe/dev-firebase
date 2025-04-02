@@ -2,7 +2,7 @@
 import { useState, useCallback } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { useTenant } from "@/middleware/TenantMiddleware";
-import type { PostgrestFilterBuilder } from "@supabase/supabase-js";
+import type { PostgrestFilterBuilder } from "@supabase/postgrest-js";
 import { fetchData as fetchDataUtil } from "./useTenantData/fetchData";
 import { insertData as insertDataUtil } from "./useTenantData/insertData";
 import { updateData as updateDataUtil } from "./useTenantData/updateData";
