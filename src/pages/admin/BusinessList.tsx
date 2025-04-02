@@ -1,9 +1,8 @@
-
 import React, { useState, useEffect, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/lib/supabase";
 import { useToast } from "@/hooks/use-toast";
-import { withAdminProtection } from "@/middleware/TenantMiddleware";
+import { useTenant, withAdminProtection } from "@/middleware";
 import { Eye, Edit, Settings, BarChart4, Users, Package, ShoppingCart } from "lucide-react";
 import { 
   Card, 

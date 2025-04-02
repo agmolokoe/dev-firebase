@@ -1,11 +1,18 @@
 
 import { useTenant } from "@/context/TenantContext";
 import { TenantProvider } from "@/providers/TenantProvider";
-import { withTenantProtection, withAdminProtection } from "@/hoc/withProtection";
+import { withTenantProtection, withAdminProtection, withPermissionProtection } from "@/hoc/withProtection";
+import type { RolePermissions, TenantRole } from "@/context/TenantContext";
 
 export {
   useTenant,
   TenantProvider,
   withTenantProtection,
-  withAdminProtection
+  withAdminProtection,
+  withPermissionProtection
+};
+
+export type {
+  RolePermissions,
+  TenantRole
 };

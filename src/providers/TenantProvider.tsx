@@ -3,7 +3,7 @@ import { ReactNode, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/lib/supabase";
 import { useToast } from "@/hooks/use-toast";
-import { TenantContext } from "@/context/TenantContext";
+import { TenantContext, TenantRole, RolePermissions, getDefaultPermissions } from "@/context/TenantContext";
 
 interface TenantProviderProps {
   children: ReactNode;
@@ -13,8 +13,9 @@ export const TenantProvider = ({ children }: TenantProviderProps) => {
   const [currentTenantId, setCurrentTenantId] = useState<string | null>(null);
   const [isAdmin, setIsAdmin] = useState<boolean>(false);
   const [tenantName, setTenantName] = useState<string | null>(null);
-  const [tenantRole, setTenantRole] = useState<'owner' | 'admin' | 'staff' | null>(null);
+  const [tenantRole, setTenantRole] = useState<TenantRole>(null);
   const [isTenantLoading, setIsTenantLoading] = useState<boolean>(true);
+  const [permissions, setPermissions] = useState<RolePermissions>(getDefaultPermissions(null));
   const navigate = useNavigate();
   const { toast } = useToast();
 
@@ -60,10 +61,14 @@ export const TenantProvider = ({ children }: TenantProviderProps) => {
         
         console.log(`Tenant context established: ${businessProfile.id} (${businessProfile.business_name})`);
         
+        // Set the tenant information
         setCurrentTenantId(businessProfile.id);
         setTenantName(businessProfile.business_name);
         setIsAdmin(isAdminUser);
-        setTenantRole(userRole as 'owner' | 'admin' | 'staff');
+        setTenantRole(userRole as TenantRole);
+        
+        // Set permissions based on role
+        setPermissions(getDefaultPermissions(userRole as TenantRole));
 
       } catch (error) {
         console.error("Error in tenant middleware:", error);
@@ -105,12 +110,17 @@ export const TenantProvider = ({ children }: TenantProviderProps) => {
         const fetchTenantName = async () => {
           const { data, error } = await supabase
             .from('business_profiles')
-            .select('business_name')
+            .select('business_name, settings')
             .eq('id', tenantId)
             .single();
             
           if (!error && data) {
             setTenantName(data.business_name);
+            
+            // Update role and permissions for this tenant context
+            const role = data.settings?.role || 'staff';
+            setTenantRole(role as TenantRole);
+            setPermissions(getDefaultPermissions(role as TenantRole));
           }
         };
         
@@ -127,7 +137,8 @@ export const TenantProvider = ({ children }: TenantProviderProps) => {
         tenantName, 
         tenantRole,
         isTenantLoading, 
-        setCurrentTenant 
+        setCurrentTenant,
+        permissions
       }}
     >
       {children}

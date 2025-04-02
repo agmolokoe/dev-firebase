@@ -1,15 +1,65 @@
 
 import { createContext, useContext } from "react";
 
+// Define roles and their capabilities
+export type TenantRole = 'owner' | 'admin' | 'staff' | null;
+
+export interface RolePermissions {
+  canManageUsers: boolean;
+  canManageProducts: boolean;
+  canManageOrders: boolean;
+  canViewAnalytics: boolean;
+  canChangeSettings: boolean;
+}
+
 // Create a context to hold the current tenant information
 interface TenantContextType {
   currentTenantId: string | null;
   isAdmin: boolean;
   tenantName: string | null;
-  tenantRole: 'owner' | 'admin' | 'staff' | null;
+  tenantRole: TenantRole;
   isTenantLoading: boolean;
   setCurrentTenant: (tenantId: string | null) => void;
+  permissions: RolePermissions;
 }
+
+// Default permissions based on role
+const getDefaultPermissions = (role: TenantRole): RolePermissions => {
+  switch (role) {
+    case 'owner':
+      return {
+        canManageUsers: true,
+        canManageProducts: true,
+        canManageOrders: true,
+        canViewAnalytics: true,
+        canChangeSettings: true
+      };
+    case 'admin':
+      return {
+        canManageUsers: true,
+        canManageProducts: true,
+        canManageOrders: true,
+        canViewAnalytics: true,
+        canChangeSettings: false
+      };
+    case 'staff':
+      return {
+        canManageUsers: false,
+        canManageProducts: true,
+        canManageOrders: true,
+        canViewAnalytics: false,
+        canChangeSettings: false
+      };
+    default:
+      return {
+        canManageUsers: false,
+        canManageProducts: false,
+        canManageOrders: false,
+        canViewAnalytics: false,
+        canChangeSettings: false
+      };
+  }
+};
 
 export const TenantContext = createContext<TenantContextType>({
   currentTenantId: null,
@@ -17,7 +67,8 @@ export const TenantContext = createContext<TenantContextType>({
   tenantName: null,
   tenantRole: null,
   isTenantLoading: true,
-  setCurrentTenant: () => {}
+  setCurrentTenant: () => {},
+  permissions: getDefaultPermissions(null)
 });
 
 export const useTenant = () => useContext(TenantContext);

@@ -2,7 +2,7 @@ import React, { useState, useEffect, useCallback } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { supabase } from "@/lib/supabase";
 import { useToast } from "@/hooks/use-toast";
-import { withAdminProtection } from "@/middleware/TenantMiddleware";
+import { useTenant, withAdminProtection } from "@/middleware";
 import { 
   ArrowLeft, 
   BarChart4, 
