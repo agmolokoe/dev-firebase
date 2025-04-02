@@ -3,6 +3,7 @@ import { useState, useCallback } from "react";
 import { supabase } from "@/lib/supabase";
 import { useToast } from "@/hooks/use-toast";
 import { useTenant } from "@/middleware/TenantMiddleware";
+import { PostgrestFilterBuilder } from "@supabase/supabase-js";
 
 // A hook to handle data operations with automatic tenant isolation
 export function useTenantData(tableName: string) {
@@ -30,7 +31,7 @@ export function useTenantData(tableName: string) {
     order?: { column: string; ascending?: boolean };
     limit?: number;
     page?: number;
-    additionalFilters?: (query: any) => any;
+    additionalFilters?: (query: PostgrestFilterBuilder<any, any, unknown>) => any;
   } = {}) => {
     try {
       setIsLoading(true);
