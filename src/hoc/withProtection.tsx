@@ -3,6 +3,7 @@ import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
 import { useTenant } from "@/context/TenantContext";
+import type { RolePermissions } from "@/context/TenantContext";
 
 // Higher-order component to restrict access to tenant-specific routes
 export const withTenantProtection = (Component: React.ComponentType<any>) => {

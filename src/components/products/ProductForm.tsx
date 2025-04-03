@@ -1,3 +1,4 @@
+
 import {
   AlertDialog,
   AlertDialogAction,
@@ -31,6 +32,21 @@ import { useEffect, useState } from "react"
 import { useToast } from "@/hooks/use-toast"
 import { useTenant } from "@/middleware";
 
+// Define Product type for use in other files
+export type Product = {
+  id: string;
+  name: string;
+  cost_price: number;
+  selling_price: number;
+  stock: number;
+  description?: string;
+  category: string;
+  status: 'active' | 'inactive';
+  taxable: boolean;
+  business_id: string;
+  created_at?: string;
+};
+
 const formSchema = z.object({
   name: z.string().min(2, {
     message: "Product name must be at least 2 characters.",
@@ -46,15 +62,15 @@ const formSchema = z.object({
   taxable: z.boolean().default(false),
 })
 
-interface ProductFormProps {
-  product?: any
-  handleCreateProduct: (values: z.infer<typeof formSchema>) => Promise<void>
-  handleUpdateProduct: (id: string, values: z.infer<typeof formSchema>) => Promise<void>
-  handleDeleteProduct: (id: string) => Promise<void>
-  isDialogOpen: boolean
-  setIsDialogOpen: (isOpen: boolean) => void
-  selectedProduct: any
-  setSelectedProduct: (product: any) => void
+export interface ProductFormProps {
+  product?: Product | null;
+  handleCreateProduct: (values: z.infer<typeof formSchema>) => Promise<void>;
+  handleUpdateProduct: (id: string, values: z.infer<typeof formSchema>) => Promise<void>;
+  handleDeleteProduct: (id: string) => Promise<void>;
+  isDialogOpen: boolean;
+  setIsDialogOpen: (isOpen: boolean) => void;
+  selectedProduct: Product | null;
+  setSelectedProduct: (product: Product | null) => void;
 }
 
 export function ProductForm({

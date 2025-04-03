@@ -24,7 +24,7 @@ interface TenantContextType {
 }
 
 // Default permissions based on role
-const getDefaultPermissions = (role: TenantRole): RolePermissions => {
+export const getDefaultPermissions = (role: TenantRole): RolePermissions => {
   switch (role) {
     case 'owner':
       return {
