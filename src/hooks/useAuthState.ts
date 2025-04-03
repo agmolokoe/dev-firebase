@@ -29,6 +29,12 @@ function useAuthState() {
         navigate("/auth");
       }
 
+      // Handle social login events
+      if (event === "USER_UPDATED" && session) {
+        setErrorMessage("");
+        toast.success("Account updated successfully!");
+      }
+
       if (event === "USER_UPDATED" && !session) {
         try {
           const { data, error: sessionError } = await supabase.auth.getSession();
