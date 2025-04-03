@@ -21,14 +21,20 @@ export const products = {
 
     const { data, error } = await supabase
       .from('products')
-      .insert([{ ...product, business_id: user.id }])
+      .insert([{ 
+        ...product, 
+        business_id: user.id,
+        status: product.status || 'active',
+        category: product.category || 'General',
+        taxable: product.taxable !== undefined ? product.taxable : false
+      }])
       .select()
       .single()
     
     if (error) throw error
     return data
   },
-  update: async (id: string, product: Partial<Product>) => {
+  update: async (id: string | number, product: Partial<Product>) => {
     const { data: { user } } = await supabase.auth.getUser()
     if (!user) throw new Error('Not authenticated')
 
@@ -43,7 +49,7 @@ export const products = {
     if (error) throw error
     return data
   },
-  delete: async (id: string) => {
+  delete: async (id: string | number) => {
     const { data: { user } } = await supabase.auth.getUser()
     if (!user) throw new Error('Not authenticated')
 

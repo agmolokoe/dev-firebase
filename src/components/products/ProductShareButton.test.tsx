@@ -5,6 +5,7 @@ import { ProductShareButton } from './ProductShareButton';
 import { vi, describe, it, expect, beforeEach } from 'vitest';
 import { db } from '@/lib/supabase';
 import { Toaster } from '@/components/ui/toaster';
+import { Product } from '@/lib/supabase/types';
 
 // Mock the dependencies
 vi.mock('@/lib/supabase', () => ({
@@ -30,14 +31,17 @@ vi.mock('@/hooks/use-toast', () => ({
 }));
 
 describe('ProductShareButton', () => {
-  const mockProduct = {
+  const mockProduct: Product = {
     id: 456,
     name: 'Test Product',
     description: 'Test Description',
     cost_price: 10,
     selling_price: 20,
     stock: 100,
-    business_id: '123'
+    business_id: '123',
+    status: 'active',
+    category: 'Test Category',
+    taxable: false
   };
 
   beforeEach(() => {

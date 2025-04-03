@@ -11,9 +11,10 @@ import {
 } from "@/components/ui/dialog"
 import * as z from "zod"
 import { supabase } from "@/lib/supabase"
-import { ProductForm, Product } from "./ProductForm"
+import { ProductForm } from "./ProductForm"
 import { formSchema } from "./ProductFormFields"
 import { useToast } from "@/hooks/use-toast"
+import { Product } from "@/lib/supabase/types"
 
 interface ProductDialogProps {
   open: boolean
@@ -120,7 +121,19 @@ export const ProductDialog = memo(function ProductDialog({
         </DialogHeader>
         
         <ProductForm
-          form={form}
+          handleCreateProduct={async (values) => {
+            await handleSubmit(values as any);
+            return Promise.resolve();
+          }}
+          handleUpdateProduct={async (id, values) => {
+            await onUpdate(Number(id), values as any);
+            return Promise.resolve();
+          }}
+          handleDeleteProduct={() => Promise.resolve()}
+          isDialogOpen={open}
+          setIsDialogOpen={onOpenChange}
+          selectedProduct={product}
+          setSelectedProduct={() => {}}
           product={product}
           previewUrl={previewUrl}
           setPreviewUrl={handleSetPreviewUrl}

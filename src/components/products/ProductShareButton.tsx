@@ -8,7 +8,7 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover"
 import { db } from "@/lib/supabase"
-import { Product } from "./ProductForm"
+import { Product } from "@/lib/supabase/types"
 import { useToast } from "@/hooks/use-toast"
 
 interface ProductShareButtonProps {

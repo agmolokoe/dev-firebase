@@ -11,17 +11,7 @@ import {
 } from "@/components/ui/table"
 import { formatCurrency } from "@/lib/utils"
 import { ProductShareButton } from "./ProductShareButton"
-
-export type Product = {
-  id: number
-  name: string
-  description: string | null
-  cost_price: number
-  selling_price: number
-  stock: number
-  image_url?: string | null
-  business_id: string
-}
+import { Product } from "@/lib/supabase/types"
 
 type ProductListProps = {
   products: Product[]
@@ -75,7 +65,9 @@ export const ProductList = memo(function ProductList({
             </TableRow>
           ) : (
             products.map((product) => {
-              const profit = product.selling_price - product.cost_price;
+              const cost = product.cost_price || 0;
+              const selling = product.selling_price || 0;
+              const profit = selling - cost;
               return (
                 <TableRow key={product.id} className="border-[#FFFFFF]/10">
                   <TableCell>
@@ -93,8 +85,8 @@ export const ProductList = memo(function ProductList({
                   </TableCell>
                   <TableCell className="text-[#FFFFFF]">{product.name}</TableCell>
                   <TableCell className="text-[#FFFFFF]">{product.description}</TableCell>
-                  <TableCell className="text-[#FFFFFF]">{formatCurrency(product.cost_price)}</TableCell>
-                  <TableCell className="text-[#FFFFFF]">{formatCurrency(product.selling_price)}</TableCell>
+                  <TableCell className="text-[#FFFFFF]">{formatCurrency(cost)}</TableCell>
+                  <TableCell className="text-[#FFFFFF]">{formatCurrency(selling)}</TableCell>
                   <TableCell className={`${profit >= 0 ? 'text-green-500' : 'text-red-500'}`}>
                     {formatCurrency(profit)}
                   </TableCell>
