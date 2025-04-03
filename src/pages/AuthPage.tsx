@@ -1,5 +1,6 @@
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
 import { Auth } from "@supabase/auth-ui-react";
 import { ThemeSupa } from "@supabase/auth-ui-shared";
 import { supabase } from "@/lib/supabase";
@@ -7,10 +8,30 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { BusinessNameInput } from "@/components/auth/BusinessNameInput";
 import { AuthError } from "@/components/auth/AuthError";
 import useAuthState from "@/hooks/useAuthState";
+import { LoadingSpinner } from "@/components/ui/loading-spinner";
 
 export default function AuthPage({ mode }: { mode: "login" | "signup" }) {
-  const { errorMessage, setErrorMessage } = useAuthState();
+  const location = useLocation();
+  const navigate = useNavigate();
+  const { errorMessage, setErrorMessage, isAuthReady } = useAuthState();
   const [businessName, setBusinessName] = useState("");
+  
+  // Check if we're being redirected from a protected page
+  useEffect(() => {
+    const from = new URLSearchParams(location.search).get("from");
+    if (from) {
+      setErrorMessage("Please sign in to access that page");
+    }
+  }, [location.search, setErrorMessage]);
+
+  // If auth is not ready yet, show loading state
+  if (!isAuthReady) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-black">
+        <LoadingSpinner />
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-black">

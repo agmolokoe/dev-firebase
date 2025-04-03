@@ -11,14 +11,19 @@ export type Customer = {
 }
 
 export type Product = {
-  id: string
+  id: number
   name: string
-  price: number
-  stock: number
-  category: string
-  status: string
+  price?: number
+  stock?: number
+  category?: string
+  status?: string
   business_id: string
   created_at?: string
+  description?: string
+  image_url?: string
+  cost_price?: number
+  selling_price?: number
+  taxable?: boolean
 }
 
 export type Order = {

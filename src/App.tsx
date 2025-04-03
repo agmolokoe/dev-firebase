@@ -1,13 +1,15 @@
+
 import React, { useEffect, useState, lazy, Suspense } from "react"
 import { Toaster } from "@/components/ui/toaster"
 import { Toaster as Sonner } from "@/components/ui/sonner"
 import { TooltipProvider } from "@/components/ui/tooltip"
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query"
-import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom"
+import { BrowserRouter, Routes, Route, Navigate, useLocation, useNavigate } from "react-router-dom"
 import { supabase } from "@/lib/supabase"
 import { Session } from "@supabase/supabase-js"
 import { CartProvider } from "./context/CartContext"
 import { TenantProvider } from "@/middleware"
+import { LoadingSpinner } from "@/components/ui/loading-spinner"
 
 // Lazy load pages
 const LandingPage = lazy(() => import("./pages/LandingPage"))
@@ -23,9 +25,44 @@ const ProductDetailPage = lazy(() => import("./pages/store/ProductDetailPage"))
 // Loading component
 const PageLoader = () => (
   <div className="min-h-screen bg-background flex items-center justify-center">
-    <div className="h-8 w-8 rounded-full border-4 border-primary border-t-transparent animate-spin"></div>
+    <LoadingSpinner size="lg" />
   </div>
 )
+
+// Protected route component
+const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
+  const [checking, setChecking] = useState(true);
+  const [authenticated, setAuthenticated] = useState(false);
+  const navigate = useNavigate();
+  const location = useLocation();
+
+  useEffect(() => {
+    const checkAuth = async () => {
+      try {
+        const { data } = await supabase.auth.getSession();
+        if (data.session) {
+          setAuthenticated(true);
+        } else {
+          // Redirect to auth page with the current path as a query parameter
+          navigate(`/auth?from=${encodeURIComponent(location.pathname)}`, { replace: true });
+        }
+      } catch (error) {
+        console.error("Error checking authentication:", error);
+        navigate("/auth", { replace: true });
+      } finally {
+        setChecking(false);
+      }
+    };
+
+    checkAuth();
+  }, [navigate, location.pathname]);
+
+  if (checking) {
+    return <PageLoader />;
+  }
+
+  return authenticated ? <>{children}</> : null;
+};
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -91,26 +128,34 @@ function App() {
                   />
                   <Route path="/privacy-policy" element={<PrivacyPolicy />} />
                   <Route path="/terms-of-service" element={<TermsOfService />} />
+                  
+                  {/* Protected routes - will redirect to auth if not logged in */}
                   <Route
                     path="/dashboard/*"
                     element={
-                      session ? <Index /> : <Navigate to="/auth" replace />
+                      <ProtectedRoute>
+                        <Index />
+                      </ProtectedRoute>
                     }
                   />
                   <Route
                     path="/dashboard/profile/setup"
                     element={
-                      session ? <BusinessProfileSetupPage /> : <Navigate to="/auth" replace />
+                      <ProtectedRoute>
+                        <BusinessProfileSetupPage />
+                      </ProtectedRoute>
                     }
                   />
                   <Route
                     path="/dashboard/subscription"
                     element={
-                      session ? <SubscriptionPage /> : <Navigate to="/auth" replace />
+                      <ProtectedRoute>
+                        <SubscriptionPage />
+                      </ProtectedRoute>
                     }
                   />
                   
-                  {/* New store routes with the requested URL structure */}
+                  {/* Public store routes - can be accessed without auth */}
                   <Route path="/shopapp/:businessId" element={<StorePage />} />
                   <Route path="/shopapp/:businessId/product/:productId" element={<ProductDetailPage />} />
                   

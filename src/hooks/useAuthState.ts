@@ -1,6 +1,6 @@
 
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { supabase } from "@/lib/supabase";
 import { getAuthErrorMessage } from "@/utils/auth-errors";
 import { toast } from "sonner";
@@ -8,9 +8,38 @@ import { AuthError } from "@supabase/supabase-js";
 
 function useAuthState() {
   const navigate = useNavigate();
+  const location = useLocation();
   const [errorMessage, setErrorMessage] = useState<string>("");
+  const [isAuthReady, setIsAuthReady] = useState<boolean>(false);
 
   useEffect(() => {
+    // Check current session on mount
+    const checkCurrentSession = async () => {
+      try {
+        const { data, error } = await supabase.auth.getSession();
+        
+        if (error) {
+          console.error("Error checking session:", error);
+          setIsAuthReady(true);
+          return;
+        }
+        
+        // Set auth ready after we've checked the session
+        setIsAuthReady(true);
+        
+        // If on auth page but already authenticated, redirect to dashboard
+        if (data.session && location.pathname.includes('/auth')) {
+          navigate('/dashboard');
+        }
+      } catch (err) {
+        console.error("Unexpected error checking session:", err);
+        setIsAuthReady(true);
+      }
+    };
+    
+    checkCurrentSession();
+    
+    // Set up auth state change listener
     const {
       data: { subscription },
     } = supabase.auth.onAuthStateChange(async (event, session) => {
@@ -66,9 +95,9 @@ function useAuthState() {
     return () => {
       subscription.unsubscribe();
     };
-  }, [navigate]);
+  }, [navigate, location.pathname]);
 
-  return { errorMessage, setErrorMessage };
+  return { errorMessage, setErrorMessage, isAuthReady };
 }
 
 export default useAuthState;
