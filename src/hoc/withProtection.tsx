@@ -67,20 +67,21 @@ export const withAdminProtection = (Component: React.ComponentType<any>) => {
   };
 };
 
-// New HOC for permission-based protection
+// Higher-order component for permission-based protection
 export const withPermissionProtection = (
   Component: React.ComponentType<any>, 
   requiredPermission: keyof RolePermissions
 ) => {
   return (props: any) => {
-    const { permissions, isTenantLoading } = useTenant();
+    const { permissions, isTenantLoading, hasPermission } = useTenant();
     const navigate = useNavigate();
     const { toast } = useToast();
     
-    const hasPermission = permissions[requiredPermission];
+    // Check for the specific permission using the new hasPermission helper
+    const userHasPermission = hasPermission(requiredPermission);
     
     useEffect(() => {
-      if (!isTenantLoading && !hasPermission) {
+      if (!isTenantLoading && !userHasPermission) {
         navigate('/dashboard');
         toast({
           title: "Access Denied",
@@ -88,7 +89,7 @@ export const withPermissionProtection = (
           variant: "destructive",
         });
       }
-    }, [hasPermission, isTenantLoading, navigate, toast]);
+    }, [userHasPermission, isTenantLoading, navigate, toast]);
     
     if (isTenantLoading) {
       return (
@@ -98,7 +99,7 @@ export const withPermissionProtection = (
       );
     }
     
-    if (!hasPermission) {
+    if (!userHasPermission) {
       return null; // Will redirect via effect
     }
     

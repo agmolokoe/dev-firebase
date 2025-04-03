@@ -13,7 +13,7 @@ export interface RolePermissions {
 }
 
 // Create a context to hold the current tenant information
-interface TenantContextType {
+export interface TenantContextType {
   currentTenantId: string | null;
   isAdmin: boolean;
   tenantName: string | null;
@@ -21,6 +21,8 @@ interface TenantContextType {
   isTenantLoading: boolean;
   setCurrentTenant: (tenantId: string | null) => void;
   permissions: RolePermissions;
+  // New helper function to check specific permissions
+  hasPermission: (permission: keyof RolePermissions) => boolean;
 }
 
 // Default permissions based on role
@@ -68,7 +70,8 @@ export const TenantContext = createContext<TenantContextType>({
   tenantRole: null,
   isTenantLoading: true,
   setCurrentTenant: () => {},
-  permissions: getDefaultPermissions(null)
+  permissions: getDefaultPermissions(null),
+  hasPermission: () => false
 });
 
 export const useTenant = () => useContext(TenantContext);

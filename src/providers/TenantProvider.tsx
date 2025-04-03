@@ -1,5 +1,5 @@
 
-import { ReactNode, useEffect, useState } from "react";
+import { ReactNode, useEffect, useState, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/lib/supabase";
 import { useToast } from "@/hooks/use-toast";
@@ -18,6 +18,11 @@ export const TenantProvider = ({ children }: TenantProviderProps) => {
   const [permissions, setPermissions] = useState<RolePermissions>(getDefaultPermissions(null));
   const navigate = useNavigate();
   const { toast } = useToast();
+
+  // Helper function to check specific permissions
+  const hasPermission = useCallback((permission: keyof RolePermissions): boolean => {
+    return permissions[permission];
+  }, [permissions]);
 
   useEffect(() => {
     // Check for authentication and set up tenant information
@@ -100,7 +105,7 @@ export const TenantProvider = ({ children }: TenantProviderProps) => {
     };
   }, [navigate, toast]);
 
-  const setCurrentTenant = (tenantId: string | null) => {
+  const setCurrentTenant = useCallback((tenantId: string | null) => {
     // For admin users who can switch between tenants
     if (isAdmin) {
       setCurrentTenantId(tenantId);
@@ -127,7 +132,7 @@ export const TenantProvider = ({ children }: TenantProviderProps) => {
         fetchTenantName();
       }
     }
-  };
+  }, [isAdmin]);
 
   return (
     <TenantContext.Provider 
@@ -138,7 +143,8 @@ export const TenantProvider = ({ children }: TenantProviderProps) => {
         tenantRole,
         isTenantLoading, 
         setCurrentTenant,
-        permissions
+        permissions,
+        hasPermission
       }}
     >
       {children}
