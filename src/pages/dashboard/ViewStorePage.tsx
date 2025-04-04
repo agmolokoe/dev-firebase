@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Store, ExternalLink, Copy, CheckCheck, QrCode, ArrowRight, Palette, Settings, ArrowUpRight, Eye } from "lucide-react";
+import { Store, ExternalLink, Copy, CheckCheck, QrCode, ArrowRight, Palette, Settings, ArrowUpRight, Eye, Package, ShoppingCart } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/lib/supabase";
 import { ProductStoreLink } from "@/components/products/ProductStoreLink";

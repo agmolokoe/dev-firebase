@@ -1,10 +1,9 @@
-
 import { useState, useEffect, useCallback } from "react"
 import { useParams, Link } from "react-router-dom"
 import { supabase } from "@/lib/supabase"
 import { useToast } from "@/hooks/use-toast"
 import { Button } from "@/components/ui/button"
-import { ChevronLeft } from "lucide-react"
+import { ChevronLeft, Package } from "lucide-react"
 import { StoreNavigation } from "@/components/store/StoreNavigation"
 import { CartProvider } from "@/context/CartContext"
 import { ProductImages } from "@/components/store/ProductImages"
@@ -28,7 +27,6 @@ function ProductDetail() {
     try {
       setLoading(true)
       
-      // Perform all fetches in parallel for better performance
       const [productResponse, profileResponse, relatedResponse] = await Promise.all([
         supabase
           .from('products')
@@ -75,7 +73,6 @@ function ProductDetail() {
   }, [fetchProductData]);
 
   useEffect(() => {
-    // Add animation completion after loading
     if (!loading) {
       const timer = setTimeout(() => {
         setAnimationComplete(true);
@@ -112,19 +109,16 @@ function ProductDetail() {
     )
   }
 
-  // Extract categories for the navigation
   const categories = ['All Products', 'New Arrivals', 'Best Sellers'];
 
   return (
     <div className={`min-h-screen bg-background flex flex-col opacity-0 ${animationComplete ? 'animate-fade-in opacity-100' : ''}`}>
-      {/* Store Navigation */}
       <StoreNavigation 
         businessName={businessProfile.business_name} 
         businessId={businessId || ''} 
         categories={categories} 
       />
       
-      {/* Breadcrumb Navigation */}
       <div className="container mx-auto px-4 py-4">
         <Button variant="ghost" asChild size="sm" className="text-white/70 hover:text-white hover:bg-white/5">
           <Link to={`/shopapp/${businessId}`} className="flex items-center">
@@ -134,7 +128,6 @@ function ProductDetail() {
         </Button>
       </div>
       
-      {/* Product Detail Section with TikTok-inspired elements */}
       <div className="container mx-auto px-4 py-6">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
           <div className="relative" 
@@ -155,22 +148,19 @@ function ProductDetail() {
         </div>
       </div>
       
-      {/* Product Tabs */}
       <div className="container mx-auto px-4 py-12">
         <ProductTabs product={product} businessName={businessProfile.business_name} />
       </div>
       
-      {/* Related Products */}
       <RelatedProducts products={relatedProducts} />
       
-      {/* Footer */}
       <StoreFooter 
         businessName={businessProfile.business_name}
         websiteUrl={businessProfile.website_url}
       />
       
-      {/* Add custom animations */}
-      <style jsx>{`
+      <style>
+        {`
         @keyframes slideInFromLeft {
           0% {
             transform: translateX(-50px);
@@ -197,7 +187,8 @@ function ProductDetail() {
           0% { opacity: 0; }
           100% { opacity: 1; }
         }
-      `}</style>
+        `}
+      </style>
     </div>
   )
 }
