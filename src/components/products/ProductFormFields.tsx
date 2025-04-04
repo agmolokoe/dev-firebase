@@ -1,30 +1,34 @@
 
-import { memo } from "react"
 import { FormField, FormItem, FormLabel, FormControl, FormMessage } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { UseFormReturn } from "react-hook-form"
 import * as z from "zod"
 
+// Export the form schema so it can be reused
 export const formSchema = z.object({
-  name: z.string().min(2, "Name must be at least 2 characters"),
+  name: z.string().min(2, {
+    message: "Product name must be at least 2 characters.",
+  }),
+  cost_price: z.number(),
+  selling_price: z.number(),
+  stock: z.number(),
   description: z.string().optional(),
-  cost_price: z.string().refine((val) => !isNaN(Number(val)) && Number(val) >= 0, {
-    message: "Cost price must be a non-negative number",
+  category: z.string().min(2, {
+    message: "Category must be at least 2 characters.",
   }),
-  selling_price: z.string().refine((val) => !isNaN(Number(val)) && Number(val) > 0, {
-    message: "Selling price must be a positive number",
-  }),
-  stock: z.string().refine((val) => !isNaN(Number(val)) && Number(val) >= 0, {
-    message: "Stock must be a non-negative number",
-  }),
+  status: z.enum(["active", "inactive"]),
+  taxable: z.boolean().default(false),
 })
 
-type ProductFormFieldsProps = {
-  form: UseFormReturn<z.infer<typeof formSchema>>
+export type FormValues = z.infer<typeof formSchema>
+
+interface ProductFormFieldsProps {
+  form: UseFormReturn<FormValues>
 }
 
-export const ProductFormFields = memo(function ProductFormFields({ form }: ProductFormFieldsProps) {
+export function ProductFormFields({ form }: ProductFormFieldsProps) {
   return (
     <>
       <FormField
@@ -32,15 +36,11 @@ export const ProductFormFields = memo(function ProductFormFields({ form }: Produ
         name="name"
         render={({ field }) => (
           <FormItem>
-            <FormLabel className="text-[#FFFFFF]">Name</FormLabel>
+            <FormLabel>Name</FormLabel>
             <FormControl>
-              <Input 
-                placeholder="Product name" 
-                {...field}
-                className="bg-[#FFFFFF]/5 border-[#FFFFFF]/10 text-[#FFFFFF]"
-              />
+              <Input placeholder="Product name" {...field} />
             </FormControl>
-            <FormMessage className="text-[#FE2C55]" />
+            <FormMessage />
           </FormItem>
         )}
       />
@@ -50,80 +50,50 @@ export const ProductFormFields = memo(function ProductFormFields({ form }: Produ
         name="description"
         render={({ field }) => (
           <FormItem>
-            <FormLabel className="text-[#FFFFFF]">Description</FormLabel>
+            <FormLabel>Description</FormLabel>
             <FormControl>
-              <Textarea 
-                placeholder="Product description"
-                {...field}
-                className="bg-[#FFFFFF]/5 border-[#FFFFFF]/10 text-[#FFFFFF]"
-              />
+              <Textarea placeholder="Product description" {...field} />
             </FormControl>
-            <FormMessage className="text-[#FE2C55]" />
+            <FormMessage />
           </FormItem>
         )}
       />
-
+      
       <FormField
         control={form.control}
-        name="cost_price"
+        name="category"
         render={({ field }) => (
           <FormItem>
-            <FormLabel className="text-[#FFFFFF]">Cost Price</FormLabel>
+            <FormLabel>Category</FormLabel>
             <FormControl>
-              <Input 
-                type="number"
-                min="0"
-                step="0.01"
-                placeholder="0.00"
-                {...field}
-                className="bg-[#FFFFFF]/5 border-[#FFFFFF]/10 text-[#FFFFFF]"
-              />
+              <Input placeholder="Category" {...field} />
             </FormControl>
-            <FormMessage className="text-[#FE2C55]" />
+            <FormMessage />
           </FormItem>
         )}
       />
-
+      
       <FormField
         control={form.control}
-        name="selling_price"
+        name="status"
         render={({ field }) => (
           <FormItem>
-            <FormLabel className="text-[#FFFFFF]">Selling Price</FormLabel>
-            <FormControl>
-              <Input 
-                type="number"
-                min="0"
-                step="0.01"
-                placeholder="0.00"
-                {...field}
-                className="bg-[#FFFFFF]/5 border-[#FFFFFF]/10 text-[#FFFFFF]"
-              />
-            </FormControl>
-            <FormMessage className="text-[#FE2C55]" />
-          </FormItem>
-        )}
-      />
-
-      <FormField
-        control={form.control}
-        name="stock"
-        render={({ field }) => (
-          <FormItem>
-            <FormLabel className="text-[#FFFFFF]">Stock</FormLabel>
-            <FormControl>
-              <Input 
-                type="number"
-                min="0"
-                placeholder="0"
-                {...field}
-                className="bg-[#FFFFFF]/5 border-[#FFFFFF]/10 text-[#FFFFFF]"
-              />
-            </FormControl>
-            <FormMessage className="text-[#FE2C55]" />
+            <FormLabel>Status</FormLabel>
+            <Select onValueChange={field.onChange} defaultValue={field.value}>
+              <FormControl>
+                <SelectTrigger>
+                  <SelectValue placeholder="Select a status" />
+                </SelectTrigger>
+              </FormControl>
+              <SelectContent>
+                <SelectItem value="active">Active</SelectItem>
+                <SelectItem value="inactive">Inactive</SelectItem>
+              </SelectContent>
+            </Select>
+            <FormMessage />
           </FormItem>
         )}
       />
     </>
   )
-})
+}

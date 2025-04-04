@@ -1,5 +1,5 @@
 
-import { useState, useEffect, useCallback, useMemo, memo } from "react"
+import { useState, useEffect, useCallback } from "react"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
 import {
@@ -9,10 +9,9 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog"
-import * as z from "zod"
 import { supabase } from "@/lib/supabase"
 import { ProductForm } from "./ProductForm"
-import { formSchema } from "./ProductFormFields"
+import { formSchema, FormValues } from "./ProductFormFields"
 import { useToast } from "@/hooks/use-toast"
 import { Product } from "@/lib/supabase/types"
 
@@ -20,35 +19,21 @@ interface ProductDialogProps {
   open: boolean
   onOpenChange: (open: boolean) => void
   product: Product | null
-  onSubmit: (data: z.infer<typeof formSchema>) => Promise<void>
-  onUpdate: (id: number, data: z.infer<typeof formSchema>) => Promise<void>
+  onSubmit: (data: FormValues) => Promise<void>
+  onUpdate: (id: number, data: FormValues) => Promise<void>
+  onDelete?: (id: number) => Promise<void>
 }
 
-export const ProductDialog = memo(function ProductDialog({
+export function ProductDialog({
   open,
   onOpenChange,
   product,
   onSubmit,
   onUpdate,
+  onDelete
 }: ProductDialogProps) {
-  const [isSubmitting, setIsSubmitting] = useState(false)
-  const [previewUrl, setPreviewUrl] = useState<string | null>(null)
   const [businessId, setBusinessId] = useState<string | null>(null)
   const { toast } = useToast()
-  
-  const form = useForm<z.infer<typeof formSchema>>({
-    resolver: zodResolver(formSchema),
-    defaultValues: useMemo(() => ({
-      name: product?.name || "",
-      description: product?.description || "",
-      cost_price: product?.cost_price?.toString() || "",
-      selling_price: product?.selling_price?.toString() || "",
-      stock: product?.stock?.toString() || "0",
-      category: product?.category || "",
-      status: product?.status || "active",
-      taxable: product?.taxable ?? false,
-    }), [product])
-  })
   
   // Get business ID on mount
   useEffect(() => {
@@ -58,94 +43,101 @@ export const ProductDialog = memo(function ProductDialog({
     };
     getBusinessId();
   }, []);
-  
-  // Reset form when product changes
-  useEffect(() => {
-    if (product) {
-      form.reset({
-        name: product.name || "",
-        description: product.description || "",
-        cost_price: product.cost_price?.toString() || "",
-        selling_price: product.selling_price?.toString() || "",
-        stock: product.stock?.toString() || "0",
-        category: product.category || "",
-        status: product.status || "active",
-        taxable: product.taxable ?? false,
-      })
-      setPreviewUrl(product.image_url || null)
-    } else {
-      form.reset({
-        name: "",
-        description: "",
-        cost_price: "",
-        selling_price: "",
-        stock: "0",
-        category: "",
-        status: "active",
-        taxable: false,
-      })
-      setPreviewUrl(null)
-    }
-  }, [product, open, form])
-  
-  const handleSetPreviewUrl = useCallback((url: string | null) => {
-    setPreviewUrl(url);
-  }, []);
 
-  const handleSubmit = useCallback(async (values: z.infer<typeof formSchema>) => {
-    try {
-      setIsSubmitting(true)
-      const formData = {
-        ...values,
-        image_url: previewUrl,
-      }
-      
-      if (product) {
-        await onUpdate(product.id, formData)
-      } else {
-        await onSubmit(formData)
-      }
-    } catch (error) {
-      console.error("Error submitting product form:", error)
+  const handleCreateProduct = useCallback(async (values: FormValues) => {
+    if (!businessId) {
       toast({
         title: "Error",
-        description: "Failed to save product. Please try again.",
+        description: "You must be logged in to create products",
         variant: "destructive",
       })
-    } finally {
-      setIsSubmitting(false)
+      return
     }
-  }, [product, previewUrl, onSubmit, onUpdate, toast]);
+    
+    try {
+      await onSubmit(values)
+      onOpenChange(false)
+    } catch (error) {
+      console.error("Error creating product:", error)
+      toast({
+        title: "Error",
+        description: "Failed to create product",
+        variant: "destructive",
+      })
+    }
+  }, [businessId, onSubmit, onOpenChange, toast])
+
+  const handleUpdateProduct = useCallback(async (id: number, values: FormValues) => {
+    if (!businessId) {
+      toast({
+        title: "Error",
+        description: "You must be logged in to update products",
+        variant: "destructive",
+      })
+      return
+    }
+    
+    try {
+      await onUpdate(id, values)
+      onOpenChange(false)
+    } catch (error) {
+      console.error("Error updating product:", error)
+      toast({
+        title: "Error",
+        description: "Failed to update product",
+        variant: "destructive",
+      })
+    }
+  }, [businessId, onUpdate, onOpenChange, toast])
+
+  const handleDeleteProduct = useCallback(async (id: number) => {
+    if (!onDelete) return
+    
+    if (!businessId) {
+      toast({
+        title: "Error",
+        description: "You must be logged in to delete products",
+        variant: "destructive",
+      })
+      return
+    }
+    
+    try {
+      await onDelete(id)
+      onOpenChange(false)
+    } catch (error) {
+      console.error("Error deleting product:", error)
+      toast({
+        title: "Error",
+        description: "Failed to delete product",
+        variant: "destructive",
+      })
+    }
+  }, [businessId, onDelete, onOpenChange, toast])
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[425px] md:max-w-[600px] max-h-[90vh] bg-[#000000] text-[#FFFFFF] border-[#FFFFFF]/10 flex flex-col overflow-hidden">
+      <DialogContent className="sm:max-w-[425px] md:max-w-[600px] max-h-[90vh] overflow-y-auto">
         <DialogHeader className="pb-4">
-          <DialogTitle className="text-[#FFFFFF]">
+          <DialogTitle>
             {product ? "Edit Product" : "Add New Product"}
           </DialogTitle>
-          <DialogDescription className="text-[#FFFFFF]/70">
-            Fill in the product details below. Images will be uploaded automatically.
+          <DialogDescription>
+            Fill in the product details below.
           </DialogDescription>
         </DialogHeader>
         
         <ProductForm
-          handleCreateProduct={async (values) => {
-            await handleSubmit(values as any);
-            return Promise.resolve();
-          }}
-          handleUpdateProduct={async (id, values) => {
-            await onUpdate(Number(id), values as any);
-            return Promise.resolve();
-          }}
-          handleDeleteProduct={() => Promise.resolve()}
+          handleCreateProduct={handleCreateProduct}
+          handleUpdateProduct={handleUpdateProduct}
+          handleDeleteProduct={handleDeleteProduct}
           isDialogOpen={open}
           setIsDialogOpen={onOpenChange}
-          selectedProduct={product as any}
+          selectedProduct={product}
           setSelectedProduct={() => {}}
-          businessId={businessId}
+          product={product}
         />
       </DialogContent>
     </Dialog>
   )
-})
+}
