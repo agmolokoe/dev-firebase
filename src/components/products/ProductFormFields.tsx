@@ -5,6 +5,7 @@ import { Textarea } from "@/components/ui/textarea"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { UseFormReturn } from "react-hook-form"
 import * as z from "zod"
+import { Sparkles } from "lucide-react"
 
 // Export the form schema so it can be reused
 export const formSchema = z.object({
@@ -39,7 +40,16 @@ export function ProductFormFields({ form }: ProductFormFieldsProps) {
           <FormItem>
             <FormLabel>Name</FormLabel>
             <FormControl>
-              <Input placeholder="Product name" {...field} />
+              <div className="relative">
+                <Input 
+                  placeholder="Product name" 
+                  {...field} 
+                  className="pl-3 focus:border-[#25F4EE] transition-all duration-300"
+                />
+                {field.value && field.value.length >= 2 && (
+                  <Sparkles className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-[#25F4EE] animate-pulse" />
+                )}
+              </div>
             </FormControl>
             <FormMessage />
           </FormItem>
@@ -53,7 +63,11 @@ export function ProductFormFields({ form }: ProductFormFieldsProps) {
           <FormItem>
             <FormLabel>Description</FormLabel>
             <FormControl>
-              <Textarea placeholder="Product description" {...field} />
+              <Textarea 
+                placeholder="Product description" 
+                {...field} 
+                className="min-h-[100px] focus:border-[#25F4EE] transition-all duration-300"
+              />
             </FormControl>
             <FormMessage />
           </FormItem>
@@ -67,7 +81,11 @@ export function ProductFormFields({ form }: ProductFormFieldsProps) {
           <FormItem>
             <FormLabel>Category</FormLabel>
             <FormControl>
-              <Input placeholder="Category" {...field} />
+              <Input 
+                placeholder="Category" 
+                {...field} 
+                className="focus:border-[#25F4EE] transition-all duration-300"
+              />
             </FormControl>
             <FormMessage />
           </FormItem>
@@ -80,15 +98,18 @@ export function ProductFormFields({ form }: ProductFormFieldsProps) {
         render={({ field }) => (
           <FormItem>
             <FormLabel>Status</FormLabel>
-            <Select onValueChange={field.onChange} defaultValue={field.value}>
+            <Select 
+              onValueChange={field.onChange} 
+              defaultValue={field.value}
+            >
               <FormControl>
-                <SelectTrigger>
+                <SelectTrigger className="focus:border-[#25F4EE] focus:ring-[#25F4EE] transition-all duration-300">
                   <SelectValue placeholder="Select a status" />
                 </SelectTrigger>
               </FormControl>
               <SelectContent>
-                <SelectItem value="active">Active</SelectItem>
-                <SelectItem value="inactive">Inactive</SelectItem>
+                <SelectItem value="active" className="hover:bg-[#25F4EE]/10 cursor-pointer">Active</SelectItem>
+                <SelectItem value="inactive" className="hover:bg-[#FE2C55]/10 cursor-pointer">Inactive</SelectItem>
               </SelectContent>
             </Select>
             <FormMessage />
@@ -103,7 +124,12 @@ export function ProductFormFields({ form }: ProductFormFieldsProps) {
           <FormItem>
             <FormLabel>Product Image URL</FormLabel>
             <FormControl>
-              <Input placeholder="Image URL" {...field} value={field.value || ''} />
+              <Input 
+                placeholder="Image URL" 
+                {...field} 
+                value={field.value || ''} 
+                className="focus:border-[#25F4EE] transition-all duration-300"
+              />
             </FormControl>
             <FormMessage />
           </FormItem>

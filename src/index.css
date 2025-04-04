@@ -1,3 +1,4 @@
+
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
 
 @tailwind base;
@@ -38,4 +39,36 @@
 body {
   @apply bg-background text-foreground;
   font-feature-settings: "rlig" 1, "calt" 1;
+}
+
+/* TikTok-inspired animated link */
+.tiktok-link {
+  @apply relative inline-block;
+}
+
+.tiktok-link::after {
+  @apply content-[''] absolute left-0 bottom-0 w-full h-[2px] bg-[#25F4EE] transform scale-x-0 origin-bottom-left transition-transform duration-300;
+}
+
+.tiktok-link:hover::after {
+  @apply transform scale-x-100;
+}
+
+/* Card hover effects */
+.tiktok-card {
+  @apply transition-all duration-300 hover:shadow-lg hover:shadow-[#25F4EE]/10 hover:-translate-y-1;
+}
+
+/* TikTok-inspired button pulse */
+.tiktok-btn-pulse::before {
+  @apply content-[''] absolute inset-0 rounded-md bg-[#25F4EE]/30 transform scale-90 opacity-0 transition-all duration-500;
+}
+
+.tiktok-btn-pulse:hover::before {
+  @apply transform scale-110 opacity-100 animate-pulse;
+}
+
+/* Gradient text */
+.gradient-text {
+  @apply bg-gradient-to-r from-[#25F4EE] to-[#FE2C55] bg-clip-text text-transparent;
 }
