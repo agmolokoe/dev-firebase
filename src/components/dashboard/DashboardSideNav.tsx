@@ -61,6 +61,12 @@ export function DashboardSideNav() {
       active: pathname.startsWith("/dashboard/reports"),
     },
     {
+      title: "Marketing",
+      href: "/dashboard/marketing",
+      icon: <Share2 className="h-5 w-5" />,
+      active: pathname.startsWith("/dashboard/marketing"),
+    },
+    {
       title: "Support",
       href: "/dashboard/support",
       icon: <MessageSquare className="h-5 w-5" />,

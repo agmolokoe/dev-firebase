@@ -159,8 +159,7 @@ function ProductDetail() {
         websiteUrl={businessProfile.website_url}
       />
       
-      <style>
-        {`
+      <style dangerouslySetInnerHTML={{ __html: `
         @keyframes slideInFromLeft {
           0% {
             transform: translateX(-50px);
@@ -187,8 +186,7 @@ function ProductDetail() {
           0% { opacity: 0; }
           100% { opacity: 1; }
         }
-        `}
-      </style>
+      `}} />
     </div>
   )
 }

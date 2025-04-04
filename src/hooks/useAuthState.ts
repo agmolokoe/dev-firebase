@@ -11,6 +11,7 @@ function useAuthState() {
   const location = useLocation();
   const [errorMessage, setErrorMessage] = useState<string>("");
   const [isAuthReady, setIsAuthReady] = useState<boolean>(false);
+  const [session, setSession] = useState<any>(null);
 
   useEffect(() => {
     // Check current session on mount
@@ -24,11 +25,14 @@ function useAuthState() {
           return;
         }
         
+        // Set the session in state
+        setSession(data.session);
+        
         // Set auth ready after we've checked the session
         setIsAuthReady(true);
         
         // If on auth page but already authenticated, redirect to dashboard
-        if (data.session && location.pathname.includes('/auth')) {
+        if (data.session && location.pathname === '/auth') {
           navigate('/dashboard');
         }
       } catch (err) {
@@ -45,6 +49,9 @@ function useAuthState() {
     } = supabase.auth.onAuthStateChange(async (event, session) => {
       console.log("Auth event:", event);
       console.log("Session:", session);
+      
+      // Update session state
+      setSession(session);
 
       if (event === "SIGNED_IN" && session) {
         setErrorMessage(""); // Clear any previous errors
@@ -97,7 +104,7 @@ function useAuthState() {
     };
   }, [navigate, location.pathname]);
 
-  return { errorMessage, setErrorMessage, isAuthReady };
+  return { errorMessage, setErrorMessage, isAuthReady, session };
 }
 
 export default useAuthState;

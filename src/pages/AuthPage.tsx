@@ -16,6 +16,10 @@ export default function AuthPage({ mode }: { mode: "login" | "signup" }) {
   const { errorMessage, setErrorMessage, isAuthReady } = useAuthState();
   const [businessName, setBusinessName] = useState("");
   
+  // Get returnTo path from URL if it exists
+  const searchParams = new URLSearchParams(location.search);
+  const returnTo = searchParams.get("returnTo") || "/dashboard";
+  
   // Check if we're being redirected from a protected page
   useEffect(() => {
     const from = new URLSearchParams(location.search).get("from");
@@ -71,7 +75,7 @@ export default function AuthPage({ mode }: { mode: "login" | "signup" }) {
             }}
             theme="dark"
             providers={["google", "facebook"]}
-            redirectTo={`${window.location.origin}/dashboard`}
+            redirectTo={`${window.location.origin}${returnTo}`}
             {...(mode === "signup" && {
               options: {
                 data: {

@@ -43,19 +43,26 @@ const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
         if (data.session) {
           setAuthenticated(true);
         } else {
-          // Redirect to auth page with the current path as a query parameter
-          navigate(`/auth?from=${encodeURIComponent(location.pathname)}`, { replace: true });
+          // Only redirect if not already on the auth page
+          if (location.pathname !== '/auth') {
+            // Preserve the original URL the user was trying to access
+            const returnPath = encodeURIComponent(location.pathname + location.search);
+            navigate(`/auth?returnTo=${returnPath}`, { replace: true });
+          }
         }
       } catch (error) {
         console.error("Error checking authentication:", error);
-        navigate("/auth", { replace: true });
+        // Only redirect if not already on the auth page
+        if (location.pathname !== '/auth') {
+          navigate("/auth", { replace: true });
+        }
       } finally {
         setChecking(false);
       }
     };
 
     checkAuth();
-  }, [navigate, location.pathname]);
+  }, [navigate, location]);
 
   if (checking) {
     return <PageLoader />;
@@ -78,11 +85,13 @@ function App() {
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
+    // Get initial session
     supabase.auth.getSession().then(({ data: { session } }) => {
       setSession(session)
       setLoading(false)
     })
 
+    // Listen for auth changes
     const {
       data: { subscription },
     } = supabase.auth.onAuthStateChange((_event, session) => {
@@ -160,10 +169,10 @@ function App() {
                   <Route path="/shopapp/:businessId/product/:productId" element={<ProductDetailPage />} />
                   
                   {/* Redirects from old routes */}
-                  <Route path="/:businessId" element={<Navigate to="/shopapp/:businessId" replace />} />
-                  <Route path="/:businessId/product/:productId" element={<Navigate to="/shopapp/:businessId/product/:productId" replace />} />
-                  <Route path="/store/:businessId" element={<Navigate to="/shopapp/:businessId" replace />} />
-                  <Route path="/store/:businessId/product/:productId" element={<Navigate to="/shopapp/:businessId/product/:productId" replace />} />
+                  <Route path="/:businessId" element={<Navigate to={`/shopapp/:businessId`} replace />} />
+                  <Route path="/:businessId/product/:productId" element={<Navigate to={`/shopapp/:businessId/product/:productId`} replace />} />
+                  <Route path="/store/:businessId" element={<Navigate to={`/shopapp/:businessId`} replace />} />
+                  <Route path="/store/:businessId/product/:productId" element={<Navigate to={`/shopapp/:businessId/product/:productId`} replace />} />
                   
                   <Route path="*" element={<Navigate to="/" replace />} />
                 </Routes>

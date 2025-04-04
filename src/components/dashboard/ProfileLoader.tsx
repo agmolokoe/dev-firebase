@@ -14,17 +14,28 @@ export function ProfileLoader({ children }: { children: React.ReactNode }) {
   const { toast } = useToast();
   const location = useLocation();
 
+  // List of paths that don't require a complete profile
+  const exemptPaths = [
+    '/dashboard/profile/setup', 
+    '/dashboard/subscription', 
+    '/auth'
+  ];
+
   const fetchBusinessProfile = useCallback(async () => {
     try {
       const { data: { session } } = await supabase.auth.getSession();
+      
       if (!session) {
         setLoading(false);
-        navigate('/auth');
+        // Don't navigate if we're already on the auth page
+        if (location.pathname !== '/auth') {
+          navigate('/auth');
+        }
         return;
       }
       
-      // Skip profile check if we're already on the setup page
-      if (location.pathname === '/dashboard/profile/setup') {
+      // Skip profile check if we're on an exempt path
+      if (exemptPaths.some(path => location.pathname.startsWith(path))) {
         setLoading(false);
         return;
       }
@@ -46,7 +57,8 @@ export function ProfileLoader({ children }: { children: React.ReactNode }) {
         return;
       }
       
-      if (!data && !location.pathname.includes('/profile/setup')) {
+      // Only redirect to setup if we're not on an exempt path and there's no profile
+      if (!data && !exemptPaths.some(path => location.pathname.includes(path))) {
         console.log('No business profile found, redirecting to setup');
         toast({
           title: "Profile Setup Required",
@@ -64,7 +76,7 @@ export function ProfileLoader({ children }: { children: React.ReactNode }) {
     } finally {
       setLoading(false);
     }
-  }, [navigate, toast, location.pathname]);
+  }, [navigate, toast, location.pathname, exemptPaths]);
 
   useEffect(() => {
     fetchBusinessProfile();

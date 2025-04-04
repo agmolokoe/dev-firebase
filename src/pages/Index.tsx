@@ -12,6 +12,10 @@ const ProductsPage = lazy(() => import("./products/Index"));
 const OrdersPage = lazy(() => import("./orders/Index"));
 const SocialPage = lazy(() => import("./social/Index"));
 const ViewStorePage = lazy(() => import("./dashboard/ViewStorePage"));
+const SettingsPage = lazy(() => import("./settings/Index"));
+const ReportsPage = lazy(() => import("./reports/Index"));
+const SupportPage = lazy(() => import("./support/Index"));
+const MarketingPage = lazy(() => import("./marketing/Index"));
 
 // Admin pages
 const BusinessList = lazy(() => import("./admin/BusinessList"));
@@ -33,10 +37,21 @@ export default function Index() {
             {/* Standard routes */}
             <Route path="/" element={<Dashboard />} />
             <Route path="/customers" element={<CustomersPage />} />
+            <Route path="/customers/*" element={<CustomersPage />} />
             <Route path="/products" element={<ProductsPage />} />
+            <Route path="/products/*" element={<ProductsPage />} />
             <Route path="/orders" element={<OrdersPage />} />
+            <Route path="/orders/*" element={<OrdersPage />} />
             <Route path="/social/*" element={<SocialPage />} />
             <Route path="/view-store" element={<ViewStorePage />} />
+            <Route path="/settings" element={<SettingsPage />} />
+            <Route path="/settings/*" element={<SettingsPage />} />
+            <Route path="/reports" element={<ReportsPage />} />
+            <Route path="/reports/*" element={<ReportsPage />} />
+            <Route path="/support" element={<SupportPage />} />
+            <Route path="/support/*" element={<SupportPage />} />
+            <Route path="/marketing" element={<MarketingPage />} />
+            <Route path="/marketing/*" element={<MarketingPage />} />
             
             {/* Admin routes */}
             <Route path="/admin/businesses" element={<BusinessList />} />
