@@ -13,7 +13,7 @@ export const products = {
       .order('created_at', { ascending: false })
     
     if (error) throw error
-    return data
+    return data as Product[]
   },
   create: async (product: Omit<Product, 'id' | 'created_at' | 'business_id'>) => {
     const { data: { user } } = await supabase.auth.getUser()
@@ -32,7 +32,7 @@ export const products = {
       .single()
     
     if (error) throw error
-    return data
+    return data as Product
   },
   update: async (id: string | number, product: Partial<Product>) => {
     const { data: { user } } = await supabase.auth.getUser()
@@ -47,7 +47,7 @@ export const products = {
       .single()
     
     if (error) throw error
-    return data
+    return data as Product
   },
   delete: async (id: string | number) => {
     const { data: { user } } = await supabase.auth.getUser()

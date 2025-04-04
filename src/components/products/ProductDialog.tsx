@@ -44,6 +44,9 @@ export const ProductDialog = memo(function ProductDialog({
       cost_price: product?.cost_price?.toString() || "",
       selling_price: product?.selling_price?.toString() || "",
       stock: product?.stock?.toString() || "0",
+      category: product?.category || "",
+      status: product?.status || "active",
+      taxable: product?.taxable ?? false,
     }), [product])
   })
   
@@ -65,6 +68,9 @@ export const ProductDialog = memo(function ProductDialog({
         cost_price: product.cost_price?.toString() || "",
         selling_price: product.selling_price?.toString() || "",
         stock: product.stock?.toString() || "0",
+        category: product.category || "",
+        status: product.status || "active",
+        taxable: product.taxable ?? false,
       })
       setPreviewUrl(product.image_url || null)
     } else {
@@ -74,6 +80,9 @@ export const ProductDialog = memo(function ProductDialog({
         cost_price: "",
         selling_price: "",
         stock: "0",
+        category: "",
+        status: "active",
+        taxable: false,
       })
       setPreviewUrl(null)
     }
@@ -132,14 +141,8 @@ export const ProductDialog = memo(function ProductDialog({
           handleDeleteProduct={() => Promise.resolve()}
           isDialogOpen={open}
           setIsDialogOpen={onOpenChange}
-          selectedProduct={product}
+          selectedProduct={product as any}
           setSelectedProduct={() => {}}
-          product={product}
-          previewUrl={previewUrl}
-          setPreviewUrl={handleSetPreviewUrl}
-          isSubmitting={isSubmitting}
-          onSubmit={handleSubmit}
-          onOpenChange={onOpenChange}
           businessId={businessId}
         />
       </DialogContent>

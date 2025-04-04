@@ -1,6 +1,6 @@
 
 import { memo } from "react"
-import { Product } from "./ProductForm"
+import { Product } from "@/lib/supabase/types"
 import { ProductShareButton } from "./ProductShareButton"
 
 interface ProductShareSectionProps {
