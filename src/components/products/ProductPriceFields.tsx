@@ -5,6 +5,7 @@ import { Switch } from "@/components/ui/switch"
 import { UseFormReturn } from "react-hook-form"
 import { FormValues } from "./ProductFormFields"
 import { useMemo } from "react"
+import { AlertTriangle } from "lucide-react"
 
 interface ProductPriceFieldsProps {
   form: UseFormReturn<FormValues>
@@ -17,6 +18,15 @@ export function ProductPriceFields({ form }: ProductPriceFieldsProps) {
   const profit = useMemo(() => {
     return sellingPrice - costPrice
   }, [costPrice, sellingPrice])
+
+  const profitMargin = useMemo(() => {
+    if (sellingPrice <= 0) return 0
+    return (profit / sellingPrice) * 100
+  }, [profit, sellingPrice])
+
+  const isPriceError = useMemo(() => {
+    return sellingPrice < costPrice
+  }, [sellingPrice, costPrice])
 
   return (
     <>
@@ -33,6 +43,7 @@ export function ProductPriceFields({ form }: ProductPriceFieldsProps) {
                   placeholder="Cost price" 
                   {...field}
                   onChange={(e) => field.onChange(parseFloat(e.target.value))} 
+                  className={isPriceError ? "border-destructive" : ""}
                 />
               </FormControl>
               <FormMessage />
@@ -51,6 +62,7 @@ export function ProductPriceFields({ form }: ProductPriceFieldsProps) {
                   placeholder="Selling price" 
                   {...field}
                   onChange={(e) => field.onChange(parseFloat(e.target.value))} 
+                  className={isPriceError ? "border-destructive" : ""}
                 />
               </FormControl>
               <FormMessage />
@@ -60,9 +72,15 @@ export function ProductPriceFields({ form }: ProductPriceFieldsProps) {
       </div>
       
       <div className="bg-muted p-3 rounded-md">
+        {isPriceError && (
+          <div className="flex items-center gap-2 text-destructive mb-2">
+            <AlertTriangle className="h-4 w-4" />
+            <p className="text-sm">Selling price should be greater than cost price</p>
+          </div>
+        )}
         <p className="text-sm text-muted-foreground">Profit per unit:</p>
         <p className={`text-lg font-semibold ${profit >= 0 ? 'text-green-500' : 'text-red-500'}`}>
-          ${profit.toFixed(2)}
+          ${profit.toFixed(2)} ({profitMargin.toFixed(0)}% margin)
         </p>
       </div>
       

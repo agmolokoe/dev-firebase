@@ -8,7 +8,7 @@ interface ProductStoreLinkProps {
 
 export function ProductStoreLink({ businessId }: ProductStoreLinkProps) {
   const getStoreUrl = () => {
-    return `/store/${businessId}`;
+    return `/shopapp/${businessId}`;
   };
 
   return (

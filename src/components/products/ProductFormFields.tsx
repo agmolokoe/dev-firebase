@@ -20,6 +20,7 @@ export const formSchema = z.object({
   }),
   status: z.enum(["active", "inactive"]),
   taxable: z.boolean().default(false),
+  image_url: z.string().optional(),
 })
 
 export type FormValues = z.infer<typeof formSchema>
@@ -90,6 +91,20 @@ export function ProductFormFields({ form }: ProductFormFieldsProps) {
                 <SelectItem value="inactive">Inactive</SelectItem>
               </SelectContent>
             </Select>
+            <FormMessage />
+          </FormItem>
+        )}
+      />
+      
+      <FormField
+        control={form.control}
+        name="image_url"
+        render={({ field }) => (
+          <FormItem>
+            <FormLabel>Product Image URL</FormLabel>
+            <FormControl>
+              <Input placeholder="Image URL" {...field} value={field.value || ''} />
+            </FormControl>
             <FormMessage />
           </FormItem>
         )}

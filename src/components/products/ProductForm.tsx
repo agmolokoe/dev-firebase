@@ -3,12 +3,14 @@ import { Button } from "@/components/ui/button"
 import { Form } from "@/components/ui/form"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
-import { useEffect } from "react"
+import { useEffect, useState } from "react"
 import { useToast } from "@/hooks/use-toast"
 import { Product } from "@/lib/supabase/types"
 import { ProductDeleteAlert } from "./ProductDeleteAlert"
 import { ProductFormFields, formSchema, FormValues } from "./ProductFormFields"
 import { ProductPriceFields } from "./ProductPriceFields"
+import { ProductImageSection } from "./ProductImageSection"
+import { ProductStoreLink } from "./ProductStoreLink"
 
 export interface ProductFormProps {
   product?: Product | null;
@@ -32,6 +34,7 @@ export function ProductForm({
   setSelectedProduct
 }: ProductFormProps) {
   const { toast } = useToast()
+  const [previewUrl, setPreviewUrl] = useState<string | null>(null)
   
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
@@ -44,6 +47,7 @@ export function ProductForm({
       category: product?.category || "",
       status: (product?.status as "active" | "inactive") || "active",
       taxable: product?.taxable || false,
+      image_url: product?.image_url || "",
     },
   })
 
@@ -58,7 +62,9 @@ export function ProductForm({
         category: selectedProduct.category,
         status: (selectedProduct.status as "active" | "inactive"),
         taxable: selectedProduct.taxable,
+        image_url: selectedProduct.image_url || "",
       });
+      setPreviewUrl(selectedProduct.image_url || null);
     } else {
       form.reset({
         name: "",
@@ -69,12 +75,19 @@ export function ProductForm({
         category: "",
         status: "active",
         taxable: false,
+        image_url: "",
       });
+      setPreviewUrl(null);
     }
   }, [selectedProduct, form]);
 
   const onSubmit = async (values: FormValues) => {
     try {
+      // Add image URL from preview if it exists
+      if (previewUrl) {
+        values.image_url = previewUrl;
+      }
+      
       if (product) {
         await handleUpdateProduct(product.id, values);
         toast({
@@ -122,10 +135,20 @@ export function ProductForm({
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+        <ProductImageSection 
+          previewUrl={previewUrl}
+          setPreviewUrl={setPreviewUrl}
+          isSubmitting={form.formState.isSubmitting}
+        />
+        
         <div className="space-y-6">
           <ProductFormFields form={form} />
           <ProductPriceFields form={form} />
         </div>
+        
+        {selectedProduct?.business_id && (
+          <ProductStoreLink businessId={selectedProduct.business_id} />
+        )}
         
         <div className="flex justify-end space-x-2 pt-4 border-t">
           {product && (
