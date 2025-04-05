@@ -4,7 +4,7 @@ import { useProductData } from "./useProductData"
 import { useProductActions } from "./useProductActions"
 import { useTenant } from "@/middleware"
 
-export function useProducts() {
+export function useProducts(options?: { forWebstore?: boolean }) {
   const [selectedProduct, setSelectedProduct] = useState<any>(null)
   const [isDialogOpen, setIsDialogOpen] = useState(false)
   
@@ -47,9 +47,14 @@ export function useProducts() {
     setSelectedProduct(product);
   }, []);
 
+  // Filter products for webstore if needed
+  const webstoreProducts = options?.forWebstore 
+    ? products.filter(product => product.published !== false)
+    : products;
+
   return {
     userId: currentTenantId || userId,
-    products,
+    products: options?.forWebstore ? webstoreProducts : products,
     isLoading,
     error,
     stats,

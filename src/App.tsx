@@ -173,6 +173,7 @@ function App() {
                   <Route path="/:businessId/product/:productId" element={<Navigate to={`/shopapp/:businessId/product/:productId`} replace />} />
                   <Route path="/store/:businessId" element={<Navigate to={`/shopapp/:businessId`} replace />} />
                   <Route path="/store/:businessId/product/:productId" element={<Navigate to={`/shopapp/:businessId/product/:productId`} replace />} />
+                  <Route path="/webstore" element={<Navigate to="/dashboard/webstore" replace />} />
                   
                   <Route path="*" element={<Navigate to="/" replace />} />
                 </Routes>

@@ -10,7 +10,8 @@ import {
   Settings,
   MessageSquare,
   Share2,
-  Store
+  Store,
+  Globe
 } from "lucide-react";
 
 export function DashboardSideNav() {
@@ -47,6 +48,12 @@ export function DashboardSideNav() {
       href: "/dashboard/social",
       icon: <Share2 className="h-5 w-5" />,
       active: pathname.startsWith("/dashboard/social"),
+    },
+    {
+      title: "Webstore",
+      href: "/dashboard/webstore",
+      icon: <Globe className="h-5 w-5" />,
+      active: pathname.startsWith("/dashboard/webstore"),
     },
     {
       title: "View Store",

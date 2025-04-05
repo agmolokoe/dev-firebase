@@ -5,21 +5,38 @@ import { useState } from "react"
 
 interface ProductStoreLinkProps {
   businessId: string | null;
+  variant?: 'default' | 'outline' | 'subtle';
+  className?: string;
 }
 
-export function ProductStoreLink({ businessId }: ProductStoreLinkProps) {
+export function ProductStoreLink({ 
+  businessId, 
+  variant = 'outline',
+  className = ''
+}: ProductStoreLinkProps) {
   const [isHovering, setIsHovering] = useState(false);
   
   const getStoreUrl = () => {
     return `/shopapp/${businessId}`;
   };
 
+  // Different styles based on variant
+  const getButtonStyles = () => {
+    if (variant === 'default') {
+      return `bg-[#25F4EE] text-black hover:bg-[#25F4EE]/90 ${isHovering ? 'bg-[#25F4EE]/90' : ''}`;
+    } else if (variant === 'subtle') {
+      return `bg-transparent text-[#25F4EE] hover:bg-[#25F4EE]/10 ${isHovering ? 'bg-[#25F4EE]/10' : ''}`;
+    } else {
+      return `text-[#FFFFFF] border-[#25F4EE]/40 relative overflow-hidden ${isHovering ? 'bg-[#25F4EE]/10' : 'hover:bg-[#25F4EE]/10'}`;
+    }
+  };
+
   return (
-    <div className="mt-6 pt-4 border-t border-[#FFFFFF]/10">
+    <div className={`${variant !== 'subtle' ? 'mt-6 pt-4 border-t border-[#FFFFFF]/10' : ''} ${className}`}>
       <Button
         type="button"
-        variant="outline"
-        className={`w-full text-[#FFFFFF] border-[#25F4EE]/40 relative overflow-hidden group transition-all duration-300 ${isHovering ? 'bg-[#25F4EE]/10' : 'hover:bg-[#25F4EE]/10'}`}
+        variant={variant === 'default' ? 'default' : 'outline'}
+        className={`w-full group transition-all duration-300 ${getButtonStyles()}`}
         onClick={() => window.open(getStoreUrl(), '_blank')}
         onMouseEnter={() => setIsHovering(true)}
         onMouseLeave={() => setIsHovering(false)}

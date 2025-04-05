@@ -11,6 +11,7 @@ const CustomersPage = lazy(() => import("./customers/Index"));
 const ProductsPage = lazy(() => import("./products/Index"));
 const OrdersPage = lazy(() => import("./orders/Index"));
 const SocialPage = lazy(() => import("./social/Index"));
+const WebstorePage = lazy(() => import("./webstore/Index"));
 const ViewStorePage = lazy(() => import("./dashboard/ViewStorePage"));
 const SettingsPage = lazy(() => import("./settings/Index"));
 const ReportsPage = lazy(() => import("./reports/Index"));
@@ -43,6 +44,8 @@ export default function Index() {
             <Route path="/orders" element={<OrdersPage />} />
             <Route path="/orders/*" element={<OrdersPage />} />
             <Route path="/social/*" element={<SocialPage />} />
+            <Route path="/webstore" element={<WebstorePage />} />
+            <Route path="/webstore/*" element={<WebstorePage />} />
             <Route path="/view-store" element={<ViewStorePage />} />
             <Route path="/settings" element={<SettingsPage />} />
             <Route path="/settings/*" element={<SettingsPage />} />
