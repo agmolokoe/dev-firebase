@@ -11,7 +11,8 @@ import {
   MessageSquare,
   Share2,
   Store,
-  Globe
+  Globe,
+  Sparkles
 } from "lucide-react";
 
 export function DashboardSideNav() {
@@ -26,16 +27,23 @@ export function DashboardSideNav() {
       active: pathname === "/dashboard",
     },
     {
-      title: "Customers",
-      href: "/dashboard/customers",
-      icon: <Users className="h-5 w-5" />,
-      active: pathname.startsWith("/dashboard/customers"),
+      title: "Webstore",
+      href: "/dashboard/webstore",
+      icon: <Store className="h-5 w-5 text-teal-400" />,
+      active: pathname.startsWith("/dashboard/webstore"),
+      highlight: true,
     },
     {
       title: "Products",
       href: "/dashboard/products",
       icon: <Package className="h-5 w-5" />,
       active: pathname.startsWith("/dashboard/products"),
+    },
+    {
+      title: "Customers",
+      href: "/dashboard/customers",
+      icon: <Users className="h-5 w-5" />,
+      active: pathname.startsWith("/dashboard/customers"),
     },
     {
       title: "Orders",
@@ -50,15 +58,9 @@ export function DashboardSideNav() {
       active: pathname.startsWith("/dashboard/social"),
     },
     {
-      title: "Webstore",
-      href: "/dashboard/webstore",
-      icon: <Globe className="h-5 w-5" />,
-      active: pathname.startsWith("/dashboard/webstore"),
-    },
-    {
       title: "View Store",
       href: "/dashboard/view-store",
-      icon: <Store className="h-5 w-5" />,
+      icon: <Globe className="h-5 w-5" />,
       active: pathname.startsWith("/dashboard/view-store"),
     },
     {
@@ -70,7 +72,7 @@ export function DashboardSideNav() {
     {
       title: "Marketing",
       href: "/dashboard/marketing",
-      icon: <Share2 className="h-5 w-5" />,
+      icon: <Sparkles className="h-5 w-5" />,
       active: pathname.startsWith("/dashboard/marketing"),
     },
     {
@@ -94,12 +96,21 @@ export function DashboardSideNav() {
           key={link.href}
           to={link.href}
           className={cn(
-            "flex items-center gap-2 rounded-lg px-3 py-2 text-foreground transition-all hover:text-foreground",
-            link.active ? "bg-secondary" : "hover:bg-secondary/20"
+            "flex items-center gap-2 rounded-lg px-3 py-2 text-foreground transition-all hover:text-foreground relative group",
+            link.active 
+              ? "bg-gradient-to-r from-teal-500 to-blue-600 text-white" 
+              : "hover:bg-white/10",
+            link.highlight && "border-l-4 border-teal-400"
           )}
         >
-          {link.icon}
-          {link.title}
+          <span className={cn(
+            "absolute inset-0 bg-gradient-to-r from-teal-500/10 to-blue-600/10 opacity-0 rounded-lg transition-opacity group-hover:opacity-100",
+            link.active ? "opacity-0" : ""
+          )} />
+          <span className="relative z-10 flex items-center gap-2">
+            {link.icon}
+            <span className="transition-all duration-300">{link.title}</span>
+          </span>
         </Link>
       ))}
     </nav>

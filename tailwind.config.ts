@@ -23,22 +23,22 @@ export default {
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",
         ring: "hsl(var(--ring))",
-        background: "#000000", // TikTok Black
-        foreground: "#FFFFFF", // TikTok White
+        background: "#000000", // Black
+        foreground: "#FFFFFF", // White
         primary: {
-          DEFAULT: "#FE2C55", // TikTok Red
+          DEFAULT: "#2DD4BF", // Teal
           foreground: "#FFFFFF",
         },
         secondary: {
-          DEFAULT: "#25F4EE", // TikTok Blue
+          DEFAULT: "#3B82F6", // Royal Blue
           foreground: "#000000",
         },
         success: {
-          DEFAULT: "#00F076", // TikTok Green
+          DEFAULT: "#00F076", // Green
           foreground: "#000000",
         },
         destructive: {
-          DEFAULT: "#FE2C55", // TikTok Red
+          DEFAULT: "#EF4444", // Red
           foreground: "#FFFFFF",
         },
         muted: {
@@ -46,18 +46,26 @@ export default {
           foreground: "#FFFFFF",
         },
         accent: {
-          DEFAULT: "#25F4EE", // TikTok Blue
+          DEFAULT: "#2DD4BF", // Teal
           foreground: "#000000",
         },
         card: {
           DEFAULT: "#121212", // Slightly lighter black
           foreground: "#FFFFFF",
         },
+        teal: {
+          400: "#2DD4BF",
+          500: "#14B8A6",
+        },
+        blue: {
+          500: "#3B82F6",
+          600: "#2563EB",
+        }
       },
       borderRadius: {
-        lg: "0.5rem",
-        md: "calc(0.5rem - 2px)",
-        sm: "calc(0.5rem - 4px)",
+        lg: "0.75rem",
+        md: "calc(0.75rem - 2px)",
+        sm: "calc(0.75rem - 4px)",
       },
       keyframes: {
         "accordion-down": {
@@ -88,6 +96,18 @@ export default {
           "0%, 100%": { transform: "translateX(0)" },
           "10%, 30%, 50%, 70%, 90%": { transform: "translateX(-5px)" },
           "20%, 40%, 60%, 80%": { transform: "translateX(5px)" },
+        },
+        fadeIn: {
+          "0%": { opacity: "0" },
+          "100%": { opacity: "1" },
+        },
+        slideUp: {
+          "0%": { transform: "translateY(20px)", opacity: "0" },
+          "100%": { transform: "translateY(0)", opacity: "1" },
+        },
+        glow: {
+          "0%, 100%": { boxShadow: "0 0 10px rgba(45, 212, 191, 0.5)" },
+          "50%": { boxShadow: "0 0 20px rgba(45, 212, 191, 0.8)" },
         }
       },
       animation: {
@@ -98,9 +118,17 @@ export default {
         "pulse": "pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite",
         "bounce": "bounce 1s ease-in-out infinite",
         "shake": "shake 0.5s ease-in-out",
+        "fade-in": "fadeIn 0.5s ease-out forwards",
+        "slide-up": "slideUp 0.5s ease-out forwards",
+        "glow": "glow 2s infinite ease-in-out",
       },
       fontFamily: {
         sans: ["Inter", "sans-serif"],
+      },
+      boxShadow: {
+        'soft': '0 2px 15px rgba(0, 0, 0, 0.1)',
+        'glow-teal': '0 0 15px rgba(45, 212, 191, 0.5)',
+        'glow-blue': '0 0 15px rgba(59, 130, 246, 0.5)',
       },
     },
   },

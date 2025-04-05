@@ -7,28 +7,28 @@
 
 @layer base {
   :root {
-    --background: 0 0% 0%; /* TikTok Black */
-    --foreground: 0 0% 100%; /* TikTok White */
+    --background: 0 0% 0%; /* Black */
+    --foreground: 0 0% 100%; /* White */
     --card: 0 0% 7%; /* Slightly lighter black */
     --card-foreground: 0 0% 100%; /* White */
     --popover: 0 0% 7%; /* Slightly lighter black */
     --popover-foreground: 0 0% 100%; /* White */
-    --primary: 345 99% 58%; /* TikTok Red */
+    --primary: 180 100% 45%; /* Teal */
     --primary-foreground: 0 0% 100%; /* White */
-    --secondary: 183 91% 55%; /* TikTok Blue */
+    --secondary: 225 73% 57%; /* Royal Blue */
     --secondary-foreground: 0 0% 0%; /* Black */
     --success: 156 100% 47%; /* TikTok Green */
     --success-foreground: 0 0% 0%; /* Black */
     --muted: 0 0% 12%; /* Darker shade of black */
     --muted-foreground: 0 0% 100%; /* White */
-    --accent: 183 91% 55%; /* TikTok Blue */
+    --accent: 180 100% 45%; /* Teal */
     --accent-foreground: 0 0% 0%; /* Black */
-    --destructive: 345 99% 58%; /* TikTok Red */
+    --destructive: 0 84% 60%; /* Red */
     --destructive-foreground: 0 0% 100%; /* White */
     --border: 0 0% 12%; /* Darker shade of black */
     --input: 0 0% 12%; /* Darker shade of black */
-    --ring: 345 99% 58%; /* TikTok Red */
-    --radius: 0.5rem;
+    --ring: 180 100% 45%; /* Teal */
+    --radius: 0.75rem;
   }
 }
 
@@ -41,34 +41,96 @@ body {
   font-feature-settings: "rlig" 1, "calt" 1;
 }
 
-/* TikTok-inspired animated link */
+/* Animated link with teal underline */
 .tiktok-link {
   @apply relative inline-block;
 }
 
 .tiktok-link::after {
-  @apply content-[''] absolute left-0 bottom-0 w-full h-[2px] bg-[#25F4EE] transform scale-x-0 origin-bottom-left transition-transform duration-300;
+  @apply content-[''] absolute left-0 bottom-0 w-full h-[2px] bg-teal-400 transform scale-x-0 origin-bottom-left transition-transform duration-300;
 }
 
 .tiktok-link:hover::after {
   @apply transform scale-x-100;
 }
 
-/* Card hover effects */
+/* Enhanced card hover effects with shadows */
 .tiktok-card {
-  @apply transition-all duration-300 hover:shadow-lg hover:shadow-[#25F4EE]/10 hover:-translate-y-1;
+  @apply transition-all duration-300 hover:shadow-lg hover:shadow-teal-500/20 hover:-translate-y-1;
 }
 
-/* TikTok-inspired button pulse */
+/* Button pulse effect */
+.tiktok-btn-pulse {
+  @apply relative overflow-hidden;
+}
+
 .tiktok-btn-pulse::before {
-  @apply content-[''] absolute inset-0 rounded-md bg-[#25F4EE]/30 transform scale-90 opacity-0 transition-all duration-500;
+  @apply content-[''] absolute inset-0 rounded-md bg-teal-400/30 transform scale-90 opacity-0 transition-all duration-500;
 }
 
 .tiktok-btn-pulse:hover::before {
   @apply transform scale-110 opacity-100 animate-pulse;
 }
 
-/* Gradient text */
+/* Gradient text - teal to royal blue */
 .gradient-text {
-  @apply bg-gradient-to-r from-[#25F4EE] to-[#FE2C55] bg-clip-text text-transparent;
+  @apply bg-gradient-to-r from-teal-400 to-blue-600 bg-clip-text text-transparent;
+}
+
+/* Animated section entry */
+.animate-entry {
+  @apply opacity-0;
+  animation: entryAnimation 0.6s ease-out forwards;
+}
+
+@keyframes entryAnimation {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Card hover glow effect */
+.card-glow {
+  @apply transition-all duration-500;
+  box-shadow: 0 0 0 rgba(45, 212, 191, 0);
+}
+
+.card-glow:hover {
+  box-shadow: 0 0 30px rgba(45, 212, 191, 0.3);
+}
+
+/* Wave animation */
+.wave-animation {
+  position: relative;
+  overflow: hidden;
+}
+
+.wave-animation::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(45deg, rgba(45, 212, 191, 0.1) 0%, transparent 100%);
+  z-index: 0;
+  transform: translateX(-100%);
+  animation: wave 2s infinite linear;
+}
+
+@keyframes wave {
+  0% {
+    transform: translateX(-100%);
+  }
+  50% {
+    transform: translateX(100%);
+  }
+  100% {
+    transform: translateX(100%);
+  }
 }
