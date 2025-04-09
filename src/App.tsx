@@ -24,12 +24,13 @@ const ProductDetailPage = lazy(() => import("./pages/store/ProductDetailPage"))
 
 // Loading component
 const PageLoader = () => (
-  <div className="min-h-screen bg-background flex items-center justify-center">
+  <div className="min-h-screen bg-background flex flex-col items-center justify-center">
     <LoadingSpinner size="lg" />
+    <p className="mt-4 text-white/70 animate-pulse">Loading Baseti Social Shop...</p>
   </div>
 )
 
-// Protected route component
+// Protected route component with enhanced error handling and redirect
 const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
   const [checking, setChecking] = useState(true);
   const [authenticated, setAuthenticated] = useState(false);
@@ -39,7 +40,13 @@ const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
   useEffect(() => {
     const checkAuth = async () => {
       try {
-        const { data } = await supabase.auth.getSession();
+        const { data, error } = await supabase.auth.getSession();
+        
+        if (error) {
+          console.error("Error checking authentication:", error);
+          throw error;
+        }
+        
         if (data.session) {
           setAuthenticated(true);
         } else {
@@ -47,14 +54,14 @@ const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
           if (location.pathname !== '/auth') {
             // Preserve the original URL the user was trying to access
             const returnPath = encodeURIComponent(location.pathname + location.search);
-            navigate(`/auth?returnTo=${returnPath}`, { replace: true });
+            navigate(`/auth?returnTo=${returnPath}&from=protected`, { replace: true });
           }
         }
       } catch (error) {
         console.error("Error checking authentication:", error);
         // Only redirect if not already on the auth page
         if (location.pathname !== '/auth') {
-          navigate("/auth", { replace: true });
+          navigate("/auth?from=error", { replace: true });
         }
       } finally {
         setChecking(false);
@@ -62,6 +69,20 @@ const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
     };
 
     checkAuth();
+    
+    // Listen for auth state changes while on protected routes
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+      if (event === 'SIGNED_OUT') {
+        setAuthenticated(false);
+        navigate('/auth', { replace: true });
+      } else if (event === 'SIGNED_IN' && session) {
+        setAuthenticated(true);
+      }
+    });
+
+    return () => {
+      subscription.unsubscribe();
+    };
   }, [navigate, location]);
 
   if (checking) {
@@ -76,6 +97,7 @@ const queryClient = new QueryClient({
     queries: {
       refetchOnWindowFocus: false,
       staleTime: 60000, // 1 minute
+      retry: 1,
     },
   },
 })
@@ -112,7 +134,7 @@ function App() {
           <TenantProvider>
             <CartProvider>
               <Toaster />
-              <Sonner />
+              <Sonner position="top-right" closeButton={true} />
               <Suspense fallback={<PageLoader />}>
                 <Routes>
                   <Route

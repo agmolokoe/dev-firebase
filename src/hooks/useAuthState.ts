@@ -12,16 +12,19 @@ function useAuthState() {
   const [errorMessage, setErrorMessage] = useState<string>("");
   const [isAuthReady, setIsAuthReady] = useState<boolean>(false);
   const [session, setSession] = useState<any>(null);
+  const [isLoading, setIsLoading] = useState<boolean>(true);
 
   useEffect(() => {
     // Check current session on mount
     const checkCurrentSession = async () => {
       try {
+        setIsLoading(true);
         const { data, error } = await supabase.auth.getSession();
         
         if (error) {
           console.error("Error checking session:", error);
           setIsAuthReady(true);
+          setIsLoading(false);
           return;
         }
         
@@ -41,6 +44,8 @@ function useAuthState() {
       } catch (err) {
         console.error("Unexpected error checking session:", err);
         setIsAuthReady(true);
+      } finally {
+        setIsLoading(false);
       }
     };
     
@@ -51,14 +56,13 @@ function useAuthState() {
       data: { subscription },
     } = supabase.auth.onAuthStateChange(async (event, session) => {
       console.log("Auth event:", event);
-      console.log("Session:", session);
       
       // Update session state
       setSession(session);
 
       if (event === "SIGNED_IN" && session) {
         setErrorMessage(""); // Clear any previous errors
-        toast.success("Successfully signed in!");
+        toast.success("Successfully signed in! Welcome to Baseti Social Shop.");
         
         // Check for returnTo parameter
         const params = new URLSearchParams(location.search);
@@ -68,8 +72,12 @@ function useAuthState() {
 
       if (event === "SIGNED_OUT") {
         setErrorMessage("");
-        toast.success("Successfully signed out!");
+        toast.success("Successfully signed out. See you soon!");
         navigate("/auth", { replace: true });
+      }
+
+      if (event === "PASSWORD_RECOVERY") {
+        toast.info("Please check your email to reset your password.");
       }
 
       // Handle social login events
@@ -111,7 +119,7 @@ function useAuthState() {
     };
   }, [navigate, location.pathname, location.search]);
 
-  return { errorMessage, setErrorMessage, isAuthReady, session };
+  return { errorMessage, setErrorMessage, isAuthReady, session, isLoading };
 }
 
 export default useAuthState;
