@@ -13,21 +13,21 @@
     --card-foreground: 0 0% 100%; /* White */
     --popover: 0 0% 7%; /* Slightly lighter black */
     --popover-foreground: 0 0% 100%; /* White */
-    --primary: 180 100% 45%; /* Teal */
+    --primary: 174 98% 55%; /* TikTok Blue (#25F4EE) */
     --primary-foreground: 0 0% 100%; /* White */
     --secondary: 225 73% 57%; /* Royal Blue */
     --secondary-foreground: 0 0% 0%; /* Black */
-    --success: 156 100% 47%; /* TikTok Green */
+    --success: 177 85% 32%; /* WhatsApp Green (#075E54) */
     --success-foreground: 0 0% 0%; /* Black */
     --muted: 0 0% 12%; /* Darker shade of black */
     --muted-foreground: 0 0% 100%; /* White */
-    --accent: 180 100% 45%; /* Teal */
+    --accent: 174 98% 55%; /* TikTok Blue (#25F4EE) */
     --accent-foreground: 0 0% 0%; /* Black */
-    --destructive: 0 84% 60%; /* Red */
+    --destructive: 343 100% 63%; /* TikTok Pink (#FE2C55) */
     --destructive-foreground: 0 0% 100%; /* White */
     --border: 0 0% 12%; /* Darker shade of black */
     --input: 0 0% 12%; /* Darker shade of black */
-    --ring: 180 100% 45%; /* Teal */
+    --ring: 174 98% 55%; /* TikTok Blue (#25F4EE) */
     --radius: 0.75rem;
   }
 }
@@ -47,7 +47,7 @@ body {
 }
 
 .tiktok-link::after {
-  @apply content-[''] absolute left-0 bottom-0 w-full h-[2px] bg-teal-400 transform scale-x-0 origin-bottom-left transition-transform duration-300;
+  @apply content-[''] absolute left-0 bottom-0 w-full h-[2px] bg-[#25F4EE] transform scale-x-0 origin-bottom-left transition-transform duration-300;
 }
 
 .tiktok-link:hover::after {
@@ -56,7 +56,7 @@ body {
 
 /* Enhanced card hover effects with shadows */
 .tiktok-card {
-  @apply transition-all duration-300 hover:shadow-lg hover:shadow-teal-500/20 hover:-translate-y-1;
+  @apply transition-all duration-300 hover:shadow-lg hover:shadow-[#25F4EE]/20 hover:-translate-y-1;
 }
 
 /* Button pulse effect */
@@ -65,7 +65,7 @@ body {
 }
 
 .tiktok-btn-pulse::before {
-  @apply content-[''] absolute inset-0 rounded-md bg-teal-400/30 transform scale-90 opacity-0 transition-all duration-500;
+  @apply content-[''] absolute inset-0 rounded-md bg-[#25F4EE]/30 transform scale-90 opacity-0 transition-all duration-500;
 }
 
 .tiktok-btn-pulse:hover::before {
@@ -74,7 +74,7 @@ body {
 
 /* Gradient text - teal to royal blue */
 .gradient-text {
-  @apply bg-gradient-to-r from-teal-400 to-blue-600 bg-clip-text text-transparent;
+  @apply bg-gradient-to-r from-[#25F4EE] to-[#3B82F6] bg-clip-text text-transparent;
 }
 
 /* Animated section entry */
@@ -97,11 +97,11 @@ body {
 /* Card hover glow effect */
 .card-glow {
   @apply transition-all duration-500;
-  box-shadow: 0 0 0 rgba(45, 212, 191, 0);
+  box-shadow: 0 0 0 rgba(37, 244, 238, 0);
 }
 
 .card-glow:hover {
-  box-shadow: 0 0 30px rgba(45, 212, 191, 0.3);
+  box-shadow: 0 0 30px rgba(37, 244, 238, 0.3);
 }
 
 /* Wave animation */
@@ -117,7 +117,7 @@ body {
   left: 0;
   right: 0;
   bottom: 0;
-  background: linear-gradient(45deg, rgba(45, 212, 191, 0.1) 0%, transparent 100%);
+  background: linear-gradient(45deg, rgba(37, 244, 238, 0.1) 0%, transparent 100%);
   z-index: 0;
   transform: translateX(-100%);
   animation: wave 2s infinite linear;

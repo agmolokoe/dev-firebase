@@ -44,7 +44,7 @@ export function StoreHeader({ businessProfile, handleViewStore }: StoreHeaderPro
         >
           <Button 
             onClick={handleViewStore}
-            className="flex items-center gap-2 bg-gradient-to-r from-teal-500 to-blue-600 hover:from-teal-400 hover:to-blue-500 text-white font-medium shadow-md transition-all duration-300"
+            className="flex items-center gap-2 bg-gradient-to-r from-[#25F4EE] to-[#FE2C55] hover:from-[#25F4EE]/90 hover:to-[#FE2C55]/90 text-white font-medium shadow-md transition-all duration-300"
             size="lg"
           >
             <Eye className="h-5 w-5" />

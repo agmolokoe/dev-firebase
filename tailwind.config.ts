@@ -26,7 +26,7 @@ export default {
         background: "#000000", // Black
         foreground: "#FFFFFF", // White
         primary: {
-          DEFAULT: "#2DD4BF", // Teal
+          DEFAULT: "#25F4EE", // TikTok Blue
           foreground: "#FFFFFF",
         },
         secondary: {
@@ -34,11 +34,11 @@ export default {
           foreground: "#000000",
         },
         success: {
-          DEFAULT: "#00F076", // Green
+          DEFAULT: "#075E54", // WhatsApp Green
           foreground: "#000000",
         },
         destructive: {
-          DEFAULT: "#EF4444", // Red
+          DEFAULT: "#FE2C55", // TikTok Pink
           foreground: "#FFFFFF",
         },
         muted: {
@@ -46,21 +46,21 @@ export default {
           foreground: "#FFFFFF",
         },
         accent: {
-          DEFAULT: "#2DD4BF", // Teal
+          DEFAULT: "#25F4EE", // TikTok Blue
           foreground: "#000000",
         },
         card: {
           DEFAULT: "#121212", // Slightly lighter black
           foreground: "#FFFFFF",
         },
-        teal: {
-          400: "#2DD4BF",
-          500: "#14B8A6",
+        tiktok: {
+          blue: "#25F4EE",
+          pink: "#FE2C55",
         },
-        blue: {
-          500: "#3B82F6",
-          600: "#2563EB",
-        }
+        whatsapp: {
+          green: "#075E54",
+          light: "#25D366",
+        },
       },
       borderRadius: {
         lg: "0.75rem",
@@ -106,8 +106,8 @@ export default {
           "100%": { transform: "translateY(0)", opacity: "1" },
         },
         glow: {
-          "0%, 100%": { boxShadow: "0 0 10px rgba(45, 212, 191, 0.5)" },
-          "50%": { boxShadow: "0 0 20px rgba(45, 212, 191, 0.8)" },
+          "0%, 100%": { boxShadow: "0 0 10px rgba(37, 244, 238, 0.5)" },
+          "50%": { boxShadow: "0 0 20px rgba(37, 244, 238, 0.8)" },
         }
       },
       animation: {
@@ -127,8 +127,8 @@ export default {
       },
       boxShadow: {
         'soft': '0 2px 15px rgba(0, 0, 0, 0.1)',
-        'glow-teal': '0 0 15px rgba(45, 212, 191, 0.5)',
-        'glow-blue': '0 0 15px rgba(59, 130, 246, 0.5)',
+        'glow-teal': '0 0 15px rgba(37, 244, 238, 0.5)',
+        'glow-pink': '0 0 15px rgba(254, 44, 85, 0.5)',
       },
     },
   },
