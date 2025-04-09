@@ -9,6 +9,7 @@ import { BusinessNameInput } from "@/components/auth/BusinessNameInput";
 import { AuthError } from "@/components/auth/AuthError";
 import useAuthState from "@/hooks/useAuthState";
 import { LoadingSpinner } from "@/components/ui/loading-spinner";
+import { motion } from "framer-motion";
 
 export default function AuthPage({ mode }: { mode: "login" | "signup" }) {
   const location = useLocation();
@@ -19,6 +20,10 @@ export default function AuthPage({ mode }: { mode: "login" | "signup" }) {
   // Get returnTo path from URL if it exists
   const searchParams = new URLSearchParams(location.search);
   const returnTo = searchParams.get("returnTo") || "/dashboard";
+  const modeFromUrl = searchParams.get("mode");
+  
+  // Determine the mode based on URL parameter or prop
+  const effectiveMode = modeFromUrl === "signup" ? "signup" : modeFromUrl === "login" ? "login" : mode;
   
   // Check if we're being redirected from a protected page
   useEffect(() => {
@@ -38,16 +43,29 @@ export default function AuthPage({ mode }: { mode: "login" | "signup" }) {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-black">
-      <Card className="w-full max-w-md bg-black border-white/10">
-        <CardHeader>
-          <CardTitle className="text-2xl font-bold text-center text-white">
-            {mode === "login" ? "Welcome Back" : "Create Account"}
-          </CardTitle>
-        </CardHeader>
+    <motion.div 
+      className="min-h-screen flex items-center justify-center bg-black"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ duration: 0.5 }}
+    >
+      <Card className="w-full max-w-md bg-black border-white/10 overflow-hidden">
+        <motion.div
+          initial={{ y: -20 }}
+          animate={{ y: 0 }}
+          transition={{ delay: 0.2, duration: 0.5 }}
+        >
+          <CardHeader className="relative">
+            <div className="absolute inset-0 bg-gradient-to-r from-[#25F4EE]/20 to-[#FE2C55]/20 rounded-t-lg opacity-30"></div>
+            <CardTitle className="text-2xl font-bold text-center text-white relative z-10">
+              {effectiveMode === "login" ? "Welcome Back" : "Create Account"}
+            </CardTitle>
+          </CardHeader>
+        </motion.div>
+        
         <CardContent>
           <AuthError message={errorMessage} />
-          {mode === "signup" && (
+          {effectiveMode === "signup" && (
             <BusinessNameInput
               value={businessName}
               onChange={(value) => {
@@ -63,9 +81,9 @@ export default function AuthPage({ mode }: { mode: "login" | "signup" }) {
               variables: {
                 default: {
                   colors: {
-                    brand: "#000000",
-                    brandAccent: "#333333",
-                    brandButtonText: "#FFFFFF",
+                    brand: "#25F4EE",
+                    brandAccent: "#FE2C55",
+                    brandButtonText: "#000000",
                     inputText: "#FFFFFF",
                     inputBackground: "rgba(255, 255, 255, 0.05)",
                     inputBorder: "rgba(255, 255, 255, 0.1)",
@@ -76,7 +94,8 @@ export default function AuthPage({ mode }: { mode: "login" | "signup" }) {
             theme="dark"
             providers={["google", "facebook"]}
             redirectTo={`${window.location.origin}${returnTo}`}
-            {...(mode === "signup" && {
+            view={effectiveMode === "login" ? "sign_in" : "sign_up"}
+            {...(effectiveMode === "signup" && {
               options: {
                 data: {
                   business_name: businessName.trim() || null,
@@ -84,25 +103,30 @@ export default function AuthPage({ mode }: { mode: "login" | "signup" }) {
               },
             })}
           />
-          <p className="mt-4 text-sm text-gray-400 text-center">
-            {mode === "login" ? (
+          <motion.p 
+            className="mt-6 text-sm text-gray-400 text-center"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.4, duration: 0.5 }}
+          >
+            {effectiveMode === "login" ? (
               <>
                 Don't have an account?{" "}
-                <a href="/auth?mode=signup" className="text-white hover:underline">
+                <a href="/auth?mode=signup" className="text-[#25F4EE] hover:underline transition-colors">
                   Sign up
                 </a>
               </>
             ) : (
               <>
                 Already have an account?{" "}
-                <a href="/auth?mode=login" className="text-white hover:underline">
+                <a href="/auth?mode=login" className="text-[#25F4EE] hover:underline transition-colors">
                   Log in
                 </a>
               </>
             )}
-          </p>
+          </motion.p>
         </CardContent>
       </Card>
-    </div>
+    </motion.div>
   );
 }

@@ -33,7 +33,10 @@ function useAuthState() {
         
         // If on auth page but already authenticated, redirect to dashboard
         if (data.session && location.pathname === '/auth') {
-          navigate('/dashboard');
+          // Check if there's a return path in the URL
+          const params = new URLSearchParams(location.search);
+          const returnTo = params.get('returnTo');
+          navigate(returnTo || '/dashboard', { replace: true });
         }
       } catch (err) {
         console.error("Unexpected error checking session:", err);
@@ -56,13 +59,17 @@ function useAuthState() {
       if (event === "SIGNED_IN" && session) {
         setErrorMessage(""); // Clear any previous errors
         toast.success("Successfully signed in!");
-        navigate("/dashboard");
+        
+        // Check for returnTo parameter
+        const params = new URLSearchParams(location.search);
+        const returnTo = params.get('returnTo');
+        navigate(returnTo || "/dashboard", { replace: true });
       }
 
       if (event === "SIGNED_OUT") {
         setErrorMessage("");
         toast.success("Successfully signed out!");
-        navigate("/auth");
+        navigate("/auth", { replace: true });
       }
 
       // Handle social login events
@@ -102,7 +109,7 @@ function useAuthState() {
     return () => {
       subscription.unsubscribe();
     };
-  }, [navigate, location.pathname]);
+  }, [navigate, location.pathname, location.search]);
 
   return { errorMessage, setErrorMessage, isAuthReady, session };
 }

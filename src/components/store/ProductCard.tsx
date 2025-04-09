@@ -1,4 +1,3 @@
-
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
@@ -54,7 +53,6 @@ export function ProductCard({
       business_id,
     });
     
-    // Animate button click
     setButtonClicked(true);
     setTimeout(() => setButtonClicked(false), 500);
     
@@ -70,7 +68,7 @@ export function ProductCard({
       onMouseEnter={() => setIsHovering(true)}
       onMouseLeave={() => setIsHovering(false)}
     >
-      <Link to={`/store/${business_id}/product/${id}`} className="relative block">
+      <Link to={`/shopapp/${business_id}/product/${id}`} className="relative block">
         <div className="aspect-square overflow-hidden bg-black">
           {image_url ? (
             <img
@@ -84,7 +82,6 @@ export function ProductCard({
             </div>
           )}
           
-          {/* Overlay gradient on hover */}
           <div 
             className={`absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent transition-opacity duration-500 ${
               isHovering ? 'opacity-100' : 'opacity-0'
@@ -92,7 +89,6 @@ export function ProductCard({
           ></div>
         </div>
         
-        {/* Product badges */}
         <div className="absolute top-2 left-2 flex flex-col gap-1">
           {isNew && (
             <Badge variant="secondary" className="bg-[#25F4EE] text-black font-semibold animate-pulse">
@@ -111,7 +107,6 @@ export function ProductCard({
           )}
         </div>
         
-        {/* Quick actions */}
         <div className="absolute top-2 right-2 flex flex-col gap-2">
           <Button
             variant="secondary"
@@ -149,7 +144,6 @@ export function ProductCard({
           </Popover>
         </div>
         
-        {/* Rating preview */}
         <div 
           className={`absolute bottom-2 left-2 bg-black/60 backdrop-blur-sm px-2 py-1 rounded-md transition-all duration-500 ${
             isHovering ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'
@@ -165,8 +159,7 @@ export function ProductCard({
             <span className="text-xs text-white ml-1">(5.0)</span>
           </div>
         </div>
-
-        {/* Price tag that slides in on hover */}
+        
         <div 
           className={`absolute bottom-2 right-2 bg-[#FE2C55] text-white font-bold px-3 py-1 rounded-md transition-all duration-500 ${
             isHovering ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'
@@ -179,7 +172,7 @@ export function ProductCard({
       <CardContent className="p-4 flex-grow">
         <div className="mb-2 mt-2">
           <Link 
-            to={`/store/${business_id}/product/${id}`}
+            to={`/shopapp/${business_id}/product/${id}`}
             className="font-semibold hover:text-[#25F4EE] transition-colors truncate block text-lg"
           >
             {name}
@@ -202,7 +195,6 @@ export function ProductCard({
           onClick={handleAddToCart}
           disabled={stock <= 0}
         >
-          {/* Button background animation */}
           <div 
             className={`absolute inset-0 bg-white/20 transform ${
               buttonClicked ? 'scale-x-100' : 'scale-x-0'
