@@ -11,9 +11,11 @@ import { CartProvider } from "./context/CartContext"
 import { TenantProvider } from "@/middleware"
 import { LoadingSpinner } from "@/components/ui/loading-spinner"
 
-// Lazy load pages
+// Import AuthPage directly instead of lazy loading
+import AuthPage from "./pages/AuthPage"
+
+// Lazy load other pages
 const LandingPage = lazy(() => import("./pages/LandingPage"))
-const AuthPage = lazy(() => import("./pages/AuthPage"))
 const Index = lazy(() => import("./pages/Index"))
 const PrivacyPolicy = lazy(() => import("./pages/legal/PrivacyPolicy"))
 const TermsOfService = lazy(() => import("./pages/legal/TermsOfService"))
