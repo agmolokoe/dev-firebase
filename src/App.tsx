@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState, lazy, Suspense } from "react"
 import { Toaster } from "@/components/ui/toaster"
 import { Toaster as Sonner } from "@/components/ui/sonner"
@@ -54,14 +53,12 @@ const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
         } else {
           // Only redirect if not already on the auth page
           if (location.pathname !== '/auth') {
-            // Preserve the original URL the user was trying to access
             const returnPath = encodeURIComponent(location.pathname + location.search);
             navigate(`/auth?returnTo=${returnPath}&from=protected`, { replace: true });
           }
         }
       } catch (error) {
         console.error("Error checking authentication:", error);
-        // Only redirect if not already on the auth page
         if (location.pathname !== '/auth') {
           navigate("/auth?from=error", { replace: true });
         }
